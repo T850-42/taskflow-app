@@ -9271,6 +9271,106 @@
       -webkit-mask-image: radial-gradient(circle at right, black 0%, transparent 70%);
     }
 
+  /* ═══════════════════════════════════════════
+     MOBILE RESPONSIVE  (phones ≤ 600px)
+     ═══════════════════════════════════════════ */
+  @media (max-width: 600px) {
+
+    body {
+      padding: 12px 10px 200px;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    /* App header — tighter */
+    .app-header {
+      margin-bottom: 14px;
+      gap: 10px;
+    }
+    .app-header h1 { font-size: 1.3rem !important; }
+    .trip-logo { width: 40px; height: 40px; flex-shrink: 0; }
+    .trip-badge { font-size: 0.6rem !important; }
+    #share-btn { padding: 6px 12px; font-size: 0.75rem; }
+
+    /* Main task input area */
+    .tt-input-row, .tt-add-row { flex-wrap: wrap; gap: 6px; }
+    .tt-input { font-size: 1rem !important; padding: 14px 16px !important; }
+    .tt-add-btn, .tt-speak-btn { padding: 14px 18px !important; font-size: 0.9rem !important; }
+
+    /* Task list */
+    .tt-item { padding: 12px 12px !important; }
+    .tt-item-text { font-size: 0.95rem !important; }
+
+    /* Power button */
+    .tf-power-btn { padding: 10px 14px; font-size: 0.85rem; }
+
+    /* ── TOP BAR: hide overflow buttons, keep essentials ── */
+    .guide-btn  { left: 60px !important;  top: 12px !important; font-size: 0.75rem !important; padding: 6px 10px !important; }
+    .history-btn { display: none !important; }
+    .routine-btn { display: none !important; }
+    .settings-btn { right: 8px !important; top: 12px !important; font-size: 0.75rem !important; padding: 6px 10px !important; }
+
+    /* ── RIGHT SIDE: stack vertically, right-edge ── */
+    .ai-helper-btn { right: 8px !important; top: 110px !important; padding: 8px 10px !important; font-size: 0.8rem !important; }
+    .airdrop-btn   { right: 8px !important; top: 168px !important; padding: 8px 10px !important; font-size: 0.8rem !important; }
+    .net-btn       { right: 8px !important; top: 226px !important; padding: 8px 10px !important; font-size: 0.8rem !important; }
+    .vel-btn       { right: 8px !important; top: 284px !important; padding: 8px 10px !important; font-size: 0.8rem !important; }
+
+    /* ── BOTTOM DOCK — 2 rows of 3, fills screen width ── */
+
+    /* Row 2 (higher row) */
+    .celebrate-btn   { left: 6px   !important; bottom: 100px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+    .habits-book-btn { left: 33%   !important; transform: translateX(-50%); bottom: 100px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+    .trip-btn        { right: 6px  !important; left: auto !important; transform: none; bottom: 100px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+
+    /* Row 1 (bottom row) */
+    .scanner-btn     { left: 6px   !important; bottom: 48px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+    .reminders-btn   { left: 33%   !important; transform: translateX(-50%); right: auto !important; bottom: 48px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+    .downloads-btn   { right: 6px  !important; left: auto !important; transform: none; bottom: 48px !important; padding: 9px 10px !important; font-size: 0.78rem !important; }
+
+    /* Prog, dict, map, calendar, apps in secondary strip if visible */
+    .prog-btn        { display: none !important; }
+    .dict-btn        { display: none !important; }
+    .map-btn         { display: none !important; }
+    .apps-btn        { display: none !important; }
+    .weather-btn     { display: none !important; }
+    .calendar-fab    { display: none !important; }
+
+    /* Sidebar */
+    .sidebar { width: 85vw !important; max-width: 320px; }
+
+    /* Modals */
+    .tf-power-panel  { border-radius: 16px; }
+    .settings-overlay .settings-box,
+    .trip-overlay .trip-box,
+    .habits-overlay .book-box { max-height: 90vh; overflow-y: auto; }
+
+    /* Share modal */
+    #share-modal-box { padding: 24px 16px 20px; }
+    #share-qr { width: 160px; height: 160px; }
+
+    /* Calendar widget */
+    .calendar-widget { right: 8px !important; bottom: 48px !important; }
+
+    /* Duo btn */
+    .duo-btn { left: 8px !important; top: auto !important; bottom: 160px !important; font-size: 0.78rem !important; padding: 7px 10px !important; }
+
+    /* Upgrade btn */
+    .upg-btn { left: 8px !important; top: auto !important; bottom: 210px !important; font-size: 0.78rem !important; padding: 7px 10px !important; }
+
+    /* Info btn */
+    .info-btn { right: 8px !important; bottom: 160px !important; top: auto !important; }
+
+    /* Focus btn */
+    .tf-focus-btn { top: 56px !important; right: 8px !important; font-size: 0.78rem !important; padding: 6px 10px !important; }
+
+    /* Sign in btn */
+    .tf-signin-btn { top: 12px !important; right: 60px !important; font-size: 0.75rem !important; padding: 6px 10px !important; }
+
+  }
   </style>
 </head>
 <body>
