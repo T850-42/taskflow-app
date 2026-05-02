@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Device detection runs before any rendering so CSS classes are ready immediately -->
+  <script>
+  (function(){
+    var ua = navigator.userAgent;
+    var w = Math.min(screen.width, screen.height); // shortest side = true device width
+    var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    var phone = /iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua) || (touch && w < 480);
+    var tablet = !phone && (/iPad|Android(?!.*Mobile)/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) || (touch && w >= 480 && w < 900));
+    var cls = phone ? 'device-mobile' : tablet ? 'device-tablet' : 'device-desktop';
+    document.documentElement.classList.add(cls);
+    window.__device = cls;
+  })();
+  </script>
   <title>TaskFlow</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
