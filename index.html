@@ -9316,12 +9316,28 @@
     border-radius: 14px;
   }
 
-  /* Task input — big, finger-friendly */
-  html.device-mobile .tt-input-row,
-  html.device-mobile .tt-add-row { flex-wrap: wrap; gap: 8px; }
-  html.device-mobile .tt-input { font-size: 1rem; padding: 14px 16px; }
-  html.device-mobile .tt-add-btn { padding: 14px 20px; font-size: 1rem; flex: 1; }
-  html.device-mobile .tt-speak-btn { padding: 14px 20px; font-size: 1rem; }
+  /* Task input — big, finger-friendly, wrap so Add button is always visible */
+  html.device-mobile .input-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  html.device-mobile #todo-input {
+    flex: 1 1 100% !important;
+    font-size: 1rem !important;
+    padding: 14px 16px !important;
+    min-width: 0 !important;
+  }
+  html.device-mobile #mic-btn {
+    flex: 1 1 auto !important;
+    padding: 13px 18px !important;
+    font-size: 0.95rem !important;
+  }
+  html.device-mobile #add-btn {
+    flex: 0 0 auto !important;
+    padding: 13px 22px !important;
+    font-size: 0.95rem !important;
+  }
+  html.device-mobile .grammar-dot { display: none !important; }
 
   /* Task list */
   html.device-mobile .tt-item { padding: 14px 12px; }
