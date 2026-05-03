@@ -25,7 +25,7 @@
     function applyDevice() {
       var vw = window.innerWidth || document.documentElement.clientWidth;
       var phone = isPhoneUA || (touch && vw < 480) || vw < 600;
-      var tablet = !phone && (isTabletUA || (vw >= 600 && vw < 1024));
+      var tablet = !phone && (isTabletUA || (vw >= 600 && vw < 1280));
       var cls = phone ? 'device-mobile' : tablet ? 'device-tablet' : 'device-desktop';
       var html = document.documentElement;
       if (!html.classList.contains(cls)) {
