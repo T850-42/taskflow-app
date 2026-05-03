@@ -11945,11 +11945,28 @@
       });
 
       if (filtered.length === 0) {
-        list.innerHTML = `<li class="empty">${
-          todos.length === 0 ? 'No tasks yet. Add one above!' :
-          searchQuery ? 'No matching tasks found.' :
-          'No tasks match your filters.'
-        }</li>`;
+        if (todos.length === 0) {
+          // Empty app — show motivational GIF
+          list.innerHTML = `<li class="empty">
+            <div class="empty-gif-wrap">
+              <img src="https://media.giphy.com/media/3oEjHAUOqG3lSS0f1C/giphy.gif" alt="Let's get started!" loading="lazy">
+              <div class="empty-text">✨ No tasks yet — add your first one above!</div>
+            </div>
+          </li>`;
+        } else if (filter === 'completed' && todos.every(t => t.done)) {
+          // All tasks done — celebration GIF
+          list.innerHTML = `<li class="empty">
+            <div class="all-done-gif-wrap">
+              <img src="https://media.giphy.com/media/xT77XWum9yH7zNkFW0/giphy.gif" alt="All done!" loading="lazy">
+              <div class="done-text">🎉 All tasks completed — you're crushing it!</div>
+            </div>
+          </li>`;
+        } else {
+          list.innerHTML = `<li class="empty">${
+            searchQuery ? 'No matching tasks found.' :
+            'No tasks match your filters.'
+          }</li>`;
+        }
       } else {
         list.innerHTML = filtered.map(t => {
           const bgUrl = t.showBg ? getFirstImageDataUrl(t.attachments) : null;
