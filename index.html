@@ -14,17 +14,36 @@
     });
   }
   </script>
-  <!-- Device detection runs before any rendering so CSS classes are ready immediately -->
+  <!-- Device detection: runs immediately at load, then updates on every resize -->
   <script>
   (function(){
     var ua = navigator.userAgent;
-    var w = Math.min(screen.width, screen.height); // shortest side = true device width
     var touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    var phone = /iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua) || (touch && w < 480);
-    var tablet = !phone && (/iPad|Android(?!.*Mobile)/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) || (touch && w >= 480 && w < 900));
-    var cls = phone ? 'device-mobile' : tablet ? 'device-tablet' : 'device-desktop';
-    document.documentElement.classList.add(cls);
-    window.__device = cls;
+    var isPhoneUA = /iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua);
+    var isTabletUA = /iPad|Android(?!.*Mobile)/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+
+    function applyDevice() {
+      var vw = window.innerWidth || document.documentElement.clientWidth;
+      var phone = isPhoneUA || (touch && vw < 480) || vw < 600;
+      var tablet = !phone && (isTabletUA || (vw >= 600 && vw < 1024));
+      var cls = phone ? 'device-mobile' : tablet ? 'device-tablet' : 'device-desktop';
+      var html = document.documentElement;
+      if (!html.classList.contains(cls)) {
+        html.classList.remove('device-mobile', 'device-tablet', 'device-desktop');
+        html.classList.add(cls);
+        window.__device = cls;
+      }
+    }
+
+    // Run immediately (before render)
+    applyDevice();
+
+    // Re-run on resize with debounce so it doesn't fire 100x while dragging
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applyDevice, 80);
+    });
   })();
   </script>
   <title>TaskFlow</title>
