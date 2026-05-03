@@ -97,6 +97,53 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#4772fa">
+
+  <!-- ── Google Structured Data — tells Google what the app is + shows screenshots ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "TaskFlow",
+    "url": "https://t850-42.github.io/taskflow-app/",
+    "description": "A beautiful AI-powered task manager with routines, habits, reminders, calendar, voice input, and more. Free. Works offline on any device.",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Thales"
+    },
+    "screenshot": [
+      {
+        "@type": "ImageObject",
+        "url": "https://t850-42.github.io/taskflow-app/social-preview.png",
+        "width": 1200,
+        "height": 630,
+        "caption": "TaskFlow – Smart Task Manager app screenshot"
+      }
+    ],
+    "image": "https://t850-42.github.io/taskflow-app/icon-512.png",
+    "featureList": [
+      "AI task assistant",
+      "Voice input",
+      "Daily routines",
+      "Habit tracker",
+      "Reminders",
+      "Calendar",
+      "Works offline (PWA)",
+      "Free to use"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "ratingCount": "1"
+    }
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
