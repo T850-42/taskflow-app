@@ -22,21 +22,44 @@
     var isPhoneUA = /iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua);
     var isTabletUA = /iPad|Android(?!.*Mobile)/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
 
+    // Selectors for every floating button that should hide below 1280px
+    var FLOAT_SEL = [
+      '.guide-btn','.history-btn','.routine-btn','.ai-helper-btn','.airdrop-btn',
+      '.net-btn','.vel-btn','.upg-btn','.duo-btn','.info-btn','.tf-focus-btn',
+      '.celebrate-btn','.habits-book-btn','.trip-btn','.scanner-btn','.reminders-btn',
+      '.downloads-btn','.prog-btn','.dict-btn','.map-btn','.calendar-fab',
+      '.calendar-widget','.apps-btn','.weather-btn','.notes-btn','.vault-btn',
+      '.tf-lang-btn','.tf-lang-menu'
+    ].join(',');
+
     function applyDevice() {
       var vw = window.innerWidth || document.documentElement.clientWidth;
       var phone = isPhoneUA || (touch && vw < 480) || vw < 600;
       var tablet = !phone && (isTabletUA || (vw >= 600 && vw < 1280));
       var cls = phone ? 'device-mobile' : tablet ? 'device-tablet' : 'device-desktop';
       var html = document.documentElement;
-      if (!html.classList.contains(cls)) {
-        html.classList.remove('device-mobile', 'device-tablet', 'device-desktop');
-        html.classList.add(cls);
-        window.__device = cls;
-      }
+      html.classList.remove('device-mobile', 'device-tablet', 'device-desktop');
+      html.classList.add(cls);
+      window.__device = cls;
+
+      // Direct JS hide/show — immune to CSS caching, fires on every resize
+      var isDesktop = cls === 'device-desktop';
+      try {
+        document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
+          if (isDesktop) {
+            el.style.removeProperty('display');
+          } else {
+            el.style.setProperty('display', 'none', 'important');
+          }
+        });
+      } catch(e) {}
     }
 
-    // Run immediately (before render)
+    // Run immediately (before render) for class assignment
     applyDevice();
+
+    // Also run after DOM ready so JS hide/show can find the buttons
+    document.addEventListener('DOMContentLoaded', applyDevice);
 
     // Re-run on resize with debounce so it doesn't fire 100x while dragging
     var resizeTimer;
