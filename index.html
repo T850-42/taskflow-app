@@ -9425,40 +9425,44 @@
   html.device-mobile .tf-lang-menu { display: none !important; }
 
   /* ── TABLET ─────────────────────────────────────────────── */
-  html.device-tablet body { padding: 24px 20px 120px; }
+  html.device-tablet body { padding: 20px 16px 24px; }
   html.device-tablet .container { max-width: 680px; }
   html.device-tablet .tf-power-btn { font-size: 0.9rem; }
-  html.device-tablet .tt-input { font-size: 1rem; padding: 13px 16px; }
   html.device-tablet .sidebar { width: 75vw; max-width: 340px; }
 
-  /* On tablet: hide the noisiest floating buttons, keep useful ones */
+  /* Tablet: hide ALL floating buttons — same as mobile, clean layout */
+  html.device-tablet .guide-btn,
+  html.device-tablet .history-btn,
+  html.device-tablet .routine-btn,
   html.device-tablet .ai-helper-btn,
   html.device-tablet .airdrop-btn,
   html.device-tablet .net-btn,
   html.device-tablet .vel-btn,
+  html.device-tablet .upg-btn,
+  html.device-tablet .duo-btn,
+  html.device-tablet .info-btn,
+  html.device-tablet .tf-focus-btn,
+  html.device-tablet .celebrate-btn,
+  html.device-tablet .habits-book-btn,
+  html.device-tablet .trip-btn,
+  html.device-tablet .scanner-btn,
+  html.device-tablet .reminders-btn,
+  html.device-tablet .downloads-btn,
   html.device-tablet .prog-btn,
   html.device-tablet .dict-btn,
   html.device-tablet .map-btn,
   html.device-tablet .calendar-fab,
+  html.device-tablet .calendar-widget,
   html.device-tablet .apps-btn,
   html.device-tablet .weather-btn,
   html.device-tablet .notes-btn,
   html.device-tablet .vault-btn,
-  html.device-tablet .tf-lang-btn { display: none !important; }
+  html.device-tablet .tf-lang-btn,
+  html.device-tablet .tf-lang-menu { display: none !important; }
 
-  /* Tablet: reposition remaining buttons to fit */
-  html.device-tablet .settings-btn { right: 16px !important; top: 16px !important; }
-  html.device-tablet .guide-btn { left: 80px !important; top: 16px !important; }
-  html.device-tablet .history-btn { right: 200px !important; top: 16px !important; left: auto !important; }
-  html.device-tablet .routine-btn { right: 110px !important; top: 16px !important; left: auto !important; }
-  html.device-tablet .celebrate-btn { left: 16px !important; bottom: 16px !important; }
-  html.device-tablet .habits-book-btn { left: 160px !important; bottom: 16px !important; }
-  html.device-tablet .trip-btn { left: 310px !important; bottom: 16px !important; }
-  html.device-tablet .scanner-btn { left: 460px !important; bottom: 16px !important; }
-  html.device-tablet .reminders-btn { right: 16px !important; bottom: 16px !important; left: auto !important; }
-  html.device-tablet .downloads-btn { right: 110px !important; bottom: 16px !important; left: auto !important; }
-  html.device-tablet .duo-btn { left: 16px !important; bottom: 80px !important; top: auto !important; }
-  html.device-tablet .upg-btn { left: 140px !important; bottom: 80px !important; top: auto !important; }
+  /* Keep settings and sign-in accessible on tablet */
+  html.device-tablet .settings-btn { right: 12px !important; top: 14px !important; }
+  html.device-tablet .tf-signin-btn { right: 120px !important; top: 14px !important; }
 
   /* ── DESKTOP ─────────────────────────────────────────────── */
   /* No overrides needed — original layout is desktop-first */
