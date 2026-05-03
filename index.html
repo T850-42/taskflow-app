@@ -9466,6 +9466,44 @@
 
   /* ── DESKTOP ─────────────────────────────────────────────── */
   /* No overrides needed — original layout is desktop-first */
+
+  /* ═══════════════════════════════════════════════════════════
+     @media FALLBACKS — work even if JS device detection is slow
+     or the page is served from a stale cache. Pure CSS, always
+     fires based on actual viewport width.
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Below 1280px: hide all floating clutter */
+  @media (max-width: 1279px) {
+    .guide-btn, .history-btn, .routine-btn,
+    .ai-helper-btn, .airdrop-btn, .net-btn, .vel-btn,
+    .upg-btn, .duo-btn, .info-btn, .tf-focus-btn,
+    .celebrate-btn, .habits-book-btn, .trip-btn,
+    .scanner-btn, .reminders-btn, .downloads-btn,
+    .prog-btn, .dict-btn, .map-btn,
+    .calendar-fab, .calendar-widget,
+    .apps-btn, .weather-btn, .notes-btn,
+    .vault-btn, .tf-lang-btn, .tf-lang-menu { display: none !important; }
+
+    .settings-btn { right: 12px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
+    .tf-signin-btn { right: 120px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
+    .sidebar { width: 80vw !important; max-width: 320px !important; }
+  }
+
+  /* Below 600px: mobile sizing */
+  @media (max-width: 599px) {
+    body { padding: 12px 12px 24px !important; }
+    .container { max-width: 100% !important; }
+    .app-header { margin-bottom: 12px !important; gap: 8px !important; }
+    .tf-power-btn { width: 100% !important; justify-content: center !important; padding: 13px 16px !important; }
+    .input-row { flex-wrap: wrap !important; gap: 8px !important; }
+    #todo-input { flex: 1 1 100% !important; padding: 14px 16px !important; }
+    #mic-btn { flex: 1 1 auto !important; padding: 13px 18px !important; }
+    #add-btn { flex: 0 0 auto !important; padding: 13px 22px !important; }
+    .grammar-dot { display: none !important; }
+    .settings-btn { right: 8px !important; top: 14px !important; }
+    .tf-signin-btn { right: 100px !important; top: 14px !important; }
+  }
   </style>
 </head>
 <body>
