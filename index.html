@@ -23,6 +23,8 @@
     var isTabletUA = /iPad|Android(?!.*Mobile)/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
 
     // Selectors for every floating button that should hide below 1280px
+    // ALL floating feature buttons — hidden on every device size.
+    // They remain accessible through the ✨ TaskFlow Features panel.
     var FLOAT_SEL = [
       '.guide-btn','.history-btn','.routine-btn','.ai-helper-btn','.airdrop-btn',
       '.net-btn','.vel-btn','.upg-btn','.duo-btn','.info-btn','.tf-focus-btn',
@@ -42,15 +44,11 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // Direct JS hide/show — immune to CSS caching, fires on every resize
-      var isDesktop = cls === 'device-desktop';
+      // Hide ALL floating buttons on every device — always use !important
+      // (accessible via ✨ TaskFlow Features panel instead)
       try {
         document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
-          if (isDesktop) {
-            el.style.removeProperty('display');
-          } else {
-            el.style.setProperty('display', 'none', 'important');
-          }
+          el.style.setProperty('display', 'none', 'important');
         });
       } catch(e) {}
     }
