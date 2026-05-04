@@ -9956,21 +9956,82 @@
   .empty-gif-wrap img { border-radius: 18px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.10) !important; }
   .empty-gif-wrap .empty-text { color: #6e6e73 !important; font-size: 0.9rem !important; font-weight: 500 !important; }
 
-  /* ── Floating buttons on desktop — Apple glass pill style ── */
+  /* ── ALL floating buttons on desktop — unified Apple frosted glass ── */
   html.device-desktop .guide-btn,
   html.device-desktop .history-btn,
   html.device-desktop .routine-btn,
-  html.device-desktop .weather-btn,
+  html.device-desktop .ai-helper-btn,
+  html.device-desktop .airdrop-btn,
+  html.device-desktop .net-btn,
+  html.device-desktop .vel-btn,
+  html.device-desktop .upg-btn,
+  html.device-desktop .duo-btn,
+  html.device-desktop .info-btn,
+  html.device-desktop .tf-focus-btn,
+  html.device-desktop .celebrate-btn,
+  html.device-desktop .habits-book-btn,
+  html.device-desktop .trip-btn,
+  html.device-desktop .scanner-btn,
+  html.device-desktop .reminders-btn,
+  html.device-desktop .downloads-btn,
+  html.device-desktop .prog-btn,
+  html.device-desktop .dict-btn,
   html.device-desktop .map-btn,
-  html.device-desktop .apps-btn {
+  html.device-desktop .calendar-fab,
+  html.device-desktop .apps-btn,
+  html.device-desktop .weather-btn,
+  html.device-desktop .notes-btn,
+  html.device-desktop .vault-btn,
+  html.device-desktop .tf-lang-btn {
+    background: rgba(255,255,255,0.82) !important;
+    background-image: none !important;
     backdrop-filter: saturate(1.8) blur(20px) !important;
     -webkit-backdrop-filter: saturate(1.8) blur(20px) !important;
     border: 0.5px solid rgba(0,0,0,0.10) !important;
     box-shadow: 0 1px 6px rgba(0,0,0,0.10) !important;
+    color: #1d1d1f !important;
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif !important;
     font-weight: 500 !important;
     font-size: 0.82rem !important;
     letter-spacing: -0.01em !important;
+    border-radius: 980px !important;
+    transition: background 0.15s, box-shadow 0.15s !important;
+    text-shadow: none !important;
   }
+  html.device-desktop .guide-btn:hover,
+  html.device-desktop .history-btn:hover,
+  html.device-desktop .routine-btn:hover,
+  html.device-desktop .apps-btn:hover,
+  html.device-desktop .weather-btn:hover,
+  html.device-desktop .map-btn:hover,
+  html.device-desktop .celebrate-btn:hover,
+  html.device-desktop .habits-book-btn:hover,
+  html.device-desktop .trip-btn:hover,
+  html.device-desktop .scanner-btn:hover,
+  html.device-desktop .dict-btn:hover,
+  html.device-desktop .prog-btn:hover,
+  html.device-desktop .tf-focus-btn:hover,
+  html.device-desktop .net-btn:hover,
+  html.device-desktop .vel-btn:hover,
+  html.device-desktop .upg-btn:hover,
+  html.device-desktop .duo-btn:hover {
+    background: rgba(255,255,255,0.96) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.14) !important;
+    transform: none !important;
+  }
+  /* Keep emoji/icon colors but neutralize backgrounds */
+  html.device-desktop .upg-btn svg,
+  html.device-desktop .guide-btn svg,
+  html.device-desktop .history-btn svg,
+  html.device-desktop .routine-btn svg { fill: #1d1d1f !important; }
+  /* Duolingo green dot streak stays visible */
+  html.device-desktop .duo-btn .duo-streak { background: rgba(0,0,0,0.08) !important; color: #1d1d1f !important; }
+  /* Velocity fps badge */
+  html.device-desktop .vel-btn .vel-fps { background: rgba(0,0,0,0.06) !important; color: #6e6e73 !important; }
+  /* Progress status badge */
+  html.device-desktop .prog-btn .prog-status { background: rgba(0,0,0,0.06) !important; color: #6e6e73 !important; border: none !important; }
+  /* Network green dot stays */
+  html.device-desktop .net-btn .net-dot { background: #34c759 !important; }
 
   /* ═══════════════════════════════════════════════════════════
      @media FALLBACKS — work even if JS device detection is slow
