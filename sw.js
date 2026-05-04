@@ -1,5 +1,5 @@
 // Cache version — auto-updated on each deploy so iOS detects the new SW
-const VERSION = 'v20260504083410';
+const VERSION = 'v20260504083651';
 const CACHE = 'taskflow-' + VERSION;
 const CORE = ['./index.html', './icon-192.png', './icon-512.png', './manifest.json'];
 
