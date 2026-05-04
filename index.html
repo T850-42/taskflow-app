@@ -59,7 +59,86 @@
     applyDevice();
 
     // Also run after DOM ready so JS hide/show can find the buttons
-    document.addEventListener('DOMContentLoaded', applyDevice);
+    document.addEventListener('DOMContentLoaded', function() {
+      applyDevice();
+      fixNavLayout();
+    });
+
+    // Fix button overlap — reflow top & bottom buttons into proper nav bars
+    function fixNavLayout() {
+      var vw = window.innerWidth || document.documentElement.clientWidth;
+      if (vw < 1280) return; // only on desktop
+
+      // ── TOP BAR ──────────────────────────────────────────────────
+      // Collect all visible fixed buttons in the top 80px
+      var topLeft  = []; // buttons to arrange from left
+      var topRight = []; // buttons to arrange from right (already correct)
+      var topCenter = []; // signin/account button stays in place
+
+      var topLeftIds  = ['guide-btn','apps-btn','tf-focus-btn'];
+      var topRightIds = ['weather-btn','map-btn','history-btn','routine-btn','settings-btn'];
+
+      topLeftIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && getComputedStyle(el).display !== 'none') topLeft.push(el);
+      });
+      topRightIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && getComputedStyle(el).display !== 'none') topRight.push(el);
+      });
+
+      // Re-position left buttons flush left with consistent 8px gap
+      var cursor = 76; // start after sidebar-toggle (~60px wide)
+      topLeft.forEach(function(el) {
+        el.style.left  = cursor + 'px';
+        el.style.right = 'auto';
+        el.style.top   = '14px';
+        cursor += el.offsetWidth + 8;
+      });
+
+      // Re-position right buttons flush right with consistent 8px gap
+      cursor = 12; // start 12px from right edge
+      // reverse so we go right-to-left: settings → routine → history → map → weather
+      topRight.slice().reverse().forEach(function(el) {
+        el.style.right = cursor + 'px';
+        el.style.left  = 'auto';
+        el.style.top   = '14px';
+        cursor += el.offsetWidth + 8;
+      });
+
+      // ── BOTTOM BAR ───────────────────────────────────────────────
+      var botLeftIds  = ['celebrate-btn','habits-book-btn','trip-btn','scanner-btn','dict-btn','tf-lang-btn'];
+      var botRightIds = ['prog-btn','reminders-btn','downloads-btn'];
+
+      cursor = 16;
+      botLeftIds.forEach(function(id) {
+        var el = document.getElementById(id) || document.querySelector('.'+id);
+        if (el && getComputedStyle(el).display !== 'none') {
+          el.style.left   = cursor + 'px';
+          el.style.right  = 'auto';
+          el.style.bottom = '16px';
+          el.style.top    = 'auto';
+          cursor += el.offsetWidth + 8;
+        }
+      });
+
+      cursor = 16;
+      botRightIds.forEach(function(id) {
+        var el = document.getElementById(id) || document.querySelector('.'+id);
+        if (el && getComputedStyle(el).display !== 'none') {
+          el.style.right  = cursor + 'px';
+          el.style.left   = 'auto';
+          el.style.bottom = '16px';
+          el.style.top    = 'auto';
+          cursor += el.offsetWidth + 8;
+        }
+      });
+    }
+
+    window.addEventListener('resize', function() {
+      clearTimeout(window.__navTimer);
+      window.__navTimer = setTimeout(fixNavLayout, 120);
+    });
 
     // Re-run on resize with debounce so it doesn't fire 100x while dragging
     var resizeTimer;
