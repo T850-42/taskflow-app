@@ -9684,8 +9684,8 @@
      fires based on actual viewport width.
      ═══════════════════════════════════════════════════════════ */
 
-  /* Hide ALL floating feature buttons on every screen size (CSS fallback) */
-  @media (max-width: 99999px) {
+  /* Below 1280px: hide all floating buttons (CSS fallback) */
+  @media (max-width: 1279px) {
     .guide-btn, .history-btn, .routine-btn,
     .ai-helper-btn, .airdrop-btn, .net-btn, .vel-btn,
     .upg-btn, .duo-btn, .info-btn, .tf-focus-btn,
