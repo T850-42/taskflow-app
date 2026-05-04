@@ -8,13 +8,13 @@
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://t850-42.github.io/taskflow-app/social-preview.png</image:loc>
-      <image:title>TaskFlow – Smart Task Manager App</image:title>
-      <image:caption>TaskFlow is a beautiful AI-powered todo app with habits, routines, reminders, calendar and more. Works offline as a PWA.</image:caption>
+      <image:title>TaskFlow – Smart Task Manager</image:title>
+      <image:caption>A beautiful AI-powered todo app with habits, routines, reminders, calendar and more</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://t850-42.github.io/taskflow-app/icon-512.png</image:loc>
       <image:title>TaskFlow App Icon</image:title>
-      <image:caption>The TaskFlow app icon – pink to orange gradient with white checkmark.</image:caption>
+      <image:caption>TaskFlow app icon – pink to orange gradient with white checkmark</image:caption>
     </image:image>
   </url>
 </urlset>
