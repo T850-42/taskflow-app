@@ -9598,6 +9598,275 @@
   /* No overrides needed — original layout is desktop-first */
 
   /* ═══════════════════════════════════════════════════════════
+     🍎 APPLE DESIGN SYSTEM
+     Tokens extracted from apple.com:
+       font  : SF Pro Text / -apple-system
+       text  : #1d1d1f
+       bg    : #f5f5f7
+       card  : #ffffff
+       accent: #0071e3
+       nav   : rgba(250,250,252,0.8) + saturate(1.8) blur(20px)
+       radius: 18px cards, 980px pills
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── Base reset to Apple tokens ── */
+  body {
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    background: #f5f5f7 !important;
+    color: #1d1d1f !important;
+  }
+
+  /* ── Container: white card like Apple product tiles ── */
+  .container {
+    background: #ffffff !important;
+    border-radius: 22px !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.06) !important;
+    padding: 28px 24px 32px !important;
+  }
+
+  /* ── App header ── */
+  .app-header {
+    border-bottom: none !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 0 !important;
+  }
+  .app-header h1 {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px !important;
+    color: #1d1d1f !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+  }
+  .app-header .trip-badge {
+    background: #f5f5f7 !important;
+    color: #6e6e73 !important;
+    border: none !important;
+    font-size: 0.6rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+  }
+
+  /* ── Share button — Apple pill style ── */
+  #share-btn {
+    background: #0071e3 !important;
+    background-image: none !important;
+    color: #fff !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    border-radius: 980px !important;
+    padding: 7px 16px !important;
+    box-shadow: none !important;
+    letter-spacing: -0.01em !important;
+    border: none !important;
+    transition: background 0.2s !important;
+  }
+  #share-btn:hover {
+    background: #0077ed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ── Floating top-nav buttons — frosted glass Apple nav style ── */
+  .settings-btn, .tf-signin-btn {
+    background: rgba(250,250,252,0.85) !important;
+    backdrop-filter: saturate(1.8) blur(20px) !important;
+    -webkit-backdrop-filter: saturate(1.8) blur(20px) !important;
+    border: 0.5px solid rgba(0,0,0,0.12) !important;
+    color: #1d1d1f !important;
+    border-radius: 980px !important;
+    font-weight: 500 !important;
+    font-size: 0.82rem !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
+  }
+  .settings-btn:hover, .tf-signin-btn:hover {
+    background: rgba(255,255,255,0.95) !important;
+  }
+
+  /* ── TaskFlow Features bar — Apple card style ── */
+  .tf-power-btn {
+    background: #f5f5f7 !important;
+    background-image: none !important;
+    border-radius: 12px !important;
+    color: #1d1d1f !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 13px 16px !important;
+  }
+  .tf-power-btn::before { display: none !important; }
+  .tf-power-btn:hover {
+    background: #ebebed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .tf-power-arrow { color: #6e6e73 !important; }
+
+  /* ── Input row ── */
+  .input-row input[type="text"],
+  #todo-input {
+    background: #f5f5f7 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #1d1d1f !important;
+    font-family: inherit !important;
+    font-size: 0.97rem !important;
+    box-shadow: none !important;
+    padding: 14px 16px !important;
+  }
+  .input-row input[type="text"]:focus,
+  #todo-input:focus {
+    background: #f0f0f2 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(0,113,227,0.2) !important;
+    border: none !important;
+  }
+
+  /* ── Speak (mic) button — Apple red-to-coral ── */
+  #mic-btn {
+    background: #ff3b30 !important;
+    background-image: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: -0.01em !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: background 0.15s !important;
+  }
+  #mic-btn:hover {
+    background: #e0352b !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ── Add button — Apple blue ── */
+  #add-btn {
+    background: #0071e3 !important;
+    background-image: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    letter-spacing: -0.01em !important;
+    box-shadow: none !important;
+    border: none !important;
+    transition: background 0.15s !important;
+  }
+  #add-btn:hover {
+    background: #0077ed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ── Filter tabs — Apple iOS segmented control ── */
+  .filters {
+    background: #f5f5f7 !important;
+    border-radius: 10px !important;
+    padding: 3px !important;
+    gap: 0 !important;
+    margin-bottom: 16px !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .filters button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #6e6e73 !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    padding: 7px 0 !important;
+    letter-spacing: -0.01em !important;
+    flex: 1 !important;
+    box-shadow: none !important;
+    transition: background 0.15s, color 0.15s !important;
+  }
+  .filters button.active {
+    background: #ffffff !important;
+    color: #1d1d1f !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.06) !important;
+  }
+  .filters button:hover:not(.active) {
+    background: rgba(0,0,0,0.04) !important;
+    color: #1d1d1f !important;
+  }
+
+  /* ── Todo items — Apple list cell style ── */
+  .tt-item {
+    background: #ffffff !important;
+    border: none !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 14px 4px !important;
+  }
+  .tt-item:first-child { border-radius: 12px 12px 0 0 !important; }
+  .tt-item:last-child  { border-bottom: none !important; border-radius: 0 0 12px 12px !important; }
+  .tt-item:only-child  { border-radius: 12px !important; border-bottom: none !important; }
+  #todo-list {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.06) !important;
+    overflow: hidden !important;
+    padding: 0 12px !important;
+  }
+
+  /* ── Due date row ── */
+  .input-row input[type="date"],
+  #due-date-input {
+    background: #f5f5f7 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #1d1d1f !important;
+    font-family: inherit !important;
+    padding: 8px 12px !important;
+  }
+
+  /* ── Attach file & File background ── */
+  .attach-btn, #attach-file-btn {
+    background: #f5f5f7 !important;
+    border: 1px dashed rgba(0,0,0,0.18) !important;
+    color: #6e6e73 !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+  }
+
+  /* ── Logo icon ── */
+  .trip-logo {
+    border-radius: 14px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: rgba(250,250,252,0.95) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border-right: 0.5px solid rgba(0,0,0,0.1) !important;
+  }
+  .sidebar-header {
+    background: transparent !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1) !important;
+    color: #1d1d1f !important;
+  }
+  .sidebar-nav-item:hover { background: rgba(0,0,0,0.05) !important; }
+
+  /* ── Sidebar toggle (hamburger) ── */
+  .sidebar-toggle {
+    background: rgba(250,250,252,0.85) !important;
+    backdrop-filter: saturate(1.8) blur(20px) !important;
+    -webkit-backdrop-filter: saturate(1.8) blur(20px) !important;
+    border: 0.5px solid rgba(0,0,0,0.12) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
+    color: #1d1d1f !important;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
      @media FALLBACKS — work even if JS device detection is slow
      or the page is served from a stale cache. Pure CSS, always
      fires based on actual viewport width.
