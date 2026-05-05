@@ -97,21 +97,28 @@
         if (el && getComputedStyle(el).display !== 'none') topRight.push(el);
       });
 
+      // Use setProperty with 'important' so JS beats CSS !important rules
+      function setPos(el, prop, val) {
+        el.style.setProperty(prop, val, 'important');
+      }
+
       // Re-position left buttons flush left with 8px gap
       var cursor = 76; // start after sidebar-toggle (~60px wide)
       topLeft.forEach(function(el) {
-        el.style.left  = cursor + 'px';
-        el.style.right = 'auto';
-        el.style.top   = '14px';
+        setPos(el, 'left',   cursor + 'px');
+        setPos(el, 'right',  'auto');
+        setPos(el, 'top',    '14px');
+        setPos(el, 'bottom', 'auto');
         cursor += btnW(el) + 8;
       });
 
       // Re-position right buttons flush right, right-to-left
       cursor = 12;
       topRight.slice().reverse().forEach(function(el) {
-        el.style.right = cursor + 'px';
-        el.style.left  = 'auto';
-        el.style.top   = '14px';
+        setPos(el, 'right',  cursor + 'px');
+        setPos(el, 'left',   'auto');
+        setPos(el, 'top',    '14px');
+        setPos(el, 'bottom', 'auto');
         cursor += btnW(el) + 8;
       });
 
@@ -123,10 +130,10 @@
       botLeftIds.forEach(function(id) {
         var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
-          el.style.left   = cursor + 'px';
-          el.style.right  = 'auto';
-          el.style.bottom = '16px';
-          el.style.top    = 'auto';
+          setPos(el, 'left',   cursor + 'px');
+          setPos(el, 'right',  'auto');
+          setPos(el, 'bottom', '16px');
+          setPos(el, 'top',    'auto');
           cursor += btnW(el) + 8;
         }
       });
@@ -135,10 +142,10 @@
       botRightIds.forEach(function(id) {
         var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
-          el.style.right  = cursor + 'px';
-          el.style.left   = 'auto';
-          el.style.bottom = '16px';
-          el.style.top    = 'auto';
+          setPos(el, 'right',  cursor + 'px');
+          setPos(el, 'left',   'auto');
+          setPos(el, 'bottom', '16px');
+          setPos(el, 'top',    'auto');
           cursor += btnW(el) + 8;
         }
       });
