@@ -71,15 +71,18 @@
       var vw = window.innerWidth || document.documentElement.clientWidth;
       if (vw < 1280) return; // only on desktop
 
-      // ── TOP BAR ──────────────────────────────────────────────────
-      // Collect all visible fixed buttons in the top 80px
-      var topLeft  = []; // buttons to arrange from left
-      var topRight = []; // buttons to arrange from right (already correct)
-      var topCenter = []; // signin/account button stays in place
+      // Helper: get width, fallback to measured clientWidth, then a safe minimum
+      function btnW(el) {
+        var w = el.getBoundingClientRect().width || el.offsetWidth || el.clientWidth;
+        return w > 10 ? w : 120; // never treat a button as 0-wide
+      }
 
+      // ── TOP BAR ──────────────────────────────────────────────────
       var topLeftIds  = ['guide-btn','apps-btn','tf-focus-btn'];
       var topRightIds = ['weather-btn','map-btn','history-btn','routine-btn','settings-btn'];
 
+      var topLeft  = [];
+      var topRight = [];
       topLeftIds.forEach(function(id) {
         var el = document.getElementById(id);
         if (el && getComputedStyle(el).display !== 'none') topLeft.push(el);
@@ -89,23 +92,22 @@
         if (el && getComputedStyle(el).display !== 'none') topRight.push(el);
       });
 
-      // Re-position left buttons flush left with consistent 8px gap
+      // Re-position left buttons flush left with 8px gap
       var cursor = 76; // start after sidebar-toggle (~60px wide)
       topLeft.forEach(function(el) {
         el.style.left  = cursor + 'px';
         el.style.right = 'auto';
         el.style.top   = '14px';
-        cursor += el.offsetWidth + 8;
+        cursor += btnW(el) + 8;
       });
 
-      // Re-position right buttons flush right with consistent 8px gap
-      cursor = 12; // start 12px from right edge
-      // reverse so we go right-to-left: settings → routine → history → map → weather
+      // Re-position right buttons flush right, right-to-left
+      cursor = 12;
       topRight.slice().reverse().forEach(function(el) {
         el.style.right = cursor + 'px';
         el.style.left  = 'auto';
         el.style.top   = '14px';
-        cursor += el.offsetWidth + 8;
+        cursor += btnW(el) + 8;
       });
 
       // ── BOTTOM BAR ───────────────────────────────────────────────
@@ -114,25 +116,25 @@
 
       cursor = 16;
       botLeftIds.forEach(function(id) {
-        var el = document.getElementById(id) || document.querySelector('.'+id);
+        var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
           el.style.left   = cursor + 'px';
           el.style.right  = 'auto';
           el.style.bottom = '16px';
           el.style.top    = 'auto';
-          cursor += el.offsetWidth + 8;
+          cursor += btnW(el) + 8;
         }
       });
 
       cursor = 16;
       botRightIds.forEach(function(id) {
-        var el = document.getElementById(id) || document.querySelector('.'+id);
+        var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
           el.style.right  = cursor + 'px';
           el.style.left   = 'auto';
           el.style.bottom = '16px';
           el.style.top    = 'auto';
-          cursor += el.offsetWidth + 8;
+          cursor += btnW(el) + 8;
         }
       });
     }
