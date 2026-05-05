@@ -9348,45 +9348,8 @@
        instead of crowding a single bottom bar.
        ──────────────────────────────────────────────── */
 
-    /* TOP-LEFT zone (beside sidebar toggle) */
-    .guide-btn {
-      top: 16px !important;
-      left: 76px !important;
-      bottom: auto !important;
-    }
-    .history-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 330px !important;
-      bottom: auto !important;
-    }
-    .routine-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 190px !important;
-      bottom: auto !important;
-    }
-
-    /* TOP-RIGHT zone */
-    .settings-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 80px !important;
-      bottom: auto !important;
-    }
-
-    /* BOTTOM-LEFT zone (quick actions) */
-    .celebrate-btn { left: 24px !important; bottom: 24px !important; }
-    .habits-book-btn { left: 170px !important; bottom: 24px !important; }
-    .trip-btn { left: 340px !important; bottom: 24px !important; }
-    .scanner-btn { left: 480px !important; bottom: 24px !important; }
-
-    /* BOTTOM-RIGHT zone — Reminders stays near the action area */
-    .reminders-btn {
-      left: auto !important;
-      right: 24px !important;
-      bottom: 24px !important;
-    }
+    /* Button positions are set dynamically by fixNavLayout() in JS.
+       No hardcoded pixel positions here — JS owns the layout to prevent overlaps. */
 
     /* RIGHT-SIDE vertical strip — floating assistants */
     .ai-helper-btn {
