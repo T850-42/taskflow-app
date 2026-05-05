@@ -63,7 +63,12 @@
     // Also run after DOM ready so JS hide/show can find the buttons
     document.addEventListener('DOMContentLoaded', function() {
       applyDevice();
-      fixNavLayout();
+      // Run fixNavLayout multiple times: buttons need a paint cycle before offsetWidth is non-zero
+      requestAnimationFrame(function() {
+        fixNavLayout();
+        setTimeout(fixNavLayout, 300);   // second pass after fonts/icons load
+        setTimeout(fixNavLayout, 1200);  // final pass after everything settles
+      });
     });
 
     // Fix button overlap — reflow top & bottom buttons into proper nav bars
