@@ -43,17 +43,19 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // On mobile/tablet: hide all floating buttons
-      // On desktop: restore them (fixNavLayout will handle positioning)
+      // Show/hide the flex nav containers based on device
       var isDesktop = cls === 'device-desktop';
       try {
-        document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
-          if (isDesktop) {
-            el.style.removeProperty('display');
-          } else {
-            el.style.setProperty('display', 'none', 'important');
-          }
+        ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
+          var c = document.getElementById(id);
+          if (c) c.style.setProperty('display', isDesktop ? 'flex' : 'none', 'important');
         });
+        // Also hide individual floating buttons on mobile/tablet as a fallback
+        if (!isDesktop) {
+          document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
+            el.style.setProperty('display', 'none', 'important');
+          });
+        }
       } catch(e) {}
     }
 
@@ -9665,7 +9667,39 @@
      ═══════════════════════════════════════════════════════════ */
 
   /* Below 1280px: hide all floating buttons (CSS fallback) */
+  /* ── FLEX NAV CONTAINERS ─────────────────────────────────────────
+     Buttons are moved into these at runtime by moveToNavContainers().
+     Flexbox handles spacing — no pixel math, no overlaps possible.
+  ─────────────────────────────────────────────────────────────── */
+  #nav-top-left {
+    position: fixed; top: 14px; left: 76px;
+    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    z-index: 1000; pointer-events: none;
+  }
+  #nav-top-left > * { pointer-events: auto; }
+  #nav-top-right {
+    position: fixed; top: 14px; right: 12px;
+    display: flex; flex-direction: row-reverse; gap: 8px; align-items: center;
+    z-index: 1000; pointer-events: none;
+  }
+  #nav-top-right > * { pointer-events: auto; }
+  #nav-bottom-left {
+    position: fixed; bottom: 16px; left: 16px;
+    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    z-index: 1000; pointer-events: none;
+  }
+  #nav-bottom-left > * { pointer-events: auto; }
+  #nav-bottom-right {
+    position: fixed; bottom: 16px; right: 16px;
+    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    z-index: 1000; pointer-events: none;
+  }
+  #nav-bottom-right > * { pointer-events: auto; }
+
   @media (max-width: 1279px) {
+    #nav-top-left, #nav-top-right,
+    #nav-bottom-left, #nav-bottom-right { display: none !important; }
+
     .guide-btn, .history-btn, .routine-btn,
     .ai-helper-btn, .airdrop-btn, .net-btn, .vel-btn,
     .upg-btn, .duo-btn, .info-btn, .tf-focus-btn,
@@ -20155,6 +20189,47 @@
       });
     })();
 
+  </script>
+
+  <!-- ── FLEX NAV CONTAINERS ── buttons are moved here by JS below -->
+  <div id="nav-top-left"></div>
+  <div id="nav-top-right"></div>
+  <div id="nav-bottom-left"></div>
+  <div id="nav-bottom-right"></div>
+
+  <script>
+  // Move floating buttons into flex containers so they never overlap.
+  // Flexbox handles spacing — no pixel calculations needed.
+  (function moveToNavContainers() {
+    var groups = {
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn'],
+      'nav-top-right':   ['settings-btn', 'routine-btn', 'history-btn', 'map-btn', 'weather-btn'],
+      'nav-bottom-left': ['celebrate-btn', 'habits-book-btn', 'trip-btn', 'scanner-btn', 'dict-btn', 'tf-lang-btn'],
+      'nav-bottom-right':['downloads-btn', 'reminders-btn', 'prog-btn']
+    };
+
+    function doMove() {
+      Object.keys(groups).forEach(function(containerId) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        groups[containerId].forEach(function(btnId) {
+          var btn = document.getElementById(btnId);
+          if (!btn) return;
+          // Neutralise all fixed-position CSS so flexbox takes over
+          ['position','top','left','right','bottom'].forEach(function(prop) {
+            btn.style.setProperty(prop, prop === 'position' ? 'static' : 'auto', 'important');
+          });
+          container.appendChild(btn);
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', doMove);
+    } else {
+      doMove();
+    }
+  })();
   </script>
 </body>
 </html>
