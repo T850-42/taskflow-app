@@ -18185,7 +18185,7 @@
     if (appSettings.accentColor && appSettings.accentColor !== '#111') {
       applyAccentColor(appSettings.accentColor);
     }
-    if (appSettings.darkMode) applyDarkMode(true);
+    applyDarkMode(false); // always light mode
     if (appSettings.showCount) updateCompletionCount();
 
     // Re-render calendar when todos change
@@ -18194,7 +18194,7 @@
       origRender();
       renderCalendar();
       // Re-apply dark mode styles to new todo items
-      if (appSettings.darkMode) applyDarkMode(true);
+      applyDarkMode(false); // always light mode
       // Re-apply accent color to filter buttons
       if (appSettings.accentColor && appSettings.accentColor !== '#111') applyAccentColor(appSettings.accentColor);
       // Update count if enabled
