@@ -43,12 +43,15 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // Show/hide the flex nav containers based on device
+      // Show/hide the flex nav containers based on device AND login state
       var isDesktop = cls === 'device-desktop';
+      var isLoginScreen = document.body.classList.contains('tf-gate-mode') ||
+                          document.body.classList.contains('tf-signin-page-mode');
+      var showNav = isDesktop && !isLoginScreen;
       try {
         ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
           var c = document.getElementById(id);
-          if (c) c.style.setProperty('display', isDesktop ? 'flex' : 'none', 'important');
+          if (c) c.style.setProperty('display', showNav ? 'flex' : 'none', 'important');
         });
         // Also hide individual floating buttons on mobile/tablet as a fallback
         if (!isDesktop) {
