@@ -61,6 +61,8 @@
         }
       } catch(e) {}
     }
+    // Expose so login handlers can re-run after gate-mode is removed
+    window.__tfApplyDevice = applyDevice;
 
     // Run immediately (before render) for class assignment
     applyDevice();
