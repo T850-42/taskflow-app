@@ -9680,9 +9680,13 @@
   body.tf-signin-page-mode #nav-top-right,
   body.tf-signin-page-mode #nav-bottom-left,
   body.tf-signin-page-mode #nav-bottom-right { display: none !important; }
+  /* Hidden by default; applyDevice() shows them on desktop after login check */
+  #nav-top-left, #nav-top-right, #nav-bottom-left, #nav-bottom-right {
+    display: none;
+  }
   #nav-top-left {
     position: fixed; top: 14px; left: 76px;
-    display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;
+    display: none; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;
     /* cap width so it never collides with top-right bar */
     max-width: calc(50vw - 80px);
     z-index: 1000; pointer-events: none;
