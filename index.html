@@ -17995,6 +17995,7 @@
     });
 
     function applyDarkMode(on) {
+      on = false; // Dark mode disabled — always use light theme
       if (on) {
         document.body.style.backgroundColor = '#1c1c1e';
         document.querySelector('.container').style.background = 'rgba(28,28,30,0.92)';
