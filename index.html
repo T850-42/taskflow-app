@@ -9673,28 +9673,38 @@
   ─────────────────────────────────────────────────────────────── */
   #nav-top-left {
     position: fixed; top: 14px; left: 76px;
-    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;
+    /* cap width so it never collides with top-right bar */
+    max-width: calc(50vw - 80px);
     z-index: 1000; pointer-events: none;
   }
-  #nav-top-left > * { pointer-events: auto; }
+  #nav-top-left > * { pointer-events: auto; flex-shrink: 0; }
+
   #nav-top-right {
     position: fixed; top: 14px; right: 12px;
-    display: flex; flex-direction: row-reverse; gap: 8px; align-items: center;
+    display: flex; flex-direction: row-reverse; flex-wrap: wrap; gap: 8px; align-items: center;
+    /* cap width so it never collides with top-left bar */
+    max-width: calc(50vw - 80px);
     z-index: 1000; pointer-events: none;
   }
-  #nav-top-right > * { pointer-events: auto; }
+  #nav-top-right > * { pointer-events: auto; flex-shrink: 0; }
+
   #nav-bottom-left {
     position: fixed; bottom: 16px; left: 16px;
-    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: flex-end;
+    /* cap so it doesn't collide with bottom-right bar */
+    max-width: calc(55vw - 20px);
     z-index: 1000; pointer-events: none;
   }
-  #nav-bottom-left > * { pointer-events: auto; }
+  #nav-bottom-left > * { pointer-events: auto; flex-shrink: 0; }
+
   #nav-bottom-right {
     position: fixed; bottom: 16px; right: 16px;
-    display: flex; flex-direction: row; gap: 8px; align-items: center;
+    display: flex; flex-direction: row-reverse; flex-wrap: wrap; gap: 8px; align-items: flex-end;
+    max-width: calc(45vw - 20px);
     z-index: 1000; pointer-events: none;
   }
-  #nav-bottom-right > * { pointer-events: auto; }
+  #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
 
   @media (max-width: 1279px) {
     #nav-top-left, #nav-top-right,
