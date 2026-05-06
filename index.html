@@ -13108,7 +13108,7 @@
             // Just reveal the app without signing in
             document.body.classList.remove('tf-gate-mode');
             // Re-run device detection so nav containers appear
-            if (typeof applyDevice === 'function') applyDevice();
+            if (window.__tfApplyDevice) window.__tfApplyDevice();
           } else {
             localStorage.setItem('tf_signin_signal', JSON.stringify({ username: null, guest: true, ts: Date.now() }));
             showDone('Guest', false);
