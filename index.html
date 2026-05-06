@@ -9670,7 +9670,16 @@
   /* ── FLEX NAV CONTAINERS ─────────────────────────────────────────
      Buttons are moved into these at runtime by moveToNavContainers().
      Flexbox handles spacing — no pixel math, no overlaps possible.
+     Hidden while the login / gate screen is active.
   ─────────────────────────────────────────────────────────────── */
+  body.tf-gate-mode #nav-top-left,
+  body.tf-gate-mode #nav-top-right,
+  body.tf-gate-mode #nav-bottom-left,
+  body.tf-gate-mode #nav-bottom-right,
+  body.tf-signin-page-mode #nav-top-left,
+  body.tf-signin-page-mode #nav-top-right,
+  body.tf-signin-page-mode #nav-bottom-left,
+  body.tf-signin-page-mode #nav-bottom-right { display: none !important; }
   #nav-top-left {
     position: fixed; top: 14px; left: 76px;
     display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;
