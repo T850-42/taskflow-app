@@ -43,22 +43,15 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // Show/hide the flex nav containers based on device AND login state
-      var isDesktop = cls === 'device-desktop';
+      // Show nav containers on all devices unless login screen is active
       var isLoginScreen = document.body.classList.contains('tf-gate-mode') ||
                           document.body.classList.contains('tf-signin-page-mode');
-      var showNav = isDesktop && !isLoginScreen;
+      var showNav = !isLoginScreen;
       try {
         ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
           var c = document.getElementById(id);
           if (c) c.style.setProperty('display', showNav ? 'flex' : 'none', 'important');
         });
-        // Also hide individual floating buttons on mobile/tablet as a fallback
-        if (!isDesktop) {
-          document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
-            el.style.setProperty('display', 'none', 'important');
-          });
-        }
       } catch(e) {}
     }
     // Expose so login handlers can re-run after gate-mode is removed
