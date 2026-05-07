@@ -19431,7 +19431,8 @@
       });
     })();
 
-    // ── AI Helper ──
+    // ── AI Helper ── (button removed; skip if not present)
+    if (document.getElementById('ai-helper-btn')) {
     const aiHelperOverlay = document.getElementById('ai-helper-overlay');
     const aiMessagesEl = document.getElementById('ai-helper-messages');
     const aiInputEl = document.getElementById('ai-helper-input');
