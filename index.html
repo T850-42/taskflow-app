@@ -19976,7 +19976,7 @@
           else if (target === 'calendar') document.getElementById('calendar-fab').click();
           else if (target === 'reminders') document.getElementById('reminders-btn').click();
           else if (target === 'notes') document.getElementById('notes-btn').click();
-          else if (target === 'map') document.getElementById('map-btn').click();
+          else if (target === 'map') { const mb = document.getElementById('map-btn'); if (mb) mb.click(); }
         }, 300);
       });
     });
