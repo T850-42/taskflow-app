@@ -9685,62 +9685,108 @@
   body.tf-signin-page-mode #nav-top-right,
   body.tf-signin-page-mode #nav-bottom-left,
   body.tf-signin-page-mode #nav-bottom-right { display: none !important; }
-  /* Hidden by default; applyDevice() shows them on desktop after login check */
+  /* ── NAV CONTAINERS: hidden by default, shown by applyDevice() ── */
   #nav-top-left, #nav-top-right, #nav-bottom-left, #nav-bottom-right {
     display: none;
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    gap: 6px;
+    align-items: center;
   }
-  #nav-top-left {
-    position: fixed; top: 14px; left: 76px;
-    display: none; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center;
-    /* cap width so it never collides with top-right bar */
-    max-width: calc(50vw - 80px);
-    z-index: 1000; pointer-events: none;
-  }
-  #nav-top-left > * { pointer-events: auto; flex-shrink: 0; }
+  #nav-top-left > *, #nav-top-right > *,
+  #nav-bottom-left > *, #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
 
-  #nav-top-right {
-    position: fixed; top: 14px; right: 12px;
-    display: flex; flex-direction: row-reverse; flex-wrap: wrap; gap: 8px; align-items: center;
-    /* cap width so it never collides with top-left bar */
-    max-width: calc(50vw - 80px);
-    z-index: 1000; pointer-events: none;
+  /* ── DESKTOP (≥ 1280px): 4-corner layout ── */
+  @media (min-width: 1280px) {
+    #nav-top-left {
+      top: 14px; left: 76px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(50vw - 80px);
+    }
+    #nav-top-right {
+      top: 14px; right: 12px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(50vw - 80px);
+    }
+    #nav-bottom-left {
+      bottom: 16px; left: 16px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(55vw - 20px);
+    }
+    #nav-bottom-right {
+      bottom: 16px; right: 16px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(45vw - 20px);
+    }
   }
-  #nav-top-right > * { pointer-events: auto; flex-shrink: 0; }
 
-  #nav-bottom-left {
-    position: fixed; bottom: 16px; left: 16px;
-    display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: flex-end;
-    /* cap so it doesn't collide with bottom-right bar */
-    max-width: calc(55vw - 20px);
-    z-index: 1000; pointer-events: none;
-  }
-  #nav-bottom-left > * { pointer-events: auto; flex-shrink: 0; }
-
-  #nav-bottom-right {
-    position: fixed; bottom: 16px; right: 16px;
-    display: flex; flex-direction: row-reverse; flex-wrap: wrap; gap: 8px; align-items: flex-end;
-    max-width: calc(45vw - 20px);
-    z-index: 1000; pointer-events: none;
-  }
-  #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
-
+  /* ── MOBILE / TABLET (< 1280px): full-width scrollable strips ── */
   @media (max-width: 1279px) {
-    #nav-top-left, #nav-top-right,
-    #nav-bottom-left, #nav-bottom-right { display: none !important; }
+    /* Top strip: left buttons row 1 */
+    #nav-top-left {
+      top: 0; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-top-left::-webkit-scrollbar { display: none; }
 
-    .guide-btn, .history-btn, .routine-btn,
-    .ai-helper-btn, .airdrop-btn, .net-btn, .vel-btn,
-    .upg-btn, .duo-btn, .info-btn, .tf-focus-btn,
-    .celebrate-btn, .habits-book-btn, .trip-btn,
-    .scanner-btn, .reminders-btn, .downloads-btn,
-    .prog-btn, .dict-btn, .map-btn,
-    .calendar-fab, .calendar-widget,
-    .apps-btn, .weather-btn, .notes-btn,
-    .vault-btn, .tf-lang-btn, .tf-lang-menu { display: none !important; }
+    /* Top strip row 2: right buttons */
+    #nav-top-right {
+      top: 52px; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-top-right::-webkit-scrollbar { display: none; }
 
+    /* Bottom strip row 1 */
+    #nav-bottom-left {
+      bottom: 52px; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-bottom-left::-webkit-scrollbar { display: none; }
+
+    /* Bottom strip row 2 */
+    #nav-bottom-right {
+      bottom: 0; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-bottom-right::-webkit-scrollbar { display: none; }
+
+    /* Smaller buttons on mobile */
+    #nav-top-left > *, #nav-top-right > *,
+    #nav-bottom-left > *, #nav-bottom-right > * {
+      font-size: 0.78rem !important;
+      padding: 6px 11px !important;
+      border-radius: 18px !important;
+      white-space: nowrap;
+    }
+
+    .sidebar { width: 80vw !important; max-width: 320px !important; }
     .settings-btn { right: 12px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
     .tf-signin-btn { right: 120px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
-    .sidebar { width: 80vw !important; max-width: 320px !important; }
   }
 
   /* Below 600px: mobile sizing */
