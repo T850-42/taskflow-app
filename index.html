@@ -20216,39 +20216,6 @@
     if (acAddBtn) acAddBtn.addEventListener('click', () => acTracker.init());
     if (acLootBtn) acLootBtn.addEventListener('click', () => acTracker.lootXP(1500));
 
-    // Share / QR Code
-    (function() {
-      const shareBtn = document.getElementById('share-btn');
-      const modal = document.getElementById('share-modal');
-      if (!shareBtn || !modal) return;
-      const closeBtn = document.getElementById('share-modal-close');
-      const qrImg = document.getElementById('share-qr');
-      const urlInput = document.getElementById('share-url-input');
-      const copyBtn = document.getElementById('share-copy-btn');
-
-      function getShareUrl() {
-        // Use local network IP if available, otherwise current host
-        return window.location.href.split('?')[0].split('#')[0];
-      }
-
-      shareBtn.addEventListener('click', () => {
-        const url = getShareUrl();
-        urlInput.value = url;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
-        modal.classList.add('open');
-      });
-
-      closeBtn.addEventListener('click', () => modal.classList.remove('open'));
-      modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(urlInput.value).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => copyBtn.textContent = 'Copy', 1800);
-        });
-      });
-    })();
-
   </script>
 
   <!-- ── FLEX NAV CONTAINERS ── buttons are moved here by JS below -->
