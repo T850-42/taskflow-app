@@ -9768,6 +9768,14 @@
     }
     #nav-bottom-right::-webkit-scrollbar { display: none; }
 
+    /* Override device-mobile display:none for buttons inside nav containers */
+    #nav-top-left > *, #nav-top-right > *,
+    #nav-bottom-left > *, #nav-bottom-right > * {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* Smaller buttons on mobile */
     #nav-top-left > *, #nav-top-right > *,
     #nav-bottom-left > *, #nav-bottom-right > * {
