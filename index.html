@@ -20224,6 +20224,34 @@
   <div id="nav-bottom-left"></div>
   <div id="nav-bottom-right"></div>
 
+  <!-- Share button: isolated script so crashes elsewhere can't stop it -->
+  <script>
+  (function() {
+    var shareBtn = document.getElementById('share-btn');
+    var modal    = document.getElementById('share-modal');
+    if (!shareBtn || !modal) return;
+    var closeBtn = document.getElementById('share-modal-close');
+    var qrImg    = document.getElementById('share-qr');
+    var urlInput = document.getElementById('share-url-input');
+    var copyBtn  = document.getElementById('share-copy-btn');
+
+    shareBtn.addEventListener('click', function() {
+      var url = window.location.href.split('?')[0].split('#')[0];
+      if (urlInput) urlInput.value = url;
+      if (qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+      modal.classList.add('open');
+    });
+    if (closeBtn) closeBtn.addEventListener('click', function() { modal.classList.remove('open'); });
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.classList.remove('open'); });
+    if (copyBtn) copyBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText(urlInput ? urlInput.value : '').then(function() {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(function() { copyBtn.textContent = 'Copy'; }, 1800);
+      });
+    });
+  })();
+  </script>
+
   <script>
   // Move floating buttons into flex containers so they never overlap.
   // Flexbox handles spacing — no pixel calculations needed.
