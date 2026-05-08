@@ -14958,7 +14958,8 @@
 
       // Wire up
       upgBtn.addEventListener('click', () => {
-        upgOverlay.classList.add('open');
+        // Always run upgrade to re-unlock all buttons
+        performUpgrade();
       });
       upgClose.addEventListener('click', () => upgOverlay.classList.remove('open'));
       upgOverlay.addEventListener('click', (e) => { if (e.target === upgOverlay) upgOverlay.classList.remove('open'); });
