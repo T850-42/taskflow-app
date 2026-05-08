@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://t850-42.github.io/taskflow-app/sitemap.xml
