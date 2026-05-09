@@ -25,10 +25,10 @@
     // Selectors for every floating button that should hide below 1280px
     // Floating feature buttons — hidden on mobile/tablet, visible on desktop
     var FLOAT_SEL = [
-      '.guide-btn','.history-btn','.routine-btn','.ai-helper-btn','.airdrop-btn',
-      '.net-btn','.vel-btn','.upg-btn','.duo-btn','.info-btn','.tf-focus-btn',
+      '.guide-btn','.history-btn','.routine-btn',
+      '.net-btn','.vel-btn','.upg-btn','.info-btn','.tf-focus-btn',
       '.celebrate-btn','.habits-book-btn','.trip-btn','.scanner-btn','.reminders-btn',
-      '.downloads-btn','.prog-btn','.dict-btn','.map-btn','.calendar-fab',
+      '.downloads-btn','.prog-btn','.dict-btn','.calendar-fab',
       '.calendar-widget','.apps-btn','.weather-btn','.notes-btn','.vault-btn',
       '.tf-lang-btn','.tf-lang-menu'
     ].join(',');
@@ -43,19 +43,19 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // On mobile/tablet: hide all floating buttons
-      // On desktop: restore them (fixNavLayout will handle positioning)
-      var isDesktop = cls === 'device-desktop';
+      // Show nav containers on all devices unless login screen is active
+      var isLoginScreen = document.body.classList.contains('tf-gate-mode') ||
+                          document.body.classList.contains('tf-signin-page-mode');
+      var showNav = !isLoginScreen;
       try {
-        document.querySelectorAll(FLOAT_SEL).forEach(function(el) {
-          if (isDesktop) {
-            el.style.removeProperty('display');
-          } else {
-            el.style.setProperty('display', 'none', 'important');
-          }
+        ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
+          var c = document.getElementById(id);
+          if (c) c.style.setProperty('display', showNav ? 'flex' : 'none', 'important');
         });
       } catch(e) {}
     }
+    // Expose so login handlers can re-run after gate-mode is removed
+    window.__tfApplyDevice = applyDevice;
 
     // Run immediately (before render) for class assignment
     applyDevice();
@@ -63,7 +63,12 @@
     // Also run after DOM ready so JS hide/show can find the buttons
     document.addEventListener('DOMContentLoaded', function() {
       applyDevice();
-      fixNavLayout();
+      // Run fixNavLayout multiple times: buttons need a paint cycle before offsetWidth is non-zero
+      requestAnimationFrame(function() {
+        fixNavLayout();
+        setTimeout(fixNavLayout, 300);   // second pass after fonts/icons load
+        setTimeout(fixNavLayout, 1200);  // final pass after everything settles
+      });
     });
 
     // Fix button overlap — reflow top & bottom buttons into proper nav bars
@@ -71,15 +76,18 @@
       var vw = window.innerWidth || document.documentElement.clientWidth;
       if (vw < 1280) return; // only on desktop
 
-      // ── TOP BAR ──────────────────────────────────────────────────
-      // Collect all visible fixed buttons in the top 80px
-      var topLeft  = []; // buttons to arrange from left
-      var topRight = []; // buttons to arrange from right (already correct)
-      var topCenter = []; // signin/account button stays in place
+      // Helper: get width, fallback to measured clientWidth, then a safe minimum
+      function btnW(el) {
+        var w = el.getBoundingClientRect().width || el.offsetWidth || el.clientWidth;
+        return w > 10 ? w : 120; // never treat a button as 0-wide
+      }
 
+      // ── TOP BAR ──────────────────────────────────────────────────
       var topLeftIds  = ['guide-btn','apps-btn','tf-focus-btn'];
       var topRightIds = ['weather-btn','map-btn','history-btn','routine-btn','settings-btn'];
 
+      var topLeft  = [];
+      var topRight = [];
       topLeftIds.forEach(function(id) {
         var el = document.getElementById(id);
         if (el && getComputedStyle(el).display !== 'none') topLeft.push(el);
@@ -89,23 +97,29 @@
         if (el && getComputedStyle(el).display !== 'none') topRight.push(el);
       });
 
-      // Re-position left buttons flush left with consistent 8px gap
+      // Use setProperty with 'important' so JS beats CSS !important rules
+      function setPos(el, prop, val) {
+        el.style.setProperty(prop, val, 'important');
+      }
+
+      // Re-position left buttons flush left with 8px gap
       var cursor = 76; // start after sidebar-toggle (~60px wide)
       topLeft.forEach(function(el) {
-        el.style.left  = cursor + 'px';
-        el.style.right = 'auto';
-        el.style.top   = '14px';
-        cursor += el.offsetWidth + 8;
+        setPos(el, 'left',   cursor + 'px');
+        setPos(el, 'right',  'auto');
+        setPos(el, 'top',    '14px');
+        setPos(el, 'bottom', 'auto');
+        cursor += btnW(el) + 8;
       });
 
-      // Re-position right buttons flush right with consistent 8px gap
-      cursor = 12; // start 12px from right edge
-      // reverse so we go right-to-left: settings → routine → history → map → weather
+      // Re-position right buttons flush right, right-to-left
+      cursor = 12;
       topRight.slice().reverse().forEach(function(el) {
-        el.style.right = cursor + 'px';
-        el.style.left  = 'auto';
-        el.style.top   = '14px';
-        cursor += el.offsetWidth + 8;
+        setPos(el, 'right',  cursor + 'px');
+        setPos(el, 'left',   'auto');
+        setPos(el, 'top',    '14px');
+        setPos(el, 'bottom', 'auto');
+        cursor += btnW(el) + 8;
       });
 
       // ── BOTTOM BAR ───────────────────────────────────────────────
@@ -114,25 +128,25 @@
 
       cursor = 16;
       botLeftIds.forEach(function(id) {
-        var el = document.getElementById(id) || document.querySelector('.'+id);
+        var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
-          el.style.left   = cursor + 'px';
-          el.style.right  = 'auto';
-          el.style.bottom = '16px';
-          el.style.top    = 'auto';
-          cursor += el.offsetWidth + 8;
+          setPos(el, 'left',   cursor + 'px');
+          setPos(el, 'right',  'auto');
+          setPos(el, 'bottom', '16px');
+          setPos(el, 'top',    'auto');
+          cursor += btnW(el) + 8;
         }
       });
 
       cursor = 16;
       botRightIds.forEach(function(id) {
-        var el = document.getElementById(id) || document.querySelector('.'+id);
+        var el = document.getElementById(id) || document.querySelector('.' + id);
         if (el && getComputedStyle(el).display !== 'none') {
-          el.style.right  = cursor + 'px';
-          el.style.left   = 'auto';
-          el.style.bottom = '16px';
-          el.style.top    = 'auto';
-          cursor += el.offsetWidth + 8;
+          setPos(el, 'right',  cursor + 'px');
+          setPos(el, 'left',   'auto');
+          setPos(el, 'bottom', '16px');
+          setPos(el, 'top',    'auto');
+          cursor += btnW(el) + 8;
         }
       });
     }
@@ -142,11 +156,14 @@
       window.__navTimer = setTimeout(fixNavLayout, 120);
     });
 
-    // Re-run on resize with debounce so it doesn't fire 100x while dragging
+    // Re-run on resize: apply device class first, then reposition buttons
     var resizeTimer;
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(applyDevice, 80);
+      resizeTimer = setTimeout(function() {
+        applyDevice();
+        setTimeout(fixNavLayout, 60); // slight delay so display:none is applied first
+      }, 80);
     });
   })();
   </script>
@@ -335,6 +352,68 @@
       flex-shrink: 0;
     }
     #share-btn:hover { transform: scale(1.05); box-shadow: 0 5px 18px rgba(255,107,157,0.5); }
+
+    /* Goal button */
+    .goal-btn {
+      position: fixed;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245,87,108,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+    .goal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,87,108,0.55); }
+    .goal-btn.has-goal { background: linear-gradient(135deg, #11998e, #38ef7d); }
+    .goal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 9999;
+      align-items: center; justify-content: center;
+    }
+    .goal-overlay.open { display: flex; }
+    .goal-card {
+      background: #fff; border-radius: 24px;
+      padding: 28px 24px; width: 90%; max-width: 420px;
+      max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .goal-card h2 { margin: 0 0 6px; font-size: 1.4rem; }
+    .goal-sub { color: #888; margin: 0 0 16px; font-size: 0.9rem; }
+    .goal-close {
+      position: absolute; top: 16px; right: 18px;
+      background: none; border: none; font-size: 1.5rem;
+      cursor: pointer; color: #999;
+    }
+    .goal-current {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      border-radius: 14px; padding: 12px 16px;
+      margin-bottom: 16px; color: #fff;
+    }
+    .goal-current-label { font-size: 0.75rem; opacity: 0.85; display: block; margin-bottom: 4px; }
+    .goal-current-text { font-size: 1rem; font-weight: 700; }
+    .goal-random-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff; border: none; border-radius: 14px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      margin-bottom: 16px; transition: transform 0.15s;
+    }
+    .goal-random-btn:hover { transform: scale(1.02); }
+    .goal-list { display: flex; flex-direction: column; gap: 8px; }
+    .goal-item {
+      width: 100%; padding: 12px 16px; text-align: left;
+      background: #f7f8fa; border: 2px solid transparent;
+      border-radius: 12px; font-size: 0.95rem; cursor: pointer;
+      transition: all 0.15s; font-weight: 500;
+    }
+    .goal-item:hover { background: #eef0ff; border-color: #667eea; }
+    .goal-item.selected { background: #eef9f3; border-color: #38ef7d; font-weight: 700; }
 
     /* Share modal */
     #share-modal {
@@ -9331,45 +9410,8 @@
        instead of crowding a single bottom bar.
        ──────────────────────────────────────────────── */
 
-    /* TOP-LEFT zone (beside sidebar toggle) */
-    .guide-btn {
-      top: 16px !important;
-      left: 76px !important;
-      bottom: auto !important;
-    }
-    .history-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 330px !important;
-      bottom: auto !important;
-    }
-    .routine-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 190px !important;
-      bottom: auto !important;
-    }
-
-    /* TOP-RIGHT zone */
-    .settings-btn {
-      top: 16px !important;
-      left: auto !important;
-      right: 80px !important;
-      bottom: auto !important;
-    }
-
-    /* BOTTOM-LEFT zone (quick actions) */
-    .celebrate-btn { left: 24px !important; bottom: 24px !important; }
-    .habits-book-btn { left: 170px !important; bottom: 24px !important; }
-    .trip-btn { left: 340px !important; bottom: 24px !important; }
-    .scanner-btn { left: 480px !important; bottom: 24px !important; }
-
-    /* BOTTOM-RIGHT zone — Reminders stays near the action area */
-    .reminders-btn {
-      left: auto !important;
-      right: 24px !important;
-      bottom: 24px !important;
-    }
+    /* Button positions are set dynamically by fixNavLayout() in JS.
+       No hardcoded pixel positions here — JS owns the layout to prevent overlaps. */
 
     /* RIGHT-SIDE vertical strip — floating assistants */
     .ai-helper-btn {
@@ -9685,20 +9727,132 @@
      ═══════════════════════════════════════════════════════════ */
 
   /* Below 1280px: hide all floating buttons (CSS fallback) */
-  @media (max-width: 1279px) {
-    .guide-btn, .history-btn, .routine-btn,
-    .ai-helper-btn, .airdrop-btn, .net-btn, .vel-btn,
-    .upg-btn, .duo-btn, .info-btn, .tf-focus-btn,
-    .celebrate-btn, .habits-book-btn, .trip-btn,
-    .scanner-btn, .reminders-btn, .downloads-btn,
-    .prog-btn, .dict-btn, .map-btn,
-    .calendar-fab, .calendar-widget,
-    .apps-btn, .weather-btn, .notes-btn,
-    .vault-btn, .tf-lang-btn, .tf-lang-menu { display: none !important; }
+  /* ── FLEX NAV CONTAINERS ─────────────────────────────────────────
+     Buttons are moved into these at runtime by moveToNavContainers().
+     Flexbox handles spacing — no pixel math, no overlaps possible.
+     Hidden while the login / gate screen is active.
+  ─────────────────────────────────────────────────────────────── */
+  body.tf-gate-mode #nav-top-left,
+  body.tf-gate-mode #nav-top-right,
+  body.tf-gate-mode #nav-bottom-left,
+  body.tf-gate-mode #nav-bottom-right,
+  body.tf-signin-page-mode #nav-top-left,
+  body.tf-signin-page-mode #nav-top-right,
+  body.tf-signin-page-mode #nav-bottom-left,
+  body.tf-signin-page-mode #nav-bottom-right { display: none !important; }
+  /* ── NAV CONTAINERS: hidden by default, shown by applyDevice() ── */
+  #nav-top-left, #nav-top-right, #nav-bottom-left, #nav-bottom-right {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    gap: 6px;
+    align-items: center;
+  }
+  #nav-top-left > *, #nav-top-right > *,
+  #nav-bottom-left > *, #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
 
+  /* ── DESKTOP (≥ 1280px): 4-corner layout ── */
+  @media (min-width: 1280px) {
+    #nav-top-left {
+      top: 14px; left: 76px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(50vw - 80px);
+    }
+    #nav-top-right {
+      top: 14px; right: 12px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(50vw - 80px);
+    }
+    #nav-bottom-left {
+      bottom: 16px; left: 16px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(55vw - 20px);
+    }
+    #nav-bottom-right {
+      bottom: 16px; right: 16px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(45vw - 20px);
+    }
+  }
+
+  /* ── MOBILE / TABLET (< 1280px): full-width scrollable strips ── */
+  @media (max-width: 1279px) {
+    /* Top strip: left buttons row 1 */
+    #nav-top-left {
+      top: 0; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-top-left::-webkit-scrollbar { display: none; }
+
+    /* Top strip row 2: right buttons */
+    #nav-top-right {
+      top: 52px; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-top-right::-webkit-scrollbar { display: none; }
+
+    /* Bottom strip row 1 */
+    #nav-bottom-left {
+      bottom: 52px; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-bottom-left::-webkit-scrollbar { display: none; }
+
+    /* Bottom strip row 2 */
+    #nav-bottom-right {
+      bottom: 0; left: 0; right: 0;
+      flex-direction: row; flex-wrap: nowrap;
+      overflow-x: auto; overflow-y: hidden;
+      max-width: 100%;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+    }
+    #nav-bottom-right::-webkit-scrollbar { display: none; }
+
+    /* Override device-mobile display:none for buttons inside nav containers */
+    #nav-top-left > *, #nav-top-right > *,
+    #nav-bottom-left > *, #nav-bottom-right > * {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 4px;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      flex-shrink: 0;
+    }
+
+    /* Smaller buttons on mobile */
+    #nav-top-left > *, #nav-top-right > *,
+    #nav-bottom-left > *, #nav-bottom-right > * {
+      font-size: 0.78rem !important;
+      padding: 6px 11px !important;
+      border-radius: 18px !important;
+      white-space: nowrap;
+    }
+
+    .sidebar { width: 80vw !important; max-width: 320px !important; }
     .settings-btn { right: 12px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
     .tf-signin-btn { right: 120px !important; top: 14px !important; left: auto !important; bottom: auto !important; }
-    .sidebar { width: 80vw !important; max-width: 320px !important; }
   }
 
   /* Below 600px: mobile sizing */
@@ -9803,6 +9957,7 @@
         <span class="trip-badge">Task Manager</span>
       </h1>
     </div>
+
 
     <!-- Share / QR Code button -->
     <button id="share-btn">📲 Share</button>
@@ -10384,10 +10539,11 @@
     <button id="tf-focus-pending-cancel">Cancel</button>
   </div>
 
+
   <!-- Upgrade Button -->
-  <button class="upg-btn" id="upg-btn" title="Upgrade · Get Velocity">
+  <button class="upg-btn" id="upg-btn" title="Upgrade · Unlock All Buttons">
     ⬆️ Upgrade
-    <span style="background:rgba(0,0,0,0.25);padding:1px 8px;border-radius:10px;font-size:0.7rem;letter-spacing:0.5px;">VELOCITY</span>
+    <span style="background:rgba(0,0,0,0.25);padding:1px 8px;border-radius:10px;font-size:0.7rem;letter-spacing:0.5px;">ALL BUTTONS</span>
   </button>
 
   <div class="upg-overlay" id="upg-overlay">
@@ -10606,10 +10762,6 @@
 
 
   <!-- Duolingo Language Practice -->
-  <button class="duo-btn" id="duo-btn" title="Practice a language">
-    🦉 Duolingo
-    <span class="duo-streak" id="duo-btn-streak">🔥 0</span>
-  </button>
 
   <div class="duo-overlay" id="duo-overlay">
     <div class="duo-card" id="duo-card">
@@ -11359,8 +11511,6 @@
     </div>
   </div>
 
-  <!-- Map button (top menubar) -->
-  <button class="map-btn" id="map-btn" title="World Map"><span>🗺️</span> Map</button>
 
   <!-- Map overlay -->
   <div class="map-overlay" id="map-overlay" role="dialog" aria-label="World Map">
@@ -11457,10 +11607,6 @@
     </div>
   </div>
 
-  <!-- AirDrop button -->
-  <button class="airdrop-btn" id="airdrop-btn" title="AirDrop — share your todos">
-    <svg viewBox="0 0 24 24"><path d="M12 2.5a2 2 0 100 4 2 2 0 000-4zM8.1 7.35a6 6 0 017.8 0 1 1 0 11-1.3 1.52 4 4 0 00-5.2 0 1 1 0 11-1.3-1.52zM5 12a1 1 0 010-1.4 10 10 0 0114 0 1 1 0 01-1.4 1.4 8 8 0 00-11.2 0A1 1 0 015 12zm7 2.5a2 2 0 00-2 2v4l2 2 2-2v-4a2 2 0 00-2-2z"/></svg>
-  </button>
 
   <!-- AirDrop overlay -->
   <div class="airdrop-overlay" id="airdrop-overlay">
@@ -11485,10 +11631,6 @@
     </div>
   </div>
 
-  <!-- AI Helper button -->
-  <button class="ai-helper-btn" id="ai-helper-btn" title="AI Helper">
-    🤖<span class="ai-badge"></span>
-  </button>
 
   <!-- AI Helper overlay -->
   <div class="ai-helper-overlay" id="ai-helper-overlay">
@@ -11715,6 +11857,48 @@
             <label class="settings-toggle"><input type="checkbox" id="appearance-animations" checked><div class="settings-toggle-track"><div class="settings-toggle-thumb"></div></div></label>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duolingo language-learning button -->
+  <button class="duo-btn" id="duo-btn">
+    🦉 Duolingo
+    <span class="duo-streak" id="duo-btn-streak">🔥 0</span>
+  </button>
+
+  <!-- Goal button -->
+  <button class="goal-btn" id="goal-btn">🎯 Goal</button>
+
+  <!-- Goal modal -->
+  <div class="goal-overlay" id="goal-overlay">
+    <div class="goal-card">
+      <button class="goal-close" id="goal-close">&times;</button>
+      <h2>🎯 Set Your Goal</h2>
+      <p class="goal-sub">Pick a goal or let us choose one for you!</p>
+
+      <div class="goal-current" id="goal-current" style="display:none">
+        <span class="goal-current-label">Your current goal:</span>
+        <span class="goal-current-text" id="goal-current-text"></span>
+      </div>
+
+      <button class="goal-random-btn" id="goal-random-btn">🎲 You choose for me!</button>
+
+      <div class="goal-list" id="goal-list">
+        <button class="goal-item" data-goal="💪 Exercise every day">💪 Exercise every day</button>
+        <button class="goal-item" data-goal="📚 Read more books">📚 Read more books</button>
+        <button class="goal-item" data-goal="💧 Drink more water">💧 Drink more water</button>
+        <button class="goal-item" data-goal="🥗 Eat healthier">🥗 Eat healthier</button>
+        <button class="goal-item" data-goal="😴 Sleep 8 hours">😴 Sleep 8 hours</button>
+        <button class="goal-item" data-goal="🧘 Meditate daily">🧘 Meditate daily</button>
+        <button class="goal-item" data-goal="💰 Save money">💰 Save money</button>
+        <button class="goal-item" data-goal="📝 Learn something new">📝 Learn something new</button>
+        <button class="goal-item" data-goal="🚶 Walk 10,000 steps">🚶 Walk 10,000 steps</button>
+        <button class="goal-item" data-goal="✅ Complete all my tasks">✅ Complete all my tasks</button>
+        <button class="goal-item" data-goal="🌱 Build a new habit">🌱 Build a new habit</button>
+        <button class="goal-item" data-goal="📵 Less screen time">📵 Less screen time</button>
+        <button class="goal-item" data-goal="🤝 Be more social">🤝 Be more social</button>
+        <button class="goal-item" data-goal="🎨 Be more creative">🎨 Be more creative</button>
       </div>
     </div>
   </div>
@@ -13079,6 +13263,8 @@
           if (isGateMode) {
             // Just reveal the app without signing in
             document.body.classList.remove('tf-gate-mode');
+            // Re-run device detection so nav containers appear
+            if (window.__tfApplyDevice) window.__tfApplyDevice();
           } else {
             localStorage.setItem('tf_signin_signal', JSON.stringify({ username: null, guest: true, ts: Date.now() }));
             showDone('Guest', false);
@@ -14825,6 +15011,24 @@
         const velBtn = document.getElementById('vel-btn');
         if (velBtn) velBtn.classList.add('unlocked');
         activateBooster();
+
+        // ── Unlock ALL buttons: force every nav-container button visible ──
+        ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
+          var container = document.getElementById(id);
+          if (!container) return;
+          Array.from(container.children).forEach(function(btn) {
+            btn.style.setProperty('display', 'inline-flex', 'important');
+            btn.style.setProperty('visibility', 'visible', 'important');
+            btn.style.setProperty('opacity', '1', 'important');
+          });
+        });
+
+        // Show a quick toast confirming all unlocked
+        var toast = document.createElement('div');
+        toast.textContent = '✅ All buttons unlocked!';
+        toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#2ecc71;color:#fff;padding:16px 28px;border-radius:24px;font-size:1.1rem;font-weight:700;z-index:99999;box-shadow:0 6px 24px rgba(0,0,0,0.25);';
+        document.body.appendChild(toast);
+        setTimeout(function(){ toast.remove(); }, 2500);
       }
 
       // Network info
@@ -14852,7 +15056,8 @@
 
       // Wire up
       upgBtn.addEventListener('click', () => {
-        upgOverlay.classList.add('open');
+        // Always run upgrade to re-unlock all buttons
+        performUpgrade();
       });
       upgClose.addEventListener('click', () => upgOverlay.classList.remove('open'));
       upgOverlay.addEventListener('click', (e) => { if (e.target === upgOverlay) upgOverlay.classList.remove('open'); });
@@ -17964,6 +18169,7 @@
     });
 
     function applyDarkMode(on) {
+      on = false; // Dark mode disabled — always use light theme
       if (on) {
         document.body.style.backgroundColor = '#1c1c1e';
         document.querySelector('.container').style.background = 'rgba(28,28,30,0.92)';
@@ -18153,7 +18359,7 @@
     if (appSettings.accentColor && appSettings.accentColor !== '#111') {
       applyAccentColor(appSettings.accentColor);
     }
-    if (appSettings.darkMode) applyDarkMode(true);
+    applyDarkMode(false); // always light mode
     if (appSettings.showCount) updateCompletionCount();
 
     // Re-render calendar when todos change
@@ -18162,7 +18368,7 @@
       origRender();
       renderCalendar();
       // Re-apply dark mode styles to new todo items
-      if (appSettings.darkMode) applyDarkMode(true);
+      applyDarkMode(false); // always light mode
       // Re-apply accent color to filter buttons
       if (appSettings.accentColor && appSettings.accentColor !== '#111') applyAccentColor(appSettings.accentColor);
       // Update count if enabled
@@ -19399,7 +19605,8 @@
       });
     })();
 
-    // ── AI Helper ──
+    // ── AI Helper ── (button removed; skip if not present)
+    if (document.getElementById('ai-helper-btn')) {
     const aiHelperOverlay = document.getElementById('ai-helper-overlay');
     const aiMessagesEl = document.getElementById('ai-helper-messages');
     const aiInputEl = document.getElementById('ai-helper-input');
@@ -19587,6 +19794,7 @@
         aiSendMessage(chip.dataset.q);
       });
     });
+    } // end if(ai-helper-btn)
 
     // ── Reminders App ──
     const remindersOverlay = document.getElementById('reminders-overlay');
@@ -19942,7 +20150,7 @@
           else if (target === 'calendar') document.getElementById('calendar-fab').click();
           else if (target === 'reminders') document.getElementById('reminders-btn').click();
           else if (target === 'notes') document.getElementById('notes-btn').click();
-          else if (target === 'map') document.getElementById('map-btn').click();
+          else if (target === 'map') { const mb = document.getElementById('map-btn'); if (mb) mb.click(); }
         }, 300);
       });
     });
@@ -20143,38 +20351,138 @@
     if (acAddBtn) acAddBtn.addEventListener('click', () => acTracker.init());
     if (acLootBtn) acLootBtn.addEventListener('click', () => acTracker.lootXP(1500));
 
-    // Share / QR Code
-    (function() {
-      const shareBtn = document.getElementById('share-btn');
-      const modal = document.getElementById('share-modal');
-      const closeBtn = document.getElementById('share-modal-close');
-      const qrImg = document.getElementById('share-qr');
-      const urlInput = document.getElementById('share-url-input');
-      const copyBtn = document.getElementById('share-copy-btn');
+  </script>
 
-      function getShareUrl() {
-        // Use local network IP if available, otherwise current host
-        return window.location.href.split('?')[0].split('#')[0];
+  <!-- ── FLEX NAV CONTAINERS ── buttons are moved here by JS below -->
+  <div id="nav-top-left"></div>
+  <div id="nav-top-right"></div>
+  <div id="nav-bottom-left"></div>
+  <div id="nav-bottom-right"></div>
+
+  <!-- Goal button: isolated script -->
+  <script>
+  (function() {
+    var btn      = document.getElementById('goal-btn');
+    var overlay  = document.getElementById('goal-overlay');
+    var closeBtn = document.getElementById('goal-close');
+    var randomBtn= document.getElementById('goal-random-btn');
+    var list     = document.getElementById('goal-list');
+    var currentBox  = document.getElementById('goal-current');
+    var currentText = document.getElementById('goal-current-text');
+    if (!btn || !overlay) return;
+
+    var GOALS = [
+      '💪 Exercise every day','📚 Read more books','💧 Drink more water',
+      '🥗 Eat healthier','😴 Sleep 8 hours','🧘 Meditate daily',
+      '💰 Save money','📝 Learn something new','🚶 Walk 10,000 steps',
+      '✅ Complete all my tasks','🌱 Build a new habit','📵 Less screen time',
+      '🤝 Be more social','🎨 Be more creative'
+    ];
+
+    function loadGoal() {
+      var saved = localStorage.getItem('tf_goal');
+      if (saved) {
+        btn.textContent = '🎯 Goal ✓';
+        btn.classList.add('has-goal');
+        currentBox.style.display = 'block';
+        currentText.textContent = saved;
+        list.querySelectorAll('.goal-item').forEach(function(it) {
+          it.classList.toggle('selected', it.dataset.goal === saved);
+        });
       }
+    }
 
-      shareBtn.addEventListener('click', () => {
-        const url = getShareUrl();
-        urlInput.value = url;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
-        modal.classList.add('open');
+    function setGoal(goal) {
+      localStorage.setItem('tf_goal', goal);
+      loadGoal();
+      overlay.classList.remove('open');
+      // toast
+      var t = document.createElement('div');
+      t.textContent = '🎯 Goal set: ' + goal;
+      t.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#11998e;color:#fff;padding:14px 24px;border-radius:20px;font-size:1rem;font-weight:700;z-index:99999;box-shadow:0 6px 24px rgba(0,0,0,0.2);text-align:center;max-width:80vw;';
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 2500);
+    }
+
+    loadGoal();
+
+    btn.addEventListener('click', function() { overlay.classList.add('open'); });
+    closeBtn.addEventListener('click', function() { overlay.classList.remove('open'); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    randomBtn.addEventListener('click', function() {
+      var pick = GOALS[Math.floor(Math.random() * GOALS.length)];
+      setGoal(pick);
+    });
+
+    list.addEventListener('click', function(e) {
+      var item = e.target.closest('.goal-item');
+      if (item) setGoal(item.dataset.goal);
+    });
+  })();
+  </script>
+
+  <!-- Share button: isolated script so crashes elsewhere can't stop it -->
+  <script>
+  (function() {
+    var shareBtn = document.getElementById('share-btn');
+    var modal    = document.getElementById('share-modal');
+    if (!shareBtn || !modal) return;
+    var closeBtn = document.getElementById('share-modal-close');
+    var qrImg    = document.getElementById('share-qr');
+    var urlInput = document.getElementById('share-url-input');
+    var copyBtn  = document.getElementById('share-copy-btn');
+
+    shareBtn.addEventListener('click', function() {
+      var url = window.location.href.split('?')[0].split('#')[0];
+      if (urlInput) urlInput.value = url;
+      if (qrImg) qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(url);
+      modal.classList.add('open');
+    });
+    if (closeBtn) closeBtn.addEventListener('click', function() { modal.classList.remove('open'); });
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.classList.remove('open'); });
+    if (copyBtn) copyBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText(urlInput ? urlInput.value : '').then(function() {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(function() { copyBtn.textContent = 'Copy'; }, 1800);
       });
+    });
+  })();
+  </script>
 
-      closeBtn.addEventListener('click', () => modal.classList.remove('open'));
-      modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+  <script>
+  // Move floating buttons into flex containers so they never overlap.
+  // Flexbox handles spacing — no pixel calculations needed.
+  (function moveToNavContainers() {
+    var groups = {
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn'],
+      'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'routine-btn', 'history-btn', 'weather-btn'],
+      'nav-bottom-left': ['celebrate-btn', 'habits-book-btn', 'trip-btn', 'scanner-btn', 'dict-btn', 'tf-lang-btn', 'duo-btn'],
+      'nav-bottom-right':['downloads-btn', 'reminders-btn', 'prog-btn', 'share-btn']
+    };
 
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(urlInput.value).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => copyBtn.textContent = 'Copy', 1800);
+    function doMove() {
+      Object.keys(groups).forEach(function(containerId) {
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        groups[containerId].forEach(function(btnId) {
+          var btn = document.getElementById(btnId);
+          if (!btn) return;
+          // Neutralise all fixed-position CSS so flexbox takes over
+          ['position','top','left','right','bottom'].forEach(function(prop) {
+            btn.style.setProperty(prop, prop === 'position' ? 'static' : 'auto', 'important');
+          });
+          container.appendChild(btn);
         });
       });
-    })();
+    }
 
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', doMove);
+    } else {
+      doMove();
+    }
+  })();
   </script>
 </body>
 </html>
