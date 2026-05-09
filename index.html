@@ -20431,6 +20431,60 @@
   <div id="nav-bottom-left"></div>
   <div id="nav-bottom-right"></div>
 
+  <!-- Year Countdown: isolated script -->
+  <script>
+  (function() {
+    var openBtn   = document.getElementById('open-countdown-btn');
+    var overlay   = document.getElementById('countdown-overlay');
+    var closeBtn  = document.getElementById('countdown-close');
+    var numEl     = document.getElementById('countdown-number');
+    var labelEl   = document.getElementById('countdown-label');
+    var detailEl  = document.getElementById('countdown-detail');
+    var tabs      = document.querySelectorAll('.countdown-year-tab');
+    if (!openBtn || !overlay) return;
+
+    var selectedYear = 2027;
+
+    function updateCountdown(year) {
+      var now = new Date();
+      var target = new Date(year, 0, 1); // Jan 1 of year
+      var diffMs = target - now;
+      if (diffMs <= 0) {
+        numEl.textContent = '🎉';
+        labelEl.textContent = year + ' is here!';
+        detailEl.textContent = '';
+        return;
+      }
+      var days   = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      var hours  = Math.floor((diffMs % (1000*60*60*24)) / (1000*60*60));
+      var mins   = Math.floor((diffMs % (1000*60*60)) / (1000*60));
+      numEl.textContent = days.toLocaleString();
+      labelEl.textContent = 'days until January 1, ' + year;
+      detailEl.textContent = hours + ' hours, ' + mins + ' minutes remaining today';
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        selectedYear = parseInt(tab.dataset.year);
+        updateCountdown(selectedYear);
+      });
+    });
+
+    openBtn.addEventListener('click', function() {
+      updateCountdown(selectedYear);
+      overlay.classList.add('open');
+      // Close apps popup
+      var appsPop = document.getElementById('apps-popup');
+      if (appsPop) appsPop.classList.remove('open');
+    });
+
+    closeBtn.addEventListener('click', function() { overlay.classList.remove('open'); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('open'); });
+  })();
+  </script>
+
   <!-- Goal button: isolated script -->
   <script>
   (function() {
