@@ -353,6 +353,51 @@
     }
     #share-btn:hover { transform: scale(1.05); box-shadow: 0 5px 18px rgba(255,107,157,0.5); }
 
+    /* Year Countdown */
+    .countdown-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6); z-index: 9999;
+      align-items: center; justify-content: center;
+    }
+    .countdown-overlay.open { display: flex; }
+    .countdown-card {
+      background: #fff; border-radius: 28px;
+      padding: 32px 28px; width: 88%; max-width: 380px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      position: relative; text-align: center;
+    }
+    .countdown-card h2 { margin: 0 0 6px; font-size: 1.5rem; }
+    .countdown-sub { color: #888; margin: 0 0 20px; font-size: 0.9rem; }
+    .countdown-close {
+      position: absolute; top: 16px; right: 18px;
+      background: none; border: none; font-size: 1.6rem;
+      cursor: pointer; color: #bbb;
+    }
+    .countdown-year-tabs {
+      display: flex; gap: 10px; justify-content: center; margin-bottom: 28px;
+    }
+    .countdown-year-tab {
+      flex: 1; padding: 10px 0;
+      background: #f0f0f5; border: 2px solid transparent;
+      border-radius: 14px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; color: #555;
+    }
+    .countdown-year-tab.active {
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      color: #fff; border-color: transparent;
+    }
+    .countdown-display {
+      background: linear-gradient(135deg, #667eea, #f093fb);
+      border-radius: 20px; padding: 28px 20px; margin-bottom: 16px;
+      color: #fff;
+    }
+    .countdown-number {
+      font-size: 4rem; font-weight: 900; line-height: 1;
+      letter-spacing: -2px;
+    }
+    .countdown-label { font-size: 1rem; opacity: 0.85; margin-top: 6px; }
+    .countdown-detail { color: #888; font-size: 0.85rem; }
+
     /* Goal button */
     .goal-btn {
       position: fixed;
