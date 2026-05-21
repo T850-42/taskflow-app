@@ -43,14 +43,11 @@
       html.classList.add(cls);
       window.__device = cls;
 
-      // Show nav containers on all devices unless login screen is active
-      var isLoginScreen = document.body.classList.contains('tf-gate-mode') ||
-                          document.body.classList.contains('tf-signin-page-mode');
-      var showNav = !isLoginScreen;
+      // Always show nav containers on all devices
       try {
         ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
           var c = document.getElementById(id);
-          if (c) c.style.setProperty('display', showNav ? 'flex' : 'none', 'important');
+          if (c) c.style.setProperty('display', 'flex', 'important');
         });
       } catch(e) {}
     }
