@@ -6960,8 +6960,10 @@
       display: none;
       position: fixed;
       top: 60px;
-      left: 300px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 280px;
+      max-width: 90vw;
       background: rgba(30,30,32,0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
@@ -6972,7 +6974,7 @@
       flex-direction: column;
       gap: 12px;
     }
-    .apps-popup.open { display: flex; }
+    .apps-popup.open { display: flex; transform: translateX(-50%); }
     .apps-popup-header {
       display: flex;
       align-items: center;
