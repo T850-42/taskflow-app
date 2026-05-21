@@ -12050,14 +12050,10 @@
         useBgImage = true;
         bgToggle.classList.add('active');
         document.body.style.backgroundImage = `url(${savedBg})`;
-      } else {
-        // Apply default travel background
-        document.body.style.backgroundImage = `url(${defaultBg})`;
-        useBgImage = true;
-        bgToggle.classList.add('active');
       }
+      // No default background — keep clean
     } catch (e) {
-      document.body.style.backgroundImage = `url(${defaultBg})`;
+      // keep clean
     }
 
     // ── Owner Name (editable + resizable) ──
@@ -18443,8 +18439,6 @@
         const savedBg = localStorage.getItem('app_bg');
         if (savedBg) {
           document.body.style.backgroundImage = `url(${savedBg})`;
-        } else if (typeof defaultBg !== 'undefined') {
-          document.body.style.backgroundImage = `url(${defaultBg})`;
         }
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
