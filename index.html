@@ -1234,6 +1234,19 @@
       opacity: 1;
     }
 
+    .todo-item .flag-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 0.25;
+      transition: opacity 0.15s;
+      padding: 0 2px;
+    }
+    .todo-item .flag-btn:hover { opacity: 0.7; }
+    .todo-item .flag-btn.flagged { opacity: 1; }
+    .todo-item.flagged-task { border-left: 3px solid #ff9f0a; }
+
     .todo-item .delete-btn {
       background: rgba(0,0,0,0.04);
       border: 1px solid rgba(0,0,0,0.06);
@@ -10320,6 +10333,7 @@
       <button class="active" data-filter="all">All</button>
       <button data-filter="active">Active</button>
       <button data-filter="completed">Completed</button>
+      <button data-filter="flagged">🚩 Flagged</button>
     </div>
 
     <ul class="todo-list" id="todo-list"></ul>
@@ -12272,6 +12286,7 @@
       // Status filter
       if (filter === 'active') filtered = filtered.filter(t => !t.done);
       else if (filter === 'completed') filtered = filtered.filter(t => t.done);
+      else if (filter === 'flagged') filtered = filtered.filter(t => t.flagged);
 
       // Search filter
       if (searchQuery) {
@@ -12373,6 +12388,7 @@
                 ${renderAttachments(t.attachments)}
               </div>
               <div class="todo-item-actions">
+                <button class="flag-btn ${t.flagged ? 'flagged' : ''}" data-id="${t.id}" title="Flag">🚩</button>
                 ${hasImages ? `<button class="toggle-bg-btn ${t.showBg ? 'bg-on' : ''}" data-id="${t.id}" title="Toggle file background">${t.showBg ? 'BG On' : 'BG Off'}</button>` : ''}
                 <button class="delete-btn" title="Delete">&times;</button>
               </div>
@@ -12648,6 +12664,9 @@
             window.dispatchEvent(new CustomEvent('tt-checked', { detail: todo }));
           }
         }
+      } else if (e.target.classList.contains('flag-btn')) {
+        const todo = todos.find(t => t.id === id);
+        if (todo) todo.flagged = !todo.flagged;
       } else if (e.target.classList.contains('delete-btn')) {
         const deleted = todos.find(t => t.id === id);
         if (deleted) logHistory('deleted', deleted.text);
