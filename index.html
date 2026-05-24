@@ -1429,6 +1429,49 @@
     /* ── Duolingo Language Practice ── */
 
 
+    /* ── OmniFocus-style left nav ── */
+    .of-nav {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 90px;
+      background: #1a1a1f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0 16px;
+      gap: 4px;
+      z-index: 800;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+    .of-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 76px;
+      padding: 10px 6px;
+      border: none;
+      background: transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: #999;
+    }
+    .of-nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .of-nav-item.active { background: rgba(255,255,255,0.12); color: #fff; }
+    .of-nav-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #2c2c2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .of-nav-item span { font-size: 0.72rem; font-weight: 500; text-align: center; }
+
     .omnifocus-btn {
       position: fixed;
       padding: 10px 16px;
@@ -9957,6 +10000,52 @@
     <div class="sidebar-footer">
       <div class="sidebar-footer-text">Thales' Todo App &bull; v2.0</div>
     </div>
+  </div>
+
+  <!-- OmniFocus-style left nav -->
+  <div class="of-nav" id="of-nav">
+    <button class="of-nav-item" data-of="inbox">
+      <div class="of-nav-icon of-inbox">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="13" width="18" height="8" rx="2" stroke="#a0a0b0" stroke-width="1.8"/><path d="M3 13l3-8h12l3 8" stroke="#a0a0b0" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </div>
+      <span>Inbox</span>
+    </button>
+    <button class="of-nav-item" data-of="projects">
+      <div class="of-nav-icon of-projects">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="2.5" fill="#4fc3f7"/><circle cx="12" cy="6" r="2.5" fill="#4fc3f7"/><circle cx="6" cy="12" r="2.5" fill="#4fc3f7"/><circle cx="12" cy="12" r="2.5" fill="#4fc3f7"/><circle cx="18" cy="6" r="2.5" fill="#4fc3f7"/><circle cx="18" cy="12" r="2.5" fill="#4fc3f7"/></svg>
+      </div>
+      <span>Projects</span>
+    </button>
+    <button class="of-nav-item" data-of="tags">
+      <div class="of-nav-icon of-tags">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3 7a2 2 0 012-2h6l8 8-8 8-8-8V7z" fill="#bf5af2" opacity=".85"/><circle cx="8" cy="9" r="1.5" fill="#fff"/></svg>
+      </div>
+      <span>Tags</span>
+    </button>
+    <button class="of-nav-item" data-of="forecast">
+      <div class="of-nav-icon of-forecast">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="#ff6b35" stroke-width="1.8"/><path d="M3 9h18" stroke="#ff6b35" stroke-width="1.8"/><rect x="7" y="2" width="2" height="4" rx="1" fill="#ff6b35"/><rect x="15" y="2" width="2" height="4" rx="1" fill="#ff6b35"/><rect x="7" y="13" width="2" height="2" rx=".5" fill="#ff6b35"/><rect x="11" y="13" width="2" height="2" rx=".5" fill="#ff6b35"/><rect x="15" y="13" width="2" height="2" rx=".5" fill="#ff6b35"/></svg>
+      </div>
+      <span>Forecast</span>
+    </button>
+    <button class="of-nav-item" data-of="flagged">
+      <div class="of-nav-icon of-flagged">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 3v18M5 3h12l-3 5 3 5H5" fill="#f5a623" stroke="#f5a623" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+      <span>Flagged</span>
+    </button>
+    <button class="of-nav-item" data-of="nearby">
+      <div class="of-nav-icon of-nearby">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" fill="#30d158"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#30d158" stroke-width="1.8" fill="none"/></svg>
+      </div>
+      <span>Nearby</span>
+    </button>
+    <button class="of-nav-item" data-of="review">
+      <div class="of-nav-icon of-review">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" stroke="#5e6ef7" stroke-width="1.8" fill="none"/><path d="M12 7v5l3 3" stroke="#5e6ef7" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <span>Review</span>
+    </button>
   </div>
 
   <div class="container">
@@ -20207,6 +20296,32 @@
         }, 300);
       });
     });
+
+    /* ── OmniFocus Nav ── */
+    (function setupOfNav() {
+      const items = document.querySelectorAll('.of-nav-item');
+      const filterBtnsLocal = document.querySelectorAll('.filters button');
+      items.forEach(item => {
+        item.addEventListener('click', () => {
+          items.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const view = item.dataset.of;
+          if (view === 'inbox' || view === 'projects') {
+            filterBtnsLocal.forEach(b => { if (b.dataset.filter === 'all') { b.click(); } });
+          } else if (view === 'flagged') {
+            filterBtnsLocal.forEach(b => { if (b.dataset.filter === 'flagged') { b.click(); } });
+          } else if (view === 'forecast') {
+            filterBtnsLocal.forEach(b => { if (b.dataset.filter === 'active') { b.click(); } });
+          } else if (view === 'tags') {
+            filterBtnsLocal.forEach(b => { if (b.dataset.filter === 'all') { b.click(); } });
+          } else if (view === 'nearby' || view === 'review') {
+            filterBtnsLocal.forEach(b => { if (b.dataset.filter === 'all') { b.click(); } });
+          }
+        });
+      });
+      // Set inbox as default active
+      if (items[0]) items[0].classList.add('active');
+    })();
 
     /* ── Apps Launcher ── */
     (function setupApps() {
