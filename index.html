@@ -20562,10 +20562,14 @@
   // Flexbox handles spacing — no pixel calculations needed.
   (function moveToNavContainers() {
     var groups = {
-      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn'],
-      'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'routine-btn', 'history-btn', 'weather-btn'],
-      'nav-bottom-left': ['celebrate-btn', 'habits-book-btn', 'trip-btn', 'scanner-btn', 'dict-btn', 'tf-lang-btn', 'duo-btn', 'omnifocus-btn'],
-      'nav-bottom-right':['downloads-btn', 'reminders-btn', 'prog-btn', 'share-btn']
+      // 🧭 Navigation & Core
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn'],
+      // 👤 Account & Info
+      'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'history-btn', 'weather-btn'],
+      // 🌱 Personal & Learning
+      'nav-bottom-left': ['celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn'],
+      // 🛠️ Tools & Data
+      'nav-bottom-right':['reminders-btn', 'scanner-btn', 'dict-btn', 'prog-btn', 'downloads-btn', 'share-btn']
     };
 
     function doMove() {
