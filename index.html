@@ -9776,23 +9776,23 @@
   /* ── DESKTOP (≥ 1280px): 2 vertical columns ── */
   @media (min-width: 1280px) {
     #nav-top-left {
-      top: 50%; left: 12px;
-      transform: translateY(-50%);
+      top: 10px; left: 12px; bottom: 10px;
       flex-direction: column; align-items: flex-start;
       max-width: 160px;
+      overflow-y: auto; overflow-x: hidden;
+      scrollbar-width: none;
     }
+    #nav-top-left::-webkit-scrollbar { display: none; }
     #nav-top-right {
-      top: 50%; right: 12px;
-      transform: translateY(-50%);
+      top: 10px; right: 12px; bottom: 10px;
       flex-direction: column; align-items: flex-end;
       max-width: 160px;
+      overflow-y: auto; overflow-x: hidden;
+      scrollbar-width: none;
     }
-    #nav-bottom-left {
-      display: none !important;
-    }
-    #nav-bottom-right {
-      display: none !important;
-    }
+    #nav-top-right::-webkit-scrollbar { display: none; }
+    #nav-bottom-left { display: none !important; }
+    #nav-bottom-right { display: none !important; }
   }
 
   /* ── MOBILE / TABLET (< 1280px): full-width scrollable strips ── */
