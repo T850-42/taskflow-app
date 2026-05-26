@@ -9773,26 +9773,24 @@
   #nav-top-left > *, #nav-top-right > *,
   #nav-bottom-left > *, #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
 
-  /* ── DESKTOP (≥ 1280px): 2 vertical columns ── */
+  /* ── DESKTOP (≥ 1280px): 4-corner layout ── */
   @media (min-width: 1280px) {
     #nav-top-left {
-      top: 10px; left: 12px; bottom: 10px;
-      flex-direction: column; align-items: flex-start;
-      max-width: 160px;
-      overflow-y: auto; overflow-x: hidden;
-      scrollbar-width: none;
+      top: 14px; left: 76px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(50vw - 80px);
     }
-    #nav-top-left::-webkit-scrollbar { display: none; }
     #nav-top-right {
-      top: 10px; right: 12px; bottom: 10px;
-      flex-direction: column; align-items: flex-end;
-      max-width: 160px;
-      overflow-y: auto; overflow-x: hidden;
-      scrollbar-width: none;
+      top: 14px; right: 12px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(50vw - 80px);
     }
-    #nav-top-right::-webkit-scrollbar { display: none; }
-    #nav-bottom-left { display: none !important; }
-    #nav-bottom-right { display: none !important; }
+    #nav-bottom-left {
+      bottom: 16px; left: 16px;
+      flex-direction: row; flex-wrap: wrap; max-width: calc(55vw - 20px);
+    }
+    #nav-bottom-right {
+      bottom: 16px; right: 16px;
+      flex-direction: row-reverse; flex-wrap: wrap; max-width: calc(45vw - 20px);
+    }
   }
 
   /* ── MOBILE / TABLET (< 1280px): full-width scrollable strips ── */
@@ -20564,12 +20562,14 @@
   // Flexbox handles spacing — no pixel calculations needed.
   (function moveToNavContainers() {
     var groups = {
-      // 🧭 Left column: Navigation, Core, Personal, Learning
-      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn'],
-      // 👤 Right column: Account, Info, Tools, Data
-      'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'history-btn', 'weather-btn', 'reminders-btn', 'net-btn', 'vel-btn', 'scanner-btn', 'dict-btn', 'prog-btn', 'downloads-btn', 'share-btn'],
-      'nav-bottom-left': [],
-      'nav-bottom-right':[]
+      // 🧭 Navigation & Core
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn'],
+      // 👤 Account & Info
+      'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'history-btn', 'weather-btn'],
+      // 🌱 Personal & Learning
+      'nav-bottom-left': ['celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn'],
+      // 🛠️ Tools & Data
+      'nav-bottom-right':['reminders-btn', 'net-btn', 'vel-btn', 'scanner-btn', 'dict-btn', 'prog-btn', 'downloads-btn', 'share-btn']
     };
 
     function doMove() {
