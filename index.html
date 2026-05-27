@@ -9812,7 +9812,16 @@
       font-size: 0.82rem !important;
       padding: 8px 10px !important;
       border-radius: 10px !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
     }
+    /* Hide badges/status that overflow in sidebar */
+    #nav-top-left .prog-status,
+    #nav-top-right .prog-status,
+    #nav-top-left .duo-streak,
+    #nav-top-right .duo-streak,
+    #nav-top-left .vel-fps,
+    #nav-top-right .vel-fps { display: none !important; }
     #nav-bottom-left, #nav-bottom-right { display: none !important; }
   }
 
