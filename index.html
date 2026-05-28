@@ -11987,14 +11987,14 @@
   </button>
 
   <!-- Sun Planner button -->
-  <button class="sun-planner-btn" id="sun-planner-btn">☀️ Sun Planner</button>
+  <button class="sun-planner-btn" id="sun-planner-btn" onclick="document.getElementById('sun-planner-overlay').style.display='flex'">☀️ Sun Planner</button>
 
   <!-- Sun Planner panel -->
-  <div class="sun-planner-overlay" id="sun-planner-overlay">
+  <div class="sun-planner-overlay" id="sun-planner-overlay" onclick="if(event.target===this)this.style.display='none'">
     <div class="sun-planner-panel">
       <div class="sun-planner-header">
         <span>☀️ Summer Outing Planner</span>
-        <button class="sun-planner-close" id="sun-planner-close">&times;</button>
+        <button class="sun-planner-close" id="sun-planner-close" onclick="document.getElementById('sun-planner-overlay').style.display='none'">&times;</button>
       </div>
 
       <div class="sun-planner-best">
