@@ -12578,8 +12578,8 @@
       let tags = [];
       let list = null;
 
-      // Parse priority: !1 !2 !3 !4
-      const priMatch = text.match(/\s*!([1-4])\s*/);
+      // Parse priority: !1 !2 !3 !4 or p1 p2 p3 p4 or #p1 #p2 #p3 #p4
+      const priMatch = text.match(/\s*(?:!|#?[pP])([1-4])\b\s*/);
       if (priMatch) { priority = parseInt(priMatch[1]); text = text.replace(priMatch[0], ' '); }
 
       // Parse tags: #tag
