@@ -1443,6 +1443,13 @@
     .sun-planner-btn:hover { transform: translateY(-1px); opacity: 0.9; }
     .sun-planner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; }
     .sun-planner-overlay.open { display: flex; }
+    .sun-health-cards { display: flex; flex-direction: column; gap: 10px; }
+    .sun-health-row { display: flex; align-items: flex-start; gap: 12px; background: #2c2c2e; border-radius: 14px; padding: 12px 14px; }
+    .sun-health-row.danger { border-left: 4px solid #ff453a; }
+    .sun-health-icon { font-size: 1.6rem; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+    .sun-health-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .sun-health-time { font-size: 0.78rem; font-weight: 600; color: #f7971e; margin-bottom: 2px; }
+    .sun-health-desc { font-size: 0.72rem; color: #999; line-height: 1.4; }
     .sun-planner-panel { background: #1c1c1e; color: #fff; border-radius: 22px; padding: 26px 24px; width: 380px; max-width: 93vw; display: flex; flex-direction: column; gap: 16px; }
     .sun-planner-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; }
     .sun-planner-close { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; line-height: 1; }
@@ -11997,33 +12004,53 @@
         <button class="sun-planner-close" id="sun-planner-close" onclick="document.getElementById('sun-planner-overlay').style.display='none'">&times;</button>
       </div>
 
-      <div class="sun-planner-best">
-        <div class="sun-best-card go">
-          <div class="sun-best-icon">🌅</div>
-          <div class="sun-best-label">Best time to go out</div>
-          <div class="sun-best-time" id="sun-best-go">6:00 AM – 9:00 AM</div>
-          <div class="sun-best-reason">Cool & low UV before peak heat</div>
+      <div class="sun-health-cards">
+        <div class="sun-health-row">
+          <span class="sun-health-icon">🌅</span>
+          <div>
+            <div class="sun-health-title">Best for Exercise & Walking</div>
+            <div class="sun-health-time">6:00 AM – 9:00 AM</div>
+            <div class="sun-health-desc">Cool air, low UV, great for your heart & lungs</div>
+          </div>
         </div>
-        <div class="sun-best-card back">
-          <div class="sun-best-icon">🌆</div>
-          <div class="sun-best-label">Best time to come back</div>
-          <div class="sun-best-time" id="sun-best-back">6:00 PM – 8:00 PM</div>
-          <div class="sun-best-reason">Heat drops after sunset</div>
+        <div class="sun-health-row">
+          <span class="sun-health-icon">🌞</span>
+          <div>
+            <div class="sun-health-title">Best for Vitamin D</div>
+            <div class="sun-health-time">10:00 AM – 11:00 AM</div>
+            <div class="sun-health-desc">Get 15–20 min of sun — boosts mood & bones</div>
+          </div>
+        </div>
+        <div class="sun-health-row danger">
+          <span class="sun-health-icon">🔥</span>
+          <div>
+            <div class="sun-health-title">Avoid going out</div>
+            <div class="sun-health-time">11:00 AM – 4:00 PM</div>
+            <div class="sun-health-desc">Peak UV & heat — bad for skin and body</div>
+          </div>
+        </div>
+        <div class="sun-health-row">
+          <span class="sun-health-icon">🌆</span>
+          <div>
+            <div class="sun-health-title">Good for Evening Walk</div>
+            <div class="sun-health-time">5:30 PM – 7:30 PM</div>
+            <div class="sun-health-desc">Cooler, relaxing, good for digestion & sleep</div>
+          </div>
         </div>
       </div>
 
-      <div class="sun-planner-divider">or choose your own times</div>
+      <div class="sun-planner-divider">check your own plan</div>
 
       <div class="sun-planner-custom">
         <div class="sun-custom-row">
-          <label>🚶 I plan to go out at</label>
+          <label>🚶 Go out at</label>
           <input type="time" id="sun-custom-go" value="08:00">
         </div>
         <div class="sun-custom-row">
-          <label>🏠 I plan to come back at</label>
+          <label>🏠 Come back at</label>
           <input type="time" id="sun-custom-back" value="18:00">
         </div>
-        <button class="sun-check-btn" id="sun-check-btn">Check my plan ☀️</button>
+        <button class="sun-check-btn" id="sun-check-btn">Check if it's healthy ☀️</button>
         <div class="sun-advice" id="sun-advice"></div>
       </div>
     </div>
