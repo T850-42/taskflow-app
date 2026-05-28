@@ -12050,7 +12050,7 @@
           <label>🏠 Come back at</label>
           <input type="time" id="sun-custom-back" value="18:00">
         </div>
-        <button class="sun-check-btn" id="sun-check-btn">Check if it's healthy ☀️</button>
+        <button class="sun-check-btn" id="sun-check-btn" onclick="(function(){var goInput=document.getElementById('sun-custom-go'),backInput=document.getElementById('sun-custom-back'),adviceEl=document.getElementById('sun-advice');var goH=parseInt((goInput.value||'').split(':')[0]),backH=parseInt((backInput.value||'').split(':')[0]);var goInPeak=goH>=11&&goH<16,backInPeak=backH>=11&&backH<16;if(!goInPeak&&!backInPeak){adviceEl.className='sun-advice good';adviceEl.textContent='✅ Great plan! You avoid the hottest hours (11am–4pm). Stay hydrated and enjoy your outing! 💧';}else if(goInPeak&&backInPeak){adviceEl.className='sun-advice bad';adviceEl.textContent='🔥 Both times are during peak heat (11am–4pm). Try going earlier in the morning or after 4pm!';}else if(goInPeak){adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ You\'re going out during peak heat. Try leaving before 11am. Wear sunscreen and bring water! 🧴';}else{adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ You\'re coming back during peak heat. Find shade or stay cool between 11am–4pm. 🧢';}})()">Check if it's healthy ☀️</button>
         <div class="sun-advice" id="sun-advice"></div>
       </div>
     </div>
