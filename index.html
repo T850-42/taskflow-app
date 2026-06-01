@@ -259,53 +259,12 @@
 
 
 
-    /* ── Party Decorations ── */
-    .party-banner {
-      position: fixed; top: 0; left: 0; right: 0; height: 54px;
-      z-index: 9800; pointer-events: none; overflow: hidden;
-    }
-    .party-string {
-      position: absolute; top: 10px; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, #ff6bd6, #a78bfa, #60a5fa, #34d399, #fbbf24, #f87171, #ff6bd6);
-      background-size: 200% 100%;
-      animation: string-shimmer 4s linear infinite;
-    }
-    @keyframes string-shimmer { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
-    .party-flags { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-around; align-items: flex-start; padding: 0 10px; }
-    .party-flag {
-      width: 0; height: 0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-top: 26px solid #ff6bd6;
-      transform-origin: top center;
-      animation: flag-sway 2.5s ease-in-out infinite;
-      margin-top: 0px;
-    }
-    .party-flag:nth-child(2n)   { border-top-color: #a78bfa; animation-delay: 0.3s; }
-    .party-flag:nth-child(3n)   { border-top-color: #60a5fa; animation-delay: 0.6s; }
-    .party-flag:nth-child(4n)   { border-top-color: #34d399; animation-delay: 0.9s; }
-    .party-flag:nth-child(5n)   { border-top-color: #fbbf24; animation-delay: 1.2s; }
-    .party-flag:nth-child(6n)   { border-top-color: #f87171; animation-delay: 1.5s; }
-    @keyframes flag-sway {
-      0%, 100% { transform: rotate(-8deg); }
-      50%       { transform: rotate(8deg); }
-    }
-    .party-lights { position: absolute; top: 28px; left: 0; right: 0; display: flex; justify-content: space-around; padding: 0 24px; }
-    .party-light {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #fbbf24;
-      box-shadow: 0 0 8px 4px rgba(251,191,36,0.6);
-      animation: light-glow 1.8s ease-in-out infinite alternate;
-    }
-    .party-light:nth-child(2n)  { background: #ff6bd6; box-shadow: 0 0 8px 4px rgba(255,107,214,0.6); animation-delay: 0.4s; }
-    .party-light:nth-child(3n)  { background: #60a5fa; box-shadow: 0 0 8px 4px rgba(96,165,250,0.6); animation-delay: 0.8s; }
-    .party-light:nth-child(4n)  { background: #34d399; box-shadow: 0 0 8px 4px rgba(52,211,153,0.6); animation-delay: 1.2s; }
-    @keyframes light-glow {
-      0%   { opacity: 0.5; transform: scale(0.85); }
-      100% { opacity: 1;   transform: scale(1.15); }
-    }
-    body {
-      padding-top: 64px !important;
+    /* ── Firework Ball ── */
+    #firework-ball {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 110px; height: 110px; border-radius: 50%;
+      z-index: 9800; pointer-events: none;
+      filter: drop-shadow(0 0 18px rgba(255,200,50,0.5));
     }
 
     body {
@@ -10061,24 +10020,72 @@
   </style>
 </head>
 <body>
-  <!-- Party Decorations -->
-  <div class="party-banner">
-    <div class="party-string"></div>
-    <div class="party-flags">
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
-    </div>
-    <div class="party-lights">
-      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
-      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
-      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
-      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
-    </div>
-  </div>
+  <!-- Firework Ball -->
+  <canvas id="firework-ball" width="110" height="110"></canvas>
+  <script>
+  (function(){
+    var c = document.getElementById('firework-ball');
+    var ctx = c.getContext('2d');
+    var W = 110, R = 54, cx = W/2, cy = W/2;
+    var angle = 0;
+    var rays = 320;
+    function hsl(h){ return 'hsl('+h+',100%,70%)'; }
+    function draw(){
+      ctx.clearRect(0,0,W,W);
+      // clip to circle
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx,cy,R,0,Math.PI*2);
+      ctx.clip();
+      // dark background
+      var bg = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+      bg.addColorStop(0,'#1a0a00');
+      bg.addColorStop(1,'#0a0500');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0,0,W,W);
+      // rays
+      for(var i=0;i<rays;i++){
+        var a = (i/rays)*Math.PI*2 + angle;
+        var len = R * (0.55 + 0.45*Math.abs(Math.sin(i*0.4+angle*3)));
+        var hue = (i/rays*360 + angle*80) % 360;
+        var bright = 0.4 + 0.6*Math.abs(Math.sin(i*0.7+angle*5));
+        ctx.save();
+        ctx.globalAlpha = bright;
+        ctx.strokeStyle = hsl(hue);
+        ctx.lineWidth = 0.8;
+        ctx.shadowColor = hsl(hue);
+        ctx.shadowBlur = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a)*2, cy + Math.sin(a)*2);
+        ctx.lineTo(cx + Math.cos(a)*len, cy + Math.sin(a)*len);
+        ctx.stroke();
+        ctx.restore();
+      }
+      // bright center
+      var cg = ctx.createRadialGradient(cx,cy,0,cx,cy,12);
+      cg.addColorStop(0,'rgba(255,255,220,1)');
+      cg.addColorStop(0.4,'rgba(255,200,80,0.6)');
+      cg.addColorStop(1,'rgba(255,200,80,0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(cx,cy,12,0,Math.PI*2);
+      ctx.fill();
+      // glass sphere overlay
+      var gl = ctx.createRadialGradient(cx-18,cy-18,2,cx,cy,R);
+      gl.addColorStop(0,'rgba(255,255,255,0.35)');
+      gl.addColorStop(0.4,'rgba(255,255,255,0.05)');
+      gl.addColorStop(1,'rgba(0,0,0,0.4)');
+      ctx.fillStyle = gl;
+      ctx.beginPath();
+      ctx.arc(cx,cy,R,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+      angle += 0.008;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+  </script>
 
   <!-- Sidebar Toggle Button -->
   <button class="sidebar-toggle" id="sidebar-toggle" title="Open sidebar">
