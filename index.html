@@ -9769,8 +9769,17 @@
   }
 
   /* Sign-in btn — top area, left of settings */
+  html.device-mobile #nav-top-right {
+    top: 10px !important; right: 8px !important; left: auto !important; bottom: auto !important;
+    flex-direction: row !important; flex-wrap: wrap !important; justify-content: flex-end !important;
+    max-width: calc(100vw - 60px) !important;
+  }
+  html.device-mobile #nav-top-left {
+    top: 10px !important; left: 50px !important; right: auto !important; bottom: auto !important;
+    flex-direction: row !important; flex-wrap: wrap !important;
+    max-width: calc(100vw - 120px) !important;
+  }
   html.device-mobile .tf-signin-btn {
-    top: 14px !important; right: 110px !important;
     font-size: 0.78rem !important; padding: 7px 11px !important;
   }
 
@@ -9785,8 +9794,16 @@
   /* Tablet: all buttons visible */
 
   /* Keep settings and sign-in accessible on tablet */
-  html.device-tablet .settings-btn { right: 12px !important; top: 14px !important; }
-  html.device-tablet .tf-signin-btn { right: 120px !important; top: 14px !important; }
+  html.device-tablet #nav-top-right {
+    top: 10px !important; right: 8px !important; left: auto !important; bottom: auto !important;
+    flex-direction: row !important; flex-wrap: wrap !important; justify-content: flex-end !important;
+    max-width: calc(100vw - 80px) !important;
+  }
+  html.device-tablet #nav-top-left {
+    top: 10px !important; left: 60px !important; right: auto !important; bottom: auto !important;
+    flex-direction: row !important; flex-wrap: wrap !important;
+    max-width: calc(50vw) !important;
+  }
 
   /* ── DESKTOP ─────────────────────────────────────────────── */
   /* No overrides needed — original layout is desktop-first */
@@ -9821,7 +9838,11 @@
     align-items: center;
   }
   #nav-top-left > *, #nav-top-right > *,
-  #nav-bottom-left > *, #nav-bottom-right > * { pointer-events: auto; flex-shrink: 0; }
+  #nav-bottom-left > *, #nav-bottom-right > * {
+    pointer-events: auto; flex-shrink: 0;
+    position: relative !important;
+    top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+  }
 
   /* ── DESKTOP (≥ 1280px): vertical sidebars ── */
   @media (min-width: 1280px) {
@@ -10007,6 +10028,10 @@
       <div class="sidebar-field">
         <div class="sidebar-field-label">Role</div>
         <input type="text" class="sidebar-field-input" id="sidebar-role" placeholder="e.g. Student, Developer">
+      </div>
+      <div class="sidebar-field">
+        <div class="sidebar-field-label">🎂 Birthday</div>
+        <input type="date" class="sidebar-field-input" id="sidebar-birthday" style="color:#333;background:#fff;">
       </div>
       <button class="sidebar-save-btn" id="sidebar-save">Save Profile</button>
       <div class="sidebar-save-status" id="sidebar-save-status">&#10003; Profile Saved!</div>
@@ -11291,6 +11316,16 @@
               <div class="settings-profile-sub">Todo App Owner</div>
             </div>
           </div>
+          <!-- Birthday -->
+          <div class="settings-row" style="margin-top:8px;">
+            <div class="settings-row-icon" style="background:#ff375f;">🎂</div>
+            <div class="settings-row-content">
+              <div class="settings-row-label">Birthday</div>
+              <div class="settings-row-sublabel">Shown on calendar — confetti on the day!</div>
+            </div>
+            <input type="date" id="settings-birthday" style="border:1px solid #ddd;border-radius:8px;padding:4px 8px;font-size:0.85rem;color:#333;background:#fff;cursor:pointer;max-width:140px;">
+          </div>
+
           <div class="settings-stats" id="settings-stats">
             <div class="settings-stat-card">
               <div class="settings-stat-num" id="stat-total">0</div>
@@ -17114,6 +17149,15 @@
       const today = new Date();
       const MAX_TASKS_SHOWN = 3;
 
+      // Birthday: check month/day match (year-agnostic)
+      const bdayStr = loadSettings().birthday || '';
+      let bdayMonth = -1, bdayDay = -1;
+      if (bdayStr) {
+        const bdayParts = bdayStr.split('-');
+        bdayMonth = parseInt(bdayParts[1], 10) - 1;
+        bdayDay = parseInt(bdayParts[2], 10);
+      }
+
       let html = '';
       for (let i = 0; i < firstDay; i++) {
         html += '<div class="cal-day empty"></div>';
@@ -17123,13 +17167,17 @@
         const dayTodos = getTodosByDate(dateStr);
         const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
         const isSelected = calSelected && calSelected.day === d && calSelected.month === month && calSelected.year === year;
+        const isBirthday = bdayDay === d && bdayMonth === month;
         let cls = 'cal-day';
         if (isToday) cls += ' today';
         if (isSelected) cls += ' selected';
 
         html += `<div class="${cls}" data-day="${d}" data-date="${dateStr}">`;
-        html += `<div class="cal-day-num">${d}</div>`;
+        html += `<div class="cal-day-num">${d}${isBirthday ? ' <span title="Birthday" style="font-size:0.85em;">🎂</span>' : ''}</div>`;
         html += '<div class="cal-day-tasks">';
+        if (isBirthday) {
+          html += `<div class="cal-day-task" style="background:linear-gradient(90deg,#ff375f22,#ff9ff322);color:#ff375f;font-weight:600;border-left:2px solid #ff375f;" title="🎂 Birthday!">🎂 Birthday!</div>`;
+        }
         const shown = dayTodos.slice(0, MAX_TASKS_SHOWN);
         shown.forEach(t => {
           const dCls = t.done ? ' done-task' : '';
@@ -18317,6 +18365,9 @@
       const kb = (totalSize / 1024).toFixed(1);
       document.getElementById('settings-storage').textContent = totalSize > 1048576 ? (totalSize / 1048576).toFixed(1) + ' MB' : kb + ' KB';
 
+      // Birthday
+      document.getElementById('settings-birthday').value = appSettings.birthday || '';
+
       // Sync toggles
       document.getElementById('settings-dark-mode').checked = !!appSettings.darkMode;
       document.getElementById('settings-show-bg').checked = appSettings.showBg !== false;
@@ -18451,6 +18502,13 @@
     document.getElementById('settings-sounds').addEventListener('change', function() {
       appSettings.sounds = this.checked;
       saveSettings(appSettings);
+    });
+
+    // Birthday
+    document.getElementById('settings-birthday').addEventListener('change', function() {
+      appSettings.birthday = this.value;
+      saveSettings(appSettings);
+      renderCalendar();
     });
 
     // Play sound helper
@@ -19112,6 +19170,7 @@
     // ── World Map (Leaflet) ──
     (function setupMap() {
       const btn = document.getElementById('map-btn');
+      if (!btn) return;
       const overlay = document.getElementById('map-overlay');
       const closeBtn = document.getElementById('map-close');
       const mapEl = document.getElementById('world-map');
@@ -20257,6 +20316,7 @@
       document.getElementById('sidebar-email').value = profile.email || '';
       document.getElementById('sidebar-bio').value = profile.bio || '';
       document.getElementById('sidebar-role').value = profile.role || '';
+      document.getElementById('sidebar-birthday').value = profile.birthday || appSettings.birthday || '';
       // Avatar
       const avatarEl = document.getElementById('sidebar-avatar');
       const letterEl = document.getElementById('sidebar-avatar-letter');
@@ -20277,13 +20337,21 @@
 
     // Save profile
     document.getElementById('sidebar-save').addEventListener('click', () => {
+      const bdVal = document.getElementById('sidebar-birthday').value;
       const profile = {
         name: document.getElementById('sidebar-name').value.trim(),
         email: document.getElementById('sidebar-email').value.trim(),
         bio: document.getElementById('sidebar-bio').value.trim(),
-        role: document.getElementById('sidebar-role').value.trim()
+        role: document.getElementById('sidebar-role').value.trim(),
+        birthday: bdVal
       };
       localStorage.setItem('sidebar_profile', JSON.stringify(profile));
+      // Sync birthday into appSettings so calendar picks it up
+      if (bdVal !== undefined) {
+        appSettings.birthday = bdVal;
+        saveSettings(appSettings);
+        renderCalendar();
+      }
       // Sync name with app owner name
       if (profile.name) {
         const ownerInput = document.getElementById('owner-name');
@@ -20585,6 +20653,28 @@
     if (acAddBtn) acAddBtn.addEventListener('click', () => acTracker.init());
     if (acLootBtn) acLootBtn.addEventListener('click', () => acTracker.lootXP(1500));
 
+    // ── Birthday auto-celebrate ──
+    (function checkBirthdayCelebration() {
+      const bdStr = appSettings.birthday || '';
+      if (!bdStr) return;
+      const parts = bdStr.split('-');
+      const bdMonth = parseInt(parts[1], 10) - 1;
+      const bdDay   = parseInt(parts[2], 10);
+      const now = new Date();
+      if (now.getMonth() !== bdMonth || now.getDate() !== bdDay) return;
+      // It's your birthday! Fire 5 confetti bursts with 700ms spacing.
+      let burst = 0;
+      function fireBurst() {
+        if (burst >= 5) return;
+        burst++;
+        confetti({ particleCount: 120, angle: 60,  spread: 70, origin: { x: 0,   y: 0.65 }, colors: ['#ff375f','#ffd60a','#30d158','#007aff','#bf5af2'] });
+        confetti({ particleCount: 120, angle: 120, spread: 70, origin: { x: 1,   y: 0.65 }, colors: ['#ff375f','#ffd60a','#30d158','#007aff','#bf5af2'] });
+        confetti({ particleCount: 60,              spread: 90, origin: { x: 0.5, y: 0.5  }, colors: ['#ff375f','#ffd60a','#30d158','#007aff','#bf5af2'] });
+        if (burst < 5) setTimeout(fireBurst, 700);
+      }
+      setTimeout(fireBurst, 800); // slight delay so page finishes loading
+    })();
+
   </script>
 
   <!-- ── FLEX NAV CONTAINERS ── buttons are moved here by JS below -->
@@ -20772,6 +20862,175 @@
     } else {
       doMove();
     }
+  })();
+  </script>
+
+  <!-- ── Eye Break Reminder ── -->
+  <style>
+    .eye-break-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 30, 60, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      animation: eyeBreakFadeIn 0.5s ease-out;
+    }
+    .eye-break-overlay.open { display: flex; }
+    @keyframes eyeBreakFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .eye-break-card {
+      background: linear-gradient(135deg, #0f3460, #16213e);
+      border: 1px solid rgba(100, 180, 255, 0.25);
+      border-radius: 28px;
+      padding: 48px 52px 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(100,180,255,0.08);
+    }
+    .eye-break-emoji {
+      font-size: 3.8rem;
+      margin-bottom: 16px;
+      display: block;
+      animation: eyePulse 2.5s ease-in-out infinite;
+    }
+    @keyframes eyePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+    .eye-break-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #e0f0ff;
+      margin: 0 0 10px;
+      letter-spacing: -0.3px;
+    }
+    .eye-break-subtitle {
+      font-size: 1rem;
+      color: rgba(180, 215, 255, 0.75);
+      margin: 0 0 32px;
+      line-height: 1.5;
+    }
+    .eye-break-ring {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 28px;
+    }
+    .eye-break-ring svg {
+      transform: rotate(-90deg);
+      width: 110px;
+      height: 110px;
+    }
+    .eye-break-ring svg circle {
+      fill: none;
+      stroke-width: 7;
+    }
+    .eye-break-ring .ring-bg   { stroke: rgba(100, 180, 255, 0.12); }
+    .eye-break-ring .ring-prog { stroke: #4db8ff; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+    .eye-break-countdown {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #e0f0ff;
+    }
+    .eye-break-btn {
+      background: rgba(100, 180, 255, 0.15);
+      border: 1px solid rgba(100, 180, 255, 0.3);
+      color: #90ceff;
+      border-radius: 50px;
+      padding: 11px 28px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 4px;
+    }
+    .eye-break-btn:hover { background: rgba(100, 180, 255, 0.28); transform: scale(1.04); }
+  </style>
+
+  <div class="eye-break-overlay" id="eye-break-overlay">
+    <div class="eye-break-card">
+      <span class="eye-break-emoji">👁️</span>
+      <h2 class="eye-break-title">Time to relax your eyes</h2>
+      <p class="eye-break-subtitle">Look away from the screen and focus on something far away for 5 minutes.</p>
+      <div class="eye-break-ring">
+        <svg viewBox="0 0 110 110">
+          <circle class="ring-bg"   cx="55" cy="55" r="48"/>
+          <circle class="ring-prog" id="eye-break-prog" cx="55" cy="55" r="48"
+                  stroke-dasharray="301.6" stroke-dashoffset="0"/>
+        </svg>
+        <div class="eye-break-countdown" id="eye-break-countdown">5:00</div>
+      </div>
+      <button class="eye-break-btn" id="eye-break-dismiss">I'm back ✓</button>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    var BREAK_INTERVAL_MS = 20 * 60 * 1000; // remind every 20 min
+    var BREAK_DURATION_S  = 5 * 60;          // 5 minute countdown
+    var CIRCUMFERENCE     = 2 * Math.PI * 48; // ~301.6
+
+    var overlay    = document.getElementById('eye-break-overlay');
+    var countdownEl = document.getElementById('eye-break-countdown');
+    var progressEl  = document.getElementById('eye-break-prog');
+    var dismissBtn  = document.getElementById('eye-break-dismiss');
+
+    var countdownTimer = null;
+    var remaining = BREAK_DURATION_S;
+
+    function fmt(s) {
+      var m = Math.floor(s / 60);
+      var sec = s % 60;
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    function startBreak() {
+      remaining = BREAK_DURATION_S;
+      overlay.classList.add('open');
+      progressEl.style.strokeDashoffset = '0';
+      countdownEl.textContent = fmt(remaining);
+
+      clearInterval(countdownTimer);
+      countdownTimer = setInterval(function() {
+        remaining--;
+        countdownEl.textContent = fmt(remaining);
+        var offset = CIRCUMFERENCE * (1 - remaining / BREAK_DURATION_S);
+        progressEl.style.strokeDashoffset = offset;
+        if (remaining <= 0) {
+          clearInterval(countdownTimer);
+          overlay.classList.remove('open');
+        }
+      }, 1000);
+
+      // Notify if permission granted
+      if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        new Notification('👁️ Eye Break', { body: 'Look away from the screen for 5 minutes.' });
+      }
+    }
+
+    dismissBtn.addEventListener('click', function() {
+      clearInterval(countdownTimer);
+      overlay.classList.remove('open');
+    });
+
+    // Kick off the 20-min reminder loop
+    setInterval(startBreak, BREAK_INTERVAL_MS);
+
+    // Expose so it can be triggered manually (e.g. from sidebar or console)
+    window.triggerEyeBreak = startBreak;
   })();
   </script>
 </body>
