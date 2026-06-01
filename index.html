@@ -1439,8 +1439,34 @@
     /* ── Duolingo Language Practice ── */
 
 
+    .birthday-btn { padding: 10px 16px; background: linear-gradient(135deg, #ff375f, #ff6b9d); color: #fff; border: none; border-radius: 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer; z-index: 900; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(255,55,95,0.4); transition: all 0.2s; }
+    .birthday-btn:hover { transform: translateY(-1px); opacity: 0.9; }
     .sun-planner-btn { padding: 10px 16px; background: linear-gradient(135deg, #f7971e, #ffd200); color: #1a1a1a; border: none; border-radius: 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer; z-index: 900; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(247,151,30,0.4); transition: all 0.2s; }
     .sun-planner-btn:hover { transform: translateY(-1px); opacity: 0.9; }
+    /* ── Birthday Tracker ── */
+    .bday-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; }
+    .bday-panel { background: #1c1c1e; color: #fff; border-radius: 22px; padding: 24px; width: 380px; max-width: 94vw; max-height: 85vh; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+    .bday-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; }
+    .bday-close { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; }
+    .bday-add-row { display: flex; gap: 8px; }
+    .bday-name-input { flex: 1; background: #2c2c2e; border: none; border-radius: 10px; color: #fff; padding: 10px 12px; font-size: 0.9rem; outline: none; }
+    .bday-date-input { background: #2c2c2e; border: none; border-radius: 10px; color: #fff; padding: 10px 8px; font-size: 0.85rem; outline: none; cursor: pointer; }
+    .bday-add-btn { background: linear-gradient(135deg, #ff375f, #ff6b9d); border: none; border-radius: 10px; color: #fff; padding: 10px 14px; font-size: 1rem; cursor: pointer; font-weight: 700; }
+    .bday-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .bday-list::-webkit-scrollbar { display: none; }
+    .bday-item { display: flex; align-items: center; gap: 10px; background: #2c2c2e; border-radius: 12px; padding: 11px 14px; }
+    .bday-item.soon { border-left: 3px solid #ff375f; }
+    .bday-item-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .bday-item-info { flex: 1; }
+    .bday-item-name { font-size: 0.9rem; font-weight: 700; color: #fff; }
+    .bday-item-date { font-size: 0.75rem; color: #888; margin-top: 2px; }
+    .bday-item-days { font-size: 0.78rem; font-weight: 700; color: #ff375f; white-space: nowrap; }
+    .bday-item-days.today { color: #ffd60a; }
+    .bday-item-days.far { color: #555; }
+    .bday-delete { background: none; border: none; color: #555; font-size: 1rem; cursor: pointer; padding: 4px; }
+    .bday-delete:hover { color: #ff453a; }
+    .bday-empty { text-align: center; color: #555; font-size: 0.9rem; padding: 20px 0; }
+
     .sun-planner-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; }
     .sun-planner-overlay.open { display: flex; }
     .sun-health-cards { display: flex; flex-direction: column; gap: 10px; }
@@ -12028,6 +12054,25 @@
     🟣 OmniFocus
   </button>
 
+  <!-- Birthday Tracker button -->
+  <button class="birthday-btn" id="birthday-btn" onclick="window.openBdayPanel()">🎂 Birthdays</button>
+
+  <!-- Birthday Tracker panel -->
+  <div class="bday-overlay" id="bday-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div class="bday-panel">
+      <div class="bday-header">
+        <span>🎂 Birthdays</span>
+        <button class="bday-close" onclick="document.getElementById('bday-overlay').style.display='none'">&times;</button>
+      </div>
+      <div class="bday-add-row">
+        <input class="bday-name-input" id="bday-name-input" placeholder="Person's name" maxlength="40">
+        <input class="bday-date-input" id="bday-date-input" type="date">
+        <button class="bday-add-btn" onclick="window.addBirthday()">+</button>
+      </div>
+      <div class="bday-list" id="bday-list"></div>
+    </div>
+  </div>
+
   <!-- Sun Planner button -->
   <button class="sun-planner-btn" id="sun-planner-btn" onclick="document.getElementById('sun-planner-overlay').style.display='flex'">☀️ Sun Planner</button>
 
@@ -20420,6 +20465,91 @@
     });
 
     /* ── Sun Planner ── */
+    /* ── Birthday Tracker ── */
+    (function setupBirthdayTracker() {
+      function loadBdays() { try { return JSON.parse(localStorage.getItem('bdays_v1') || '[]'); } catch(e) { return []; } }
+      function saveBdays(arr) { localStorage.setItem('bdays_v1', JSON.stringify(arr)); }
+      function daysUntilBirthday(dateStr) {
+        var parts = dateStr.split('-');
+        var month = parseInt(parts[1], 10) - 1;
+        var day = parseInt(parts[2], 10);
+        var today = new Date(); today.setHours(0,0,0,0);
+        var next = new Date(today.getFullYear(), month, day);
+        if (next < today) next.setFullYear(today.getFullYear() + 1);
+        return Math.round((next - today) / 86400000);
+      }
+      function formatBdayDate(dateStr) {
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var parts = dateStr.split('-');
+        return months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10) + (parts[0] && parts[0] !== '0000' ? ', ' + parts[0] : '');
+      }
+      function renderBdays() {
+        var list = document.getElementById('bday-list');
+        if (!list) return;
+        var bdays = loadBdays();
+        if (bdays.length === 0) { list.innerHTML = '<div class="bday-empty">No birthdays added yet.<br>Add someone above! 🎉</div>'; return; }
+        bdays.sort(function(a,b) { return daysUntilBirthday(a.date) - daysUntilBirthday(b.date); });
+        list.innerHTML = bdays.map(function(b, i) {
+          var days = daysUntilBirthday(b.date);
+          var daysLabel = days === 0 ? '🎉 Today!' : days === 1 ? 'Tomorrow!' : 'In ' + days + ' days';
+          var daysClass = days === 0 ? 'today' : days <= 7 ? '' : 'far';
+          var soonClass = days <= 7 ? 'soon' : '';
+          var icon = days === 0 ? '🥳' : days <= 7 ? '🎂' : '👤';
+          return '<div class="bday-item ' + soonClass + '">' +
+            '<span class="bday-item-icon">' + icon + '</span>' +
+            '<div class="bday-item-info">' +
+              '<div class="bday-item-name">' + b.name + '</div>' +
+              '<div class="bday-item-date">' + formatBdayDate(b.date) + '</div>' +
+            '</div>' +
+            '<span class="bday-item-days ' + daysClass + '">' + daysLabel + '</span>' +
+            '<button class="bday-delete" onclick="window.deleteBirthday(' + i + ')">🗑</button>' +
+          '</div>';
+        }).join('');
+      }
+      window.openBdayPanel = function() {
+        document.getElementById('bday-overlay').style.display = 'flex';
+        renderBdays();
+      };
+      window.addBirthday = function() {
+        var name = (document.getElementById('bday-name-input').value || '').trim();
+        var date = document.getElementById('bday-date-input').value;
+        if (!name || !date) { alert('Please enter a name and date.'); return; }
+        var bdays = loadBdays();
+        bdays.push({ name: name, date: date });
+        saveBdays(bdays);
+        document.getElementById('bday-name-input').value = '';
+        document.getElementById('bday-date-input').value = '';
+        renderBdays();
+      };
+      window.deleteBirthday = function(idx) {
+        var bdays = loadBdays();
+        bdays.splice(idx, 1);
+        saveBdays(bdays);
+        renderBdays();
+      };
+
+      // Auto-celebrate today's birthdays (once per day)
+      (function checkTodayBirthdays() {
+        var todayKey = 'bday_celebrated_' + new Date().toISOString().slice(0, 10);
+        if (localStorage.getItem(todayKey)) return;
+        var bdays = loadBdays();
+        var todayBirthdays = bdays.filter(function(b) { return daysUntilBirthday(b.date) === 0; });
+        if (todayBirthdays.length === 0) return;
+        localStorage.setItem(todayKey, '1');
+        setTimeout(function() {
+          var names = todayBirthdays.map(function(b) { return b.name; }).join(' & ');
+          if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+          }
+          var toast = document.createElement('div');
+          toast.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff375f,#ff6b9d);color:#fff;padding:14px 24px;border-radius:20px;font-size:1rem;font-weight:700;z-index:99999;box-shadow:0 6px 24px rgba(255,55,95,0.5);text-align:center;max-width:90vw;';
+          toast.textContent = '🎉 Happy Birthday, ' + names + '! 🎂';
+          document.body.appendChild(toast);
+          setTimeout(function() { toast.style.opacity='0'; toast.style.transition='opacity 0.5s'; setTimeout(function(){ toast.remove(); }, 600); }, 5000);
+        }, 1500);
+      })();
+    })();
+
     (function setupSunPlanner() {
       const btn = document.getElementById('sun-planner-btn');
       const overlay = document.getElementById('sun-planner-overlay');
@@ -20834,7 +20964,7 @@
   (function moveToNavContainers() {
     var groups = {
       // Left sidebar: Navigation + Personal
-      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn', 'sun-planner-btn'],
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn', 'sun-planner-btn', 'birthday-btn'],
       // Right sidebar: Account + Tools
       'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'history-btn', 'weather-btn', 'reminders-btn', 'net-btn', 'vel-btn', 'scanner-btn', 'dict-btn', 'prog-btn', 'downloads-btn', 'share-btn'],
       'nav-bottom-left': [],
