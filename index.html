@@ -259,6 +259,55 @@
 
 
 
+    /* ── Party Decorations ── */
+    .party-banner {
+      position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      z-index: 9800; pointer-events: none; overflow: hidden;
+    }
+    .party-string {
+      position: absolute; top: 10px; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #ff6bd6, #a78bfa, #60a5fa, #34d399, #fbbf24, #f87171, #ff6bd6);
+      background-size: 200% 100%;
+      animation: string-shimmer 4s linear infinite;
+    }
+    @keyframes string-shimmer { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+    .party-flags { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-around; align-items: flex-start; padding: 0 10px; }
+    .party-flag {
+      width: 0; height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 26px solid #ff6bd6;
+      transform-origin: top center;
+      animation: flag-sway 2.5s ease-in-out infinite;
+      margin-top: 0px;
+    }
+    .party-flag:nth-child(2n)   { border-top-color: #a78bfa; animation-delay: 0.3s; }
+    .party-flag:nth-child(3n)   { border-top-color: #60a5fa; animation-delay: 0.6s; }
+    .party-flag:nth-child(4n)   { border-top-color: #34d399; animation-delay: 0.9s; }
+    .party-flag:nth-child(5n)   { border-top-color: #fbbf24; animation-delay: 1.2s; }
+    .party-flag:nth-child(6n)   { border-top-color: #f87171; animation-delay: 1.5s; }
+    @keyframes flag-sway {
+      0%, 100% { transform: rotate(-8deg); }
+      50%       { transform: rotate(8deg); }
+    }
+    .party-lights { position: absolute; top: 28px; left: 0; right: 0; display: flex; justify-content: space-around; padding: 0 24px; }
+    .party-light {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #fbbf24;
+      box-shadow: 0 0 8px 4px rgba(251,191,36,0.6);
+      animation: light-glow 1.8s ease-in-out infinite alternate;
+    }
+    .party-light:nth-child(2n)  { background: #ff6bd6; box-shadow: 0 0 8px 4px rgba(255,107,214,0.6); animation-delay: 0.4s; }
+    .party-light:nth-child(3n)  { background: #60a5fa; box-shadow: 0 0 8px 4px rgba(96,165,250,0.6); animation-delay: 0.8s; }
+    .party-light:nth-child(4n)  { background: #34d399; box-shadow: 0 0 8px 4px rgba(52,211,153,0.6); animation-delay: 1.2s; }
+    @keyframes light-glow {
+      0%   { opacity: 0.5; transform: scale(0.85); }
+      100% { opacity: 1;   transform: scale(1.15); }
+    }
+    body {
+      padding-top: 64px !important;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f5f5f5;
@@ -10012,6 +10061,25 @@
   </style>
 </head>
 <body>
+  <!-- Party Decorations -->
+  <div class="party-banner">
+    <div class="party-string"></div>
+    <div class="party-flags">
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+      <div class="party-flag"></div><div class="party-flag"></div><div class="party-flag"></div>
+    </div>
+    <div class="party-lights">
+      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
+      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
+      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
+      <div class="party-light"></div><div class="party-light"></div><div class="party-light"></div>
+    </div>
+  </div>
+
   <!-- Sidebar Toggle Button -->
   <button class="sidebar-toggle" id="sidebar-toggle" title="Open sidebar">
     <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
