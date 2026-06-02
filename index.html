@@ -9775,6 +9775,13 @@
     padding: 13px 22px !important;
     font-size: 0.95rem !important;
   }
+  #add-btn:disabled {
+    background: #ccc !important;
+    cursor: not-allowed !important;
+    opacity: 0.55 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
   html.device-mobile .grammar-dot { display: none !important; }
 
   /* Task list */
@@ -10136,7 +10143,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11h-2z"/></svg>
         <span class="mic-label">Speak</span>
       </button>
-      <button id="add-btn">Add</button>
+      <button id="add-btn" disabled>Add</button>
     </div>
     <!-- Mic toast -->
     <div class="mic-toast" id="mic-toast"><span class="mic-dot"></span><span id="mic-toast-text">Listening…</span></div>
@@ -12365,6 +12372,16 @@
     const dateInput = document.getElementById('todo-date-input');
     const dateClearBtn = document.getElementById('date-clear-btn');
 
+    // Enable Add button only when date is present
+    function updateAddBtn() {
+      const hasDate = dateInput.value || /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)|\d{1,2}\/\d{1,2})\b/i.test(input.value);
+      addBtn.disabled = !hasDate;
+    }
+    dateInput.addEventListener('change', updateAddBtn);
+    dateInput.addEventListener('input', updateAddBtn);
+    input.addEventListener('input', updateAddBtn);
+    updateAddBtn();
+
     /* ── Natural Language Parser ── */
     function parseNaturalLanguage(rawText) {
       let text = rawText;
@@ -12426,24 +12443,6 @@
       const text = parsed.text || rawText;
       const dueDateVal = overrideDate || parsed.dueDate || dateInput.value || null;
 
-      // Date is required — block if missing
-      if (!overrideText && !dueDateVal) {
-        dateInput.style.outline = '2.5px solid #ff3b30';
-        dateInput.style.background = '#fff0f0';
-        dateInput.placeholder = '📅 Date required!';
-        dateInput.animate([
-          {transform:'translateX(-6px)'},{transform:'translateX(6px)'},
-          {transform:'translateX(-4px)'},{transform:'translateX(4px)'},
-          {transform:'translateX(0)'}
-        ], {duration:350, easing:'ease-out'});
-        dateInput.focus();
-        setTimeout(() => {
-          dateInput.style.outline = '';
-          dateInput.style.background = '';
-          dateInput.placeholder = '';
-        }, 2000);
-        return;
-      }
       const tagsInput = document.getElementById('tt-tags-input');
       const notesInput = document.getElementById('tt-notes-input');
       const listInput = document.getElementById('tt-list-input');
@@ -12474,6 +12473,7 @@
       if (!overrideText) {
         input.value = '';
         dateInput.value = '';
+        updateAddBtn();
         tagsInput.value = '';
         notesInput.value = '';
         recurInput.value = '';
@@ -12572,7 +12572,7 @@
         }
       });
     })();
-    dateClearBtn.addEventListener('click', () => { dateInput.value = ''; });
+    dateClearBtn.addEventListener('click', () => { dateInput.value = ''; updateAddBtn(); });
 
     list.addEventListener('click', e => {
       // Handle attachment clicks
