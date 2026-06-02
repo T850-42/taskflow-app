@@ -9775,13 +9775,6 @@
     padding: 13px 22px !important;
     font-size: 0.95rem !important;
   }
-  #add-btn:disabled {
-    background: #ccc !important;
-    cursor: not-allowed !important;
-    opacity: 0.55 !important;
-    transform: none !important;
-    box-shadow: none !important;
-  }
   html.device-mobile .grammar-dot { display: none !important; }
 
   /* Task list */
@@ -10143,7 +10136,7 @@
         <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11h-2z"/></svg>
         <span class="mic-label">Speak</span>
       </button>
-      <button id="add-btn" disabled>Add</button>
+      <button id="add-btn">Add</button>
     </div>
     <!-- Mic toast -->
     <div class="mic-toast" id="mic-toast"><span class="mic-dot"></span><span id="mic-toast-text">Listening…</span></div>
@@ -10162,6 +10155,7 @@
       <label>&#128197; Due:</label>
       <input type="date" id="todo-date-input">
       <button class="date-clear-btn" id="date-clear-btn">Clear</button>
+      <span id="date-required-msg" style="display:none;color:#ff3b30;font-size:0.82rem;font-weight:700;margin-left:6px;">📅 Pick a date first!</span>
     </div>
 
     <div class="options-row">
@@ -12372,15 +12366,30 @@
     const dateInput = document.getElementById('todo-date-input');
     const dateClearBtn = document.getElementById('date-clear-btn');
 
-    // Enable Add button only when date is present — poll every 200ms for reliability
-    function updateAddBtn() {
-      const hasDatePicker = !!dateInput.value;
-      const hasDateText = /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week)\b/i.test(input.value);
-      addBtn.disabled = !(hasDatePicker || hasDateText);
+    // Date is required — show error if missing when Add is clicked
+    function checkDateRequired() {
+      const parsed = parseNaturalLanguage(input.value);
+      const hasDate = !!dateInput.value || !!parsed.dueDate;
+      if (!hasDate) {
+        const row = document.querySelector('.date-picker-row');
+        row.style.transition = 'background 0.2s';
+        row.style.background = '#ffe0e0';
+        row.style.borderRadius = '10px';
+        dateInput.style.outline = '2.5px solid #ff3b30';
+        dateInput.style.boxShadow = '0 0 0 4px rgba(255,59,48,0.2)';
+        const msg = document.getElementById('date-required-msg');
+        if (msg) msg.style.display = 'block';
+        setTimeout(() => {
+          row.style.background = '';
+          dateInput.style.outline = '';
+          dateInput.style.boxShadow = '';
+          if (msg) msg.style.display = 'none';
+        }, 2500);
+        dateInput.focus();
+        return false;
+      }
+      return true;
     }
-    setInterval(updateAddBtn, 200);
-    input.addEventListener('input', updateAddBtn);
-    updateAddBtn();
 
     /* ── Natural Language Parser ── */
     function parseNaturalLanguage(rawText) {
@@ -12437,6 +12446,7 @@
     function addTodo(overrideText, overrideDate) {
       const rawText = (overrideText || input.value).trim();
       if (!rawText && pendingFiles.length === 0) return;
+      if (!overrideText && !checkDateRequired()) return;
 
       // Natural language parse
       const parsed = !overrideText ? parseNaturalLanguage(rawText) : { text: rawText, dueDate: null, priority: 0, tags: [], list: null };
