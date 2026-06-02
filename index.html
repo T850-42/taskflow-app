@@ -12372,13 +12372,13 @@
     const dateInput = document.getElementById('todo-date-input');
     const dateClearBtn = document.getElementById('date-clear-btn');
 
-    // Enable Add button only when date is present
+    // Enable Add button only when date is present — poll every 200ms for reliability
     function updateAddBtn() {
-      const hasDate = dateInput.value || /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)|\d{1,2}\/\d{1,2})\b/i.test(input.value);
-      addBtn.disabled = !hasDate;
+      const hasDatePicker = !!dateInput.value;
+      const hasDateText = /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week)\b/i.test(input.value);
+      addBtn.disabled = !(hasDatePicker || hasDateText);
     }
-    dateInput.addEventListener('change', updateAddBtn);
-    dateInput.addEventListener('input', updateAddBtn);
+    setInterval(updateAddBtn, 200);
     input.addEventListener('input', updateAddBtn);
     updateAddBtn();
 
