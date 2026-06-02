@@ -12366,30 +12366,6 @@
     const dateInput = document.getElementById('todo-date-input');
     const dateClearBtn = document.getElementById('date-clear-btn');
 
-    // Date is required — show error if missing when Add is clicked
-    function checkDateRequired() {
-      const parsed = parseNaturalLanguage(input.value);
-      const hasDate = !!dateInput.value || !!parsed.dueDate;
-      if (!hasDate) {
-        const row = document.querySelector('.date-picker-row');
-        row.style.transition = 'background 0.2s';
-        row.style.background = '#ffe0e0';
-        row.style.borderRadius = '10px';
-        dateInput.style.outline = '2.5px solid #ff3b30';
-        dateInput.style.boxShadow = '0 0 0 4px rgba(255,59,48,0.2)';
-        const msg = document.getElementById('date-required-msg');
-        if (msg) msg.style.display = 'block';
-        setTimeout(() => {
-          row.style.background = '';
-          dateInput.style.outline = '';
-          dateInput.style.boxShadow = '';
-          if (msg) msg.style.display = 'none';
-        }, 2500);
-        dateInput.focus();
-        return false;
-      }
-      return true;
-    }
 
     /* ── Natural Language Parser ── */
     function parseNaturalLanguage(rawText) {
@@ -12446,7 +12422,14 @@
     function addTodo(overrideText, overrideDate) {
       const rawText = (overrideText || input.value).trim();
       if (!rawText && pendingFiles.length === 0) return;
-      if (!overrideText && !checkDateRequired()) return;
+      if (!overrideText && !dateInput.value && !/\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week)\b/i.test(rawText)) {
+        const msg = document.getElementById('date-required-msg');
+        if (msg) { msg.style.display = 'inline'; setTimeout(() => { msg.style.display = 'none'; }, 2500); }
+        dateInput.style.outline = '2.5px solid #ff3b30';
+        setTimeout(() => { dateInput.style.outline = ''; }, 2500);
+        dateInput.focus();
+        return;
+      }
 
       // Natural language parse
       const parsed = !overrideText ? parseNaturalLanguage(rawText) : { text: rawText, dueDate: null, priority: 0, tags: [], list: null };
