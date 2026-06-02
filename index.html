@@ -12425,6 +12425,25 @@
       const parsed = !overrideText ? parseNaturalLanguage(rawText) : { text: rawText, dueDate: null, priority: 0, tags: [], list: null };
       const text = parsed.text || rawText;
       const dueDateVal = overrideDate || parsed.dueDate || dateInput.value || null;
+
+      // Date is required — block if missing
+      if (!overrideText && !dueDateVal) {
+        dateInput.style.outline = '2.5px solid #ff3b30';
+        dateInput.style.background = '#fff0f0';
+        dateInput.placeholder = '📅 Date required!';
+        dateInput.animate([
+          {transform:'translateX(-6px)'},{transform:'translateX(6px)'},
+          {transform:'translateX(-4px)'},{transform:'translateX(4px)'},
+          {transform:'translateX(0)'}
+        ], {duration:350, easing:'ease-out'});
+        dateInput.focus();
+        setTimeout(() => {
+          dateInput.style.outline = '';
+          dateInput.style.background = '';
+          dateInput.placeholder = '';
+        }, 2000);
+        return;
+      }
       const tagsInput = document.getElementById('tt-tags-input');
       const notesInput = document.getElementById('tt-notes-input');
       const listInput = document.getElementById('tt-list-input');
