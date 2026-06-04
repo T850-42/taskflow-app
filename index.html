@@ -20216,7 +20216,7 @@
       var OWNER_PIN = localStorage.getItem('appinfo_pin') || '1234';
       var unlocked = false;
 
-      var DEFAULT_INFO = "📱 App Name: TaskFlow\n📝 Description: A personal task manager and productivity app built for daily life.\n\n👤 Owner: Thales\n\n📞 Contact: Contact the owner through the app.\n\n✅ How to use:\n• Type a task and pick a date, then tap Add\n• Use p1, p2, p3, p4 to set priority\n• Type 'tomorrow' or 'monday' to set a date quickly\n• Use the buttons on the side to access features\n\n💪 My Habits:\n• I love making Lego\n• I read books after breakfast";
+      var DEFAULT_INFO = "📱 App Name: TaskFlow\n\n📝 Description:\nTaskFlow is Thales' personal task manager. It helps organize daily tasks, set due dates, track priorities, set reminders, plan trips, track habits, and much more — all in one place.\n\n👤 Owner: Thales\n\n💪 My Habits:\n• I love making Lego 🧱\n• I read books after breakfast 📚\n\n✅ How to Use:\n1. Type a task in the box and pick a date\n2. Press Add to save it\n3. Use the buttons on the left to open features\n4. Tap a task to mark it done or delete it\n5. Type 'tomorrow' or 'monday' to set a date fast\n6. Add p1, p2, p3 or p4 to set priority\n\n📞 Contact:\nThis app is owned and managed by Thales.\nOnly the owner can edit this info.";
       function loadInfo() { return localStorage.getItem('appinfo_text') || DEFAULT_INFO; }
       function renderInfo() {
         var body = document.getElementById('appinfo-body');
