@@ -1440,6 +1440,21 @@
     /* ── Duolingo Language Practice ── */
 
 
+    .appinfo-btn { padding: 10px 16px; background: linear-gradient(135deg, #0984e3, #74b9ff); color: #fff; border: none; border-radius: 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer; z-index: 900; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(9,132,227,0.35); transition: all 0.2s; }
+    .appinfo-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .appinfo-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; }
+    .appinfo-panel { background: #1c1c1e; color: #fff; border-radius: 22px; padding: 24px; width: 400px; max-width: 94vw; max-height: 85vh; display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+    .appinfo-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; }
+    .appinfo-close { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; }
+    .appinfo-body { background: #2c2c2e; border-radius: 14px; padding: 16px; font-size: 0.9rem; line-height: 1.6; color: #e0e0e0; min-height: 80px; white-space: pre-wrap; flex: 1; overflow-y: auto; }
+    .appinfo-body.empty { color: #666; font-style: italic; }
+    .appinfo-textarea { width: 100%; background: #2c2c2e; border: 1.5px solid #444; border-radius: 12px; color: #fff; padding: 12px; font-size: 0.9rem; line-height: 1.6; outline: none; resize: vertical; font-family: inherit; box-sizing: border-box; }
+    .appinfo-textarea:focus { border-color: #0984e3; }
+    .appinfo-save-btn { background: linear-gradient(135deg, #0984e3, #74b9ff); color: #fff; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 700; cursor: pointer; font-size: 0.9rem; margin-top: 8px; width: 100%; }
+    .appinfo-footer { display: flex; justify-content: flex-end; }
+    .appinfo-owner-btn { background: #2c2c2e; border: none; color: #888; border-radius: 10px; padding: 7px 14px; font-size: 0.78rem; cursor: pointer; }
+    .appinfo-owner-btn.unlocked { color: #30d158; }
+
     .birthday-btn { padding: 10px 16px; background: linear-gradient(135deg, #ff375f, #ff6b9d); color: #fff; border: none; border-radius: 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer; z-index: 900; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(255,55,95,0.4); transition: all 0.2s; }
     .birthday-btn:hover { transform: translateY(-1px); opacity: 0.9; }
     .sun-planner-btn { padding: 10px 16px; background: linear-gradient(135deg, #f7971e, #ffd200); color: #1a1a1a; border: none; border-radius: 18px; font-size: 0.9rem; font-weight: 700; cursor: pointer; z-index: 900; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(247,151,30,0.4); transition: all 0.2s; }
@@ -11769,6 +11784,27 @@
     🟣 OmniFocus
   </button>
 
+  <!-- App Info button -->
+  <button class="appinfo-btn" id="appinfo-btn" onclick="window.openAppInfo()">ℹ️ App Info</button>
+
+  <!-- App Info panel -->
+  <div class="appinfo-overlay" id="appinfo-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div class="appinfo-panel">
+      <div class="appinfo-header">
+        <span>ℹ️ App Info</span>
+        <button class="appinfo-close" onclick="document.getElementById('appinfo-overlay').style.display='none'">&times;</button>
+      </div>
+      <div class="appinfo-body" id="appinfo-body"></div>
+      <div class="appinfo-edit-area" id="appinfo-edit-area" style="display:none">
+        <textarea class="appinfo-textarea" id="appinfo-textarea" rows="8" placeholder="Write info about your app here..."></textarea>
+        <button class="appinfo-save-btn" onclick="window.saveAppInfo()">💾 Save</button>
+      </div>
+      <div class="appinfo-footer">
+        <button class="appinfo-owner-btn" id="appinfo-owner-btn" onclick="window.toggleAppInfoEdit()">🔐 Owner Edit</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Birthday Tracker button -->
   <button class="birthday-btn" id="birthday-btn" onclick="window.openBdayPanel()">🎂 Birthdays</button>
 
@@ -20175,6 +20211,62 @@
       });
     });
 
+    /* ── App Info ── */
+    (function setupAppInfo() {
+      var OWNER_PIN = localStorage.getItem('appinfo_pin') || '1234';
+      var unlocked = false;
+
+      function loadInfo() { return localStorage.getItem('appinfo_text') || ''; }
+      function renderInfo() {
+        var body = document.getElementById('appinfo-body');
+        var text = loadInfo();
+        if (text) { body.textContent = text; body.classList.remove('empty'); }
+        else { body.textContent = 'No info yet. Owner can add info by clicking "Owner Edit".'; body.classList.add('empty'); }
+      }
+
+      window.openAppInfo = function() {
+        document.getElementById('appinfo-overlay').style.display = 'flex';
+        renderInfo();
+        document.getElementById('appinfo-edit-area').style.display = 'none';
+        var ob = document.getElementById('appinfo-owner-btn');
+        ob.textContent = '🔐 Owner Edit';
+        ob.classList.remove('unlocked');
+        unlocked = false;
+      };
+
+      window.toggleAppInfoEdit = function() {
+        if (unlocked) {
+          document.getElementById('appinfo-edit-area').style.display = 'none';
+          document.getElementById('appinfo-body').style.display = 'block';
+          var ob = document.getElementById('appinfo-owner-btn');
+          ob.textContent = '🔐 Owner Edit'; ob.classList.remove('unlocked');
+          unlocked = false;
+          return;
+        }
+        var pin = prompt('Enter owner PIN to edit:');
+        if (pin === null) return;
+        if (pin !== OWNER_PIN) { alert('❌ Wrong PIN. Access denied.'); return; }
+        unlocked = true;
+        document.getElementById('appinfo-textarea').value = loadInfo();
+        document.getElementById('appinfo-edit-area').style.display = 'block';
+        document.getElementById('appinfo-body').style.display = 'none';
+        var ob = document.getElementById('appinfo-owner-btn');
+        ob.textContent = '🔓 Exit Edit'; ob.classList.add('unlocked');
+      };
+
+      window.saveAppInfo = function() {
+        var text = document.getElementById('appinfo-textarea').value.trim();
+        localStorage.setItem('appinfo_text', text);
+        renderInfo();
+        document.getElementById('appinfo-edit-area').style.display = 'none';
+        document.getElementById('appinfo-body').style.display = 'block';
+        unlocked = false;
+        var ob = document.getElementById('appinfo-owner-btn');
+        ob.textContent = '🔐 Owner Edit'; ob.classList.remove('unlocked');
+        alert('✅ Info saved!');
+      };
+    })();
+
     /* ── Sun Planner ── */
     /* ── Birthday Tracker ── */
     (function setupBirthdayTracker() {
@@ -20675,7 +20767,7 @@
   (function moveToNavContainers() {
     var groups = {
       // Left sidebar: Navigation + Personal
-      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn', 'sun-planner-btn', 'birthday-btn'],
+      'nav-top-left':    ['guide-btn', 'apps-btn', 'tf-focus-btn', 'goal-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'duo-btn', 'tf-lang-btn', 'trip-btn', 'omnifocus-btn', 'sun-planner-btn', 'birthday-btn', 'appinfo-btn'],
       // Right sidebar: Account + Tools
       'nav-top-right':   ['tf-signin-btn', 'upg-btn', 'settings-btn', 'history-btn', 'weather-btn', 'reminders-btn', 'net-btn', 'vel-btn', 'scanner-btn', 'dict-btn', 'prog-btn', 'downloads-btn', 'share-btn'],
       'nav-bottom-left': [],
