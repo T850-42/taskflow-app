@@ -12239,13 +12239,7 @@
 
       if (filtered.length === 0) {
         if (todos.length === 0) {
-          // Empty app — show motivational GIF
-          list.innerHTML = `<li class="empty">
-            <div class="empty-gif-wrap">
-              <img src="https://media.giphy.com/media/3oEjHAUOqG3lSS0f1C/giphy.gif" alt="Let's get started!" loading="lazy">
-              <div class="empty-text">✨ No tasks yet — add your first one above!</div>
-            </div>
-          </li>`;
+          list.innerHTML = '';
         } else if (filter === 'completed' && todos.every(t => t.done)) {
           // All tasks done — celebration GIF
           list.innerHTML = `<li class="empty">
