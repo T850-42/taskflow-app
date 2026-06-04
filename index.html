@@ -12457,7 +12457,6 @@
       if (!overrideText) {
         input.value = '';
         dateInput.value = '';
-        updateAddBtn();
         tagsInput.value = '';
         notesInput.value = '';
         recurInput.value = '';
@@ -12556,7 +12555,7 @@
         }
       });
     })();
-    dateClearBtn.addEventListener('click', () => { dateInput.value = ''; updateAddBtn(); });
+    dateClearBtn.addEventListener('click', () => { dateInput.value = ''; });
 
     list.addEventListener('click', e => {
       // Handle attachment clicks
