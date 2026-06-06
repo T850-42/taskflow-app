@@ -523,33 +523,18 @@
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      flex-shrink: 0;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      background: #fff;
-    }
-    .cal-top {
-      background: linear-gradient(180deg, #e8302a, #cc2a22);
-      color: #fff;
-      font-size: 0.58rem;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      text-align: center;
-      padding: 6px 0 4px;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    .cal-num {
-      flex: 1;
+      background: linear-gradient(160deg, #f953c6 0%, #ff6b35 55%, #ffa500 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.55rem;
-      font-weight: 300;
-      color: #1c1c1e;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      padding-bottom: 2px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(249,83,198,0.45);
+    }
+    .trip-logo svg {
+      width: 32px;
+      height: 32px;
+      fill: #fff;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
     }
 
     .app-header h1 {
@@ -10086,9 +10071,8 @@
 
   <div class="container">
     <div class="app-header">
-      <div class="trip-logo cal-logo" id="cal-logo">
-        <div class="cal-top" id="cal-logo-day">SAT</div>
-        <div class="cal-num" id="cal-logo-num">6</div>
+      <div class="trip-logo">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
       </div>
       <h1>
         <div class="owner-row">
