@@ -523,32 +523,34 @@
       width: 52px;
       height: 52px;
       border-radius: 14px;
-      background: linear-gradient(135deg, #4772fa, #6c8cff);
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      background: #fff;
+    }
+    .cal-logo-top {
+      background: linear-gradient(180deg, #e8302a, #c0392b);
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: center;
+      padding: 5px 0 3px;
+      flex-shrink: 0;
+    }
+    .cal-logo-num {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      box-shadow: 0 3px 12px rgba(71,114,250,0.35);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .trip-logo::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-    }
-
-    .trip-logo svg {
-      width: 30px;
-      height: 30px;
-      fill: #fff;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+      font-size: 1.5rem;
+      font-weight: 200;
+      color: #1c1c1e;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding-bottom: 3px;
     }
 
     .app-header h1 {
@@ -10085,8 +10087,9 @@
 
   <div class="container">
     <div class="app-header">
-      <div class="trip-logo">
-        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+      <div class="trip-logo cal-logo" id="cal-logo">
+        <div class="cal-logo-top" id="cal-logo-day">SAT</div>
+        <div class="cal-logo-num" id="cal-logo-num">6</div>
       </div>
       <h1>
         <div class="owner-row">
@@ -20187,6 +20190,16 @@
     });
 
     /* ── App Info ── */
+    /* ── Calendar Logo ── */
+    (function() {
+      var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+      var now = new Date();
+      var dayEl = document.getElementById('cal-logo-day');
+      var numEl = document.getElementById('cal-logo-num');
+      if (dayEl) dayEl.textContent = days[now.getDay()];
+      if (numEl) numEl.textContent = now.getDate();
+    })();
+
     (function setupAppInfo() {
       var OWNER_PIN = localStorage.getItem('appinfo_pin') || '1234';
       var unlocked = false;
