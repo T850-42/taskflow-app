@@ -9777,37 +9777,10 @@
     font-size: 0.78rem !important; padding: 7px 11px !important;
   }
 
-  /* Mobile: only show sign-in in top-right, hide left nav to avoid overlap */
-  html.device-mobile #nav-top-left { display: none !important; }
-  html.device-mobile #nav-top-right {
-    top: 10px !important; right: 8px !important; left: auto !important; bottom: auto !important;
-    flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-end !important;
-  }
-  html.device-mobile .tf-signin-btn {
-    font-size: 0.78rem !important; padding: 7px 11px !important;
-  }
-
-  /* ── ALL BUTTONS VISIBLE ON PHONE ── */
-
   /* ── TABLET ─────────────────────────────────────────────── */
   html.device-tablet body { padding: 20px 16px 24px; }
   html.device-tablet .container { max-width: 680px; }
-  html.device-tablet .tf-power-btn { font-size: 0.9rem; }
   html.device-tablet .sidebar { width: 75vw; max-width: 340px; }
-
-  /* Tablet: all buttons visible */
-
-  /* Keep settings and sign-in accessible on tablet */
-  html.device-tablet #nav-top-right {
-    top: 10px !important; right: 8px !important; left: auto !important; bottom: auto !important;
-    flex-direction: row !important; flex-wrap: wrap !important; justify-content: flex-end !important;
-    max-width: calc(100vw - 80px) !important;
-  }
-  html.device-tablet #nav-top-left {
-    top: 10px !important; left: 60px !important; right: auto !important; bottom: auto !important;
-    flex-direction: row !important; flex-wrap: wrap !important;
-    max-width: calc(50vw) !important;
-  }
 
   /* ── DESKTOP ─────────────────────────────────────────────── */
   /* No overrides needed — original layout is desktop-first */
