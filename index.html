@@ -13043,14 +13043,12 @@
       }
       function closeModal() { overlay.classList.remove('open'); }
 
-      // Button click handler — opens a NEW TAB for sign-in
+      // Button click handler — opens sign-in overlay on the same page
       btn.addEventListener('click', () => {
         if (getCurrentUser()) {
           dropdown.classList.toggle('open');
         } else {
-          // Open sign-in in a new tab
-          const url = window.location.origin + window.location.pathname + '?signin=1';
-          window.open(url, '_blank');
+          overlay.classList.add('open');
         }
       });
 
