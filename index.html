@@ -9777,16 +9777,11 @@
     font-size: 0.78rem !important; padding: 7px 11px !important;
   }
 
-  /* Sign-in btn — top area, left of settings */
+  /* Mobile: only show sign-in in top-right, hide left nav to avoid overlap */
+  html.device-mobile #nav-top-left { display: none !important; }
   html.device-mobile #nav-top-right {
     top: 10px !important; right: 8px !important; left: auto !important; bottom: auto !important;
-    flex-direction: row !important; flex-wrap: wrap !important; justify-content: flex-end !important;
-    max-width: calc(100vw - 60px) !important;
-  }
-  html.device-mobile #nav-top-left {
-    top: 10px !important; left: 50px !important; right: auto !important; bottom: auto !important;
-    flex-direction: row !important; flex-wrap: wrap !important;
-    max-width: calc(100vw - 120px) !important;
+    flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-end !important;
   }
   html.device-mobile .tf-signin-btn {
     font-size: 0.78rem !important; padding: 7px 11px !important;
