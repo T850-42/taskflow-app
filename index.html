@@ -10148,6 +10148,8 @@
     <div id="today-focus-why-list"></div><button id="today-focus-why-toggle"></button><div id="today-focus-why"></div>
     <div id="completion-counter"></div><div id="weather-temp"></div><div id="weather-desc"></div>
     <div id="ac-add-btn"></div><div id="ac-loot-btn"></div>
+    <button id="map-btn"></button><button id="airdrop-btn"></button><button id="ai-helper-btn"></button>
+    <div id="ai-typing-indicator"></div>
   </div>
 
   <!-- 🔐 Sign In button -->
@@ -12823,9 +12825,9 @@
       // Cmd+F → focus search
       if (cmd && e.key.toLowerCase() === 'f') {
         e.preventDefault();
-        if (!document.getElementById('tf-power-panel').classList.contains('open')) {
-          document.getElementById('tf-power-btn').click();
-        }
+        var _pp = document.getElementById('tf-power-panel');
+        var _pb = document.getElementById('tf-power-btn');
+        if (_pp && _pb && !_pp.classList.contains('open')) { _pb.click(); }
         setTimeout(() => document.getElementById('tt-search')?.focus(), 200);
         return;
       }
@@ -19762,7 +19764,8 @@
       }
     }
 
-    document.getElementById('ai-helper-btn').addEventListener('click', () => {
+    var aiHelperBtn = document.getElementById('ai-helper-btn');
+    if (aiHelperBtn) aiHelperBtn.addEventListener('click', () => {
       aiHelperOverlay.classList.add('open');
       aiRenderHistory();
       setTimeout(() => aiInputEl.focus(), 100);
