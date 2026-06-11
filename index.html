@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <!-- Service worker — keeps home screen bookmark auto-updating on iOS/Android -->
   <script>
   if ('serviceWorker' in navigator) {
@@ -49,7 +49,7 @@
         try {
           ['nav-top-left','nav-top-right','nav-bottom-left','nav-bottom-right'].forEach(function(id) {
             var c = document.getElementById(id);
-            if (c) c.style.setProperty('display', 'flex', 'important');
+            if (c && c.children.length) c.style.setProperty('display', 'flex', 'important');
           });
         } catch(e) {}
       } else {
@@ -199,6 +199,10 @@
   <meta name="twitter:image" content="https://t850-42.github.io/taskflow-app/social-preview.png">
 
   <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TaskFlow">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#4772fa">
@@ -255,6 +259,16 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ── Design Tokens ── */
+    :root {
+      --accent: #4772fa; --accent-strong: #3a62e8; --accent-soft: #eef2ff;
+      --grad-accent: linear-gradient(135deg, #4772fa, #6c8cff);
+      --ink: #1f2937; --ink-2: #6b7280; --ink-3: #9aa4b2; --surface: #fff; --line: #e8ecf0;
+      --shadow-sm: 0 1px 3px rgba(15,23,42,.08); --shadow-md: 0 6px 18px rgba(15,23,42,.10); --shadow-lg: 0 20px 50px rgba(15,23,42,.22);
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 999px;
+      --ease: cubic-bezier(.2,.7,.3,1);
+    }
+
     /* (Minimal mode removed — all buttons restored) */
 
 
@@ -282,6 +296,13 @@
       max-width: 560px;
       position: relative;
       z-index: 10;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: var(--r-xl);
+      padding: 28px 24px;
+      border: 1px solid rgba(255,255,255,.6);
+      box-shadow: var(--shadow-lg);
     }
 
 
@@ -9714,7 +9735,7 @@
 
   /* ── PHONE ─────────────────────────────────────────────── */
   html.device-mobile body {
-    padding: 12px 12px 24px;
+    padding: calc(124px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom));
   }
   html.device-mobile .container {
     max-width: 100%;
@@ -9778,7 +9799,7 @@
   }
 
   /* ── TABLET ─────────────────────────────────────────────── */
-  html.device-tablet body { padding: 20px 16px 24px; }
+  html.device-tablet body { padding: calc(124px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
   html.device-tablet .container { max-width: 680px; }
   html.device-tablet .sidebar { width: 75vw; max-width: 340px; }
 
@@ -9949,7 +9970,7 @@
 
   /* Below 600px: mobile sizing */
   @media (max-width: 599px) {
-    body { padding: 12px 12px 24px !important; }
+    body { padding: calc(124px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom)) !important; }
     .container { max-width: 100% !important; }
     .app-header { margin-bottom: 12px !important; gap: 8px !important; }
     .tf-power-btn { width: 100% !important; justify-content: center !important; padding: 13px 16px !important; }
@@ -9961,6 +9982,110 @@
     .settings-btn { right: 8px !important; top: 14px !important; }
     .tf-signin-btn { right: 100px !important; top: 14px !important; }
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     DESIGN SYSTEM OVERRIDES — appended pass (cascade wins)
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Quiet, unified side-nav on desktop — color reserved for state */
+  @media (min-width: 1280px) {
+    #nav-top-left > button, #nav-top-right > button {
+      background: rgba(255,255,255,.82) !important;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      color: #334155 !important;
+      border: 1px solid rgba(15,23,42,.08) !important;
+      box-shadow: 0 1px 3px rgba(15,23,42,.08) !important;
+      animation: none !important;
+      font-weight: 600 !important;
+    }
+    #nav-top-left > button:hover, #nav-top-right > button:hover {
+      background: #fff !important;
+      color: var(--accent) !important;
+      border-color: rgba(71,114,250,.35) !important;
+      transform: none !important;
+    }
+    #nav-top-right > .tf-signin-btn {
+      background: var(--grad-accent) !important;
+      color: #fff !important;
+      border: none !important;
+      box-shadow: 0 2px 8px rgba(71,114,250,.30) !important;
+    }
+  }
+
+  /* Unified accent — repoint off-brand blues */
+  .tf-signin-btn, .tf-signin-submit, .tf-signin-logo, .tf-user-info-avatar { background: var(--grad-accent); }
+  .sidebar-avatar { background: var(--grad-accent); }
+
+  /* Header hierarchy: one title, one brand color */
+  .trip-logo { background: var(--grad-accent); box-shadow: 0 4px 14px rgba(71,114,250,.35); }
+  .app-header h1 { font-size: 1.55rem; letter-spacing: -.4px; color: var(--ink); }
+  .owner-name-input { font-size: .85rem !important; font-weight: 600; color: var(--ink-2); }
+  .name-size-controls { display: none !important; }
+  #share-btn { background: rgba(255,255,255,.85); color: var(--accent); border: 1px solid rgba(71,114,250,.25); box-shadow: var(--shadow-sm); }
+  .trip-badge { color: var(--ink-3); background: rgba(15,23,42,.05); letter-spacing: 1.2px; font-size: .7rem; }
+
+  /* Compact mic, promoted Add */
+  button.mic-btn { min-width: 48px !important; width: 48px; height: 48px; padding: 0 !important; border-radius: var(--r-pill) !important; background: #fff !important; border: 2px solid var(--line) !important; box-shadow: none !important; color: #64748b; }
+  .mic-btn svg { width: 22px; height: 22px; fill: #64748b; filter: none; }
+  .mic-btn .mic-label { display: none; }
+  .mic-btn:hover { border-color: #ff3b30 !important; }
+  .mic-btn:hover svg { fill: #ff3b30; }
+  .input-row input[type="text"], .input-row button { height: 48px; }
+  #add-btn { padding: 0 24px; background: var(--accent); border-radius: var(--r-md); font-weight: 700; box-shadow: 0 2px 8px rgba(71,114,250,.30); }
+  #todo-input { font-size: 1rem; border-radius: var(--r-md); }
+
+  /* Segmented controls + task-row elevation */
+  .tt-list-tabs, .tt-smart-dates { background: #f0f2f5; border-radius: 10px; padding: 3px; gap: 2px; }
+  .tt-list-tab, .tt-smart-pill { background: transparent; border: none; border-radius: 8px; color: #8e99a4; flex: 1; font-size: .8rem; }
+  .tt-list-tab.active, .tt-smart-pill.active { background: #fff; color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .filters button { font-size: .8rem; }
+  .todo-item { padding: 16px; margin-bottom: 10px; border-radius: var(--r-lg); border: 1px solid var(--line); border-left: 3px solid transparent; box-shadow: var(--shadow-sm); transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease); }
+  .todo-item:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); border-left-color: var(--accent); }
+  .todo-item.completed { opacity: 1; background: #fafbfc; }
+  .todo-item.completed .todo-item-content span { color: var(--ink-3); }
+  .todo-item-content span { font-size: 1rem; }
+  .todo-due-date, .tt-tag-chip, .tt-recur-badge, .tt-list-badge { font-size: .72rem; border-radius: var(--r-pill); }
+  .date-picker-row label { font-size: .8rem; }
+
+  /* ═══ MOBILE NAV OVERHAUL ═══ */
+  @media (max-width: 1279px) {
+    #nav-top-left { padding: calc(6px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 6px calc(64px + env(safe-area-inset-left)); background: rgba(17,24,39,.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); gap: 8px; }
+    #nav-top-right { top: calc(56px + env(safe-area-inset-top)); justify-content: flex-start; padding-left: calc(8px + env(safe-area-inset-left)); padding-right: calc(8px + env(safe-area-inset-right)); background: rgba(17,24,39,.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); gap: 8px; }
+    #nav-top-right > :first-child { margin-left: auto !important; }
+    #nav-top-right > :not(:first-child) { margin-left: 0 !important; }
+    #nav-bottom-left { bottom: calc(56px + env(safe-area-inset-bottom)); background: rgba(17,24,39,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    #nav-bottom-right { padding-bottom: calc(6px + env(safe-area-inset-bottom)); background: rgba(17,24,39,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgba(255,255,255,.12); }
+    #nav-top-left > *, #nav-top-right > *, #nav-bottom-left > *, #nav-bottom-right > * { font-size: .8rem !important; padding: 8px 14px !important; min-height: 44px; border-radius: 22px !important; white-space: nowrap; background: rgba(255,255,255,.14) !important; color: #fff !important; border: none !important; }
+    .sidebar-toggle { top: calc(8px + env(safe-area-inset-top)) !important; left: 8px !important; width: 40px; height: 40px; }
+    #nav-top-left:empty, #nav-top-right:empty, #nav-bottom-left:empty, #nav-bottom-right:empty { display: none !important; }
+    .filters button { padding: 12px 8px !important; min-height: 44px; }
+    .container { padding: 16px 14px !important; border-radius: 18px !important; }
+  }
+
+  /* ═══ UX DELIGHT ═══ */
+  .todo-item .edit-btn { background: none; border: none; cursor: pointer; font-size: .85rem; opacity: .45; padding: 2px 4px; transition: opacity .15s; }
+  .todo-item .edit-btn:hover { opacity: 1; }
+  .tt-title-edit { font-size: 1rem !important; width: 100%; }
+  @keyframes checkPop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .todo-item input[type=checkbox]:checked { animation: checkPop .3s ease; }
+
+  #undo-toast {
+    position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1f2937; color: #fff; border-radius: var(--r-pill);
+    padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+    font-size: .9rem; box-shadow: var(--shadow-lg); z-index: 99999;
+    opacity: 0; transition: transform .25s var(--ease), opacity .25s var(--ease);
+    pointer-events: none;
+  }
+  #undo-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+  #undo-toast button { background: none; border: none; color: #6c8cff; font-weight: 800; cursor: pointer; font-size: .9rem; letter-spacing: .5px; }
+
+  .starter-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+  .starter-chip { background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(71,114,250,.25); border-radius: var(--r-pill); padding: 8px 14px; font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .15s var(--ease); }
+  .starter-chip:hover { background: var(--accent); color: #fff; }
+
+  #tf-streak-mini { align-items: center; gap: 4px; background: rgba(255,149,0,.12); color: #e8590c; border-radius: var(--r-pill); padding: 3px 10px; font-size: .78rem; font-weight: 700; margin-left: 8px; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -10052,6 +10177,7 @@
         </div>
         TaskFlow
         <span class="trip-badge">Task Manager</span>
+        <span id="tf-streak-mini" style="display:none;">🔥 <b id="tf-streak-num-mini">0</b></span>
       </h1>
     </div>
 
@@ -10081,7 +10207,7 @@
 
 
     <div class="input-row grammar-input-ring">
-      <input type="text" id="todo-input" placeholder="Add a task... (try: Buy milk tomorrow 3pm #shopping !1)" autofocus>
+      <input type="text" id="todo-input" placeholder="Add a task...">
       <span class="grammar-dot empty" id="grammar-dot"></span>
       <button id="mic-btn" class="mic-btn" title="Dictate a todo (voice input)" type="button">
         <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11h-2z"/></svg>
@@ -10138,7 +10264,7 @@
     <div id="tf-active-summary"></div><div id="tf-active-text"></div>
     <div id="tf-pomo-launch"></div><div id="tf-clear-filters"></div>
     <div id="tt-search"></div><div id="tt-list-add-btn"></div>
-    <div id="tf-streak-num"></div><div id="tf-streak-best"></div><div id="tf-streak-mini"></div><div id="tf-streak-num-mini"></div>
+    <div id="tf-streak-num"></div><div id="tf-streak-best"></div>
     <div id="tf-stat-total"></div><div id="tf-stat-done"></div><div id="tf-stat-rate"></div><div id="tf-stat-fill"></div>
     <div id="tf-matrix-overlay"></div><div id="tf-matrix-launch"></div><div id="tf-matrix-close"></div>
     <div id="tf-quad-1"></div><div id="tf-quad-2"></div><div id="tf-quad-3"></div><div id="tf-quad-4"></div>
@@ -10146,7 +10272,7 @@
     <div id="today-focus-text"></div><div id="today-focus-meta"></div>
     <button id="today-focus-do"></button><button id="today-focus-complete"></button><button id="today-focus-skip"></button>
     <div id="today-focus-why-list"></div><button id="today-focus-why-toggle"></button><div id="today-focus-why"></div>
-    <div id="completion-counter"></div><div id="weather-temp"></div><div id="weather-desc"></div>
+    <div id="weather-temp"></div><div id="weather-desc"></div>
     <div id="ac-add-btn"></div><div id="ac-loot-btn"></div>
     <button id="map-btn"></button><button id="airdrop-btn"></button><button id="ai-helper-btn"></button>
     <div id="ai-typing-indicator"></div>
@@ -11948,6 +12074,7 @@
   <script>
     const input = document.getElementById('todo-input');
     const addBtn = document.getElementById('add-btn');
+    if (window.__device === 'device-desktop' && input) input.focus();
     const list = document.getElementById('todo-list');
     const statusEl = document.getElementById('status');
     const filterBtns = document.querySelectorAll('.filters button');
@@ -11972,7 +12099,8 @@
     let dragSrcId = null;        // drag & drop source
 
     // Custom lists
-    let customLists = JSON.parse(localStorage.getItem('tt_lists') || '[]');
+    let customLists = [];
+    try { const cl = JSON.parse(localStorage.getItem('tt_lists') || '[]'); if (Array.isArray(cl)) customLists = cl; } catch (e) { customLists = []; }
 
     // Load from localStorage
     try {
@@ -12228,7 +12356,25 @@
 
       if (filtered.length === 0) {
         if (todos.length === 0) {
-          list.innerHTML = '';
+          list.innerHTML = `<li class="empty">
+            <div style="text-align:center;padding:24px 8px;">
+              <div style="font-size:2.4rem;margin-bottom:10px;">👋</div>
+              <div style="font-size:1.05rem;font-weight:700;color:#1f2937;margin-bottom:4px;">Welcome! Add your first task</div>
+              <div style="font-size:.85rem;color:#9aa4b2;">Try one of these to get started:</div>
+              <div class="starter-chips">
+                <button class="starter-chip" data-starter="Build a Lego set tomorrow">🧱 Build a Lego set</button>
+                <button class="starter-chip" data-starter="Do homework today !1">📚 Do homework</button>
+                <button class="starter-chip" data-starter="Read a book after breakfast">📖 Read a book</button>
+              </div>
+            </div>
+          </li>`;
+          list.querySelectorAll('.starter-chip').forEach(chip => {
+            chip.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              input.value = chip.dataset.starter;
+              input.focus();
+            });
+          });
         } else if (filter === 'completed' && todos.every(t => t.done)) {
           // All tasks done — celebration GIF
           list.innerHTML = `<li class="empty">
@@ -12296,13 +12442,14 @@
               ${priDot}
               <input type="checkbox" ${t.done ? 'checked' : ''}>
               <div class="todo-item-content">
-                <span>${escapeHtml(t.text)}</span>
+                <span class="tt-title" title="Click ✏️ to edit">${escapeHtml(t.text)}</span>
                 ${metaRow}
                 ${notesHtml}
                 ${subtasksHtml}
                 ${renderAttachments(t.attachments)}
               </div>
               <div class="todo-item-actions">
+                <button class="edit-btn" data-id="${t.id}" title="Edit task">✏️</button>
                 <button class="flag-btn ${t.flagged ? 'flagged' : ''}" data-id="${t.id}" title="Flag">🚩</button>
                 ${hasImages ? `<button class="toggle-bg-btn ${t.showBg ? 'bg-on' : ''}" data-id="${t.id}" title="Toggle file background">${t.showBg ? 'BG On' : 'BG Off'}</button>` : ''}
                 <button class="delete-btn" title="Delete">&times;</button>
@@ -12427,7 +12574,7 @@
         attachments: (!overrideText && pendingFiles.length > 0) ? [...pendingFiles] : [],
         showBg: !overrideText && useBgImage && pendingFiles.some(f => f.type === 'image'),
         priority: parsed.priority || selectedPriority,
-        list: parsed.list || (!overrideText ? listInput.value : 'inbox'),
+        list: parsed.list || (!overrideText ? (listInput.value || 'inbox') : 'inbox'),
         tags: allTags,
         subtasks: [],
         notes: !overrideText ? notesInput.value.trim() : '',
@@ -12540,6 +12687,30 @@
     })();
     dateClearBtn.addEventListener('click', () => { dateInput.value = ''; });
 
+    // Undo toast for deleted tasks
+    let undoTimer = null;
+    function showUndoToast() {
+      let toast = document.getElementById('undo-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'undo-toast';
+        toast.innerHTML = '<span>Task deleted</span><button id="undo-btn">UNDO</button>';
+        document.body.appendChild(toast);
+        toast.querySelector('#undo-btn').addEventListener('click', () => {
+          if (window.__lastDeleted) {
+            todos.splice(Math.min(window.__lastDeleted.idx, todos.length), 0, window.__lastDeleted.todo);
+            window.__lastDeleted = null;
+            save();
+            render();
+          }
+          toast.classList.remove('show');
+        });
+      }
+      toast.classList.add('show');
+      clearTimeout(undoTimer);
+      undoTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+    }
+
     list.addEventListener('click', e => {
       // Handle attachment clicks
       if (e.target.classList.contains('attachment-thumb')) {
@@ -12576,17 +12747,54 @@
         const todo = todos.find(t => t.id === id);
         if (todo) {
           todo.done = !todo.done;
+          todo.completedAt = todo.done ? Date.now() : null;
           logHistory(todo.done ? 'completed' : 'uncompleted', todo.text);
+          if (todo.done && typeof confetti === 'function') {
+            const r = e.target.getBoundingClientRect();
+            confetti({ particleCount: 30, spread: 55, startVelocity: 25, origin: { x: (r.left + 8) / innerWidth, y: (r.top + 8) / innerHeight } });
+          }
           if (todo.done && todo.recurring && todo.dueDate) {
             window.dispatchEvent(new CustomEvent('tt-checked', { detail: todo }));
           }
         }
+      } else if (e.target.classList.contains('edit-btn')) {
+        const todo = todos.find(t => t.id === id);
+        const titleSpan = item.querySelector('.tt-title');
+        if (todo && titleSpan && !item.querySelector('.tt-title-edit')) {
+          const editInput = document.createElement('input');
+          editInput.className = 'tt-notes-edit tt-title-edit';
+          editInput.value = todo.text;
+          titleSpan.replaceWith(editInput);
+          editInput.focus();
+          editInput.select();
+          let finished = false;
+          const finish = (saveIt) => {
+            if (finished) return;
+            finished = true;
+            if (saveIt && editInput.value.trim()) {
+              todo.text = editInput.value.trim();
+              logHistory('edited', todo.text);
+            }
+            save();
+            render();
+          };
+          editInput.addEventListener('keydown', (ke) => {
+            if (ke.key === 'Enter') finish(true);
+            else if (ke.key === 'Escape') finish(false);
+          });
+          editInput.addEventListener('blur', () => finish(true));
+        }
+        return;
       } else if (e.target.classList.contains('flag-btn')) {
         const todo = todos.find(t => t.id === id);
         if (todo) todo.flagged = !todo.flagged;
       } else if (e.target.classList.contains('delete-btn')) {
         const deleted = todos.find(t => t.id === id);
-        if (deleted) logHistory('deleted', deleted.text);
+        if (deleted) {
+          logHistory('deleted', deleted.text);
+          window.__lastDeleted = { todo: deleted, idx: todos.indexOf(deleted) };
+          showUndoToast();
+        }
         todos = todos.filter(t => t.id !== id);
       } else {
         return;
@@ -12647,7 +12855,7 @@
       const yStr = yesterday.toISOString().slice(0,10);
 
       // Check if any task was completed today
-      const completedToday = todos.some(t => t.done && new Date(t.createdAt).toISOString().slice(0,10) === today);
+      const completedToday = todos.some(t => t.done && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today);
 
       if (completedToday && s.lastDate !== today) {
         if (s.lastDate === yStr || s.lastDate === null) {
@@ -12834,8 +13042,7 @@
       // Cmd+M → matrix
       if (cmd && e.key.toLowerCase() === 'm') {
         e.preventDefault();
-        renderMatrix();
-        matrixOverlay.classList.add('open');
+        if (matrixOverlay) { renderMatrix(); matrixOverlay.classList.add('open'); }
         return;
       }
     });
@@ -17107,7 +17314,8 @@
     calFabDay.textContent = now.getDate();
 
     // Restore saved position or default to center-ish
-    const savedCalPos = JSON.parse(localStorage.getItem('cal_position') || 'null');
+    let savedCalPos = null;
+    try { savedCalPos = JSON.parse(localStorage.getItem('cal_position') || 'null'); } catch (e) { savedCalPos = null; }
     if (savedCalPos) {
       calWidget.style.top = savedCalPos.top + 'px';
       calWidget.style.left = savedCalPos.left + 'px';
@@ -18095,7 +18303,7 @@
       // Stats
       const allTodos = JSON.parse(localStorage.getItem('todos_v2') || '[]');
       document.getElementById('stat-total').textContent = allTodos.length;
-      document.getElementById('stat-completed').textContent = allTodos.filter(t => t.completed).length;
+      document.getElementById('stat-completed').textContent = allTodos.filter(t => t.done).length;
       const routineItems = JSON.parse(localStorage.getItem('daily_routine') || '[]');
       document.getElementById('stat-routine').textContent = routineItems.length;
 
@@ -18216,7 +18424,7 @@
       let counter = document.getElementById('completion-counter');
       if (appSettings.showCount) {
         const allTodos = JSON.parse(localStorage.getItem('todos_v2') || '[]');
-        const done = allTodos.filter(t => t.completed).length;
+        const done = allTodos.filter(t => t.done).length;
         const total = allTodos.length;
         if (!counter) {
           counter = document.createElement('div');
