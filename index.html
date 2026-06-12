@@ -10063,6 +10063,71 @@
     .container { padding: 16px 14px !important; border-radius: 18px !important; }
   }
 
+  /* ═══ MASTER TODO FEATURES ═══ */
+  .tt-section-header {
+    list-style: none; display: flex; align-items: center; gap: 8px;
+    font-size: .78rem; font-weight: 800; color: var(--ink-2);
+    text-transform: uppercase; letter-spacing: .8px;
+    padding: 14px 4px 6px; border: none; background: none;
+  }
+  .tt-section-header.sec-overdue { color: #e8302a; }
+  .tt-section-header.sec-today { color: var(--accent); }
+  .tt-section-header.sec-done { color: #30a14e; }
+  .tt-section-count {
+    background: rgba(15,23,42,.07); color: inherit;
+    border-radius: var(--r-pill); padding: 1px 8px; font-size: .72rem; font-weight: 700;
+  }
+  .tt-resched-btn {
+    margin-left: auto; background: rgba(232,48,42,.1); color: #e8302a;
+    border: 1px solid rgba(232,48,42,.25); border-radius: var(--r-pill);
+    padding: 3px 10px; font-size: .72rem; font-weight: 700; cursor: pointer;
+    text-transform: none; letter-spacing: 0;
+    transition: all .15s var(--ease);
+  }
+  .tt-resched-btn:hover { background: #e8302a; color: #fff; }
+
+  #daily-progress { margin: 4px 0 10px; }
+  .dp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .dp-label { font-size: .8rem; font-weight: 700; color: var(--ink-2); }
+  .dp-count { font-size: .8rem; font-weight: 800; color: var(--accent); }
+  .dp-track { height: 8px; background: #eef1f5; border-radius: var(--r-pill); overflow: hidden; }
+  .dp-fill { height: 100%; width: 0%; border-radius: var(--r-pill); transition: width .5s var(--ease), background .3s; }
+
+  .search-row { margin: 2px 0 8px; }
+  #task-search {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+    border-radius: var(--r-md); font-size: .9rem; outline: none;
+    font-family: inherit;
+    background: #f8f9fb; transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none;
+  }
+  #task-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(71,114,250,.12); background: #fff; }
+
+  .pri-picker { display: inline-flex; gap: 4px; margin-left: auto; }
+  .pri-chip {
+    border: 1.5px solid var(--line); background: #fff; border-radius: var(--r-pill);
+    padding: 4px 10px; font-size: .72rem; font-weight: 800; cursor: pointer;
+    font-family: inherit;
+    color: var(--ink-3); transition: all .15s var(--ease);
+  }
+  .pri-chip.pc1.active { border-color: #ff4757; color: #ff4757; background: rgba(255,71,87,.08); }
+  .pri-chip.pc2.active { border-color: #ffa502; color: #e8590c; background: rgba(255,165,2,.08); }
+  .pri-chip.pc3.active { border-color: #3742fa; color: #3742fa; background: rgba(55,66,250,.08); }
+  .pri-chip.pc4.active { border-color: #a4b0be; color: #57606f; background: rgba(164,176,190,.12); }
+  @media (hover: hover) and (pointer: fine) {
+    .pri-chip.pc1:hover { border-color: #ff4757; color: #ff4757; background: rgba(255,71,87,.08); }
+    .pri-chip.pc2:hover { border-color: #ffa502; color: #e8590c; background: rgba(255,165,2,.08); }
+    .pri-chip.pc3:hover { border-color: #3742fa; color: #3742fa; background: rgba(55,66,250,.08); }
+    .pri-chip.pc4:hover { border-color: #a4b0be; color: #57606f; background: rgba(164,176,190,.12); }
+  }
+  .pri-chip.active { box-shadow: 0 1px 4px rgba(15,23,42,.12); }
+  @media (max-width: 599px) {
+    .date-picker-row { flex-wrap: wrap; gap: 6px; }
+    .pri-picker { margin-left: 0; width: 100%; }
+    .pri-chip { flex: 1; min-height: 36px; }
+    .tt-resched-btn { min-height: 32px; padding: 6px 12px; }
+  }
+
   /* ═══ UX DELIGHT ═══ */
   .todo-item .edit-btn { background: none; border: none; cursor: pointer; font-size: .85rem; opacity: .45; padding: 2px 4px; transition: opacity .15s; }
   .todo-item .edit-btn:hover { opacity: 1; }
@@ -10234,6 +10299,12 @@
       <label>&#128197; Due:</label>
       <input type="date" id="todo-date-input">
       <button class="date-clear-btn" id="date-clear-btn">Clear</button>
+      <span class="pri-picker" id="pri-picker">
+        <button class="pri-chip pc1" data-pri="1" title="Urgent & important">P1</button>
+        <button class="pri-chip pc2" data-pri="2" title="Important">P2</button>
+        <button class="pri-chip pc3" data-pri="3" title="Can delegate">P3</button>
+        <button class="pri-chip pc4" data-pri="4" title="Someday">P4</button>
+      </span>
     </div>
 
     <div class="options-row">
@@ -10247,6 +10318,15 @@
       </button>
     </div>
     <div class="attach-preview" id="attach-preview"></div>
+
+    <div id="daily-progress" style="display:none;">
+      <div class="dp-row"><span class="dp-label">⭐ Today's progress</span><span class="dp-count" id="dp-count">0/0</span></div>
+      <div class="dp-track"><div class="dp-fill" id="dp-fill"></div></div>
+    </div>
+
+    <div class="search-row">
+      <input type="search" id="task-search" placeholder="🔍 Search tasks...">
+    </div>
 
     <div class="filters">
       <button class="active" data-filter="all">All</button>
@@ -12316,11 +12396,12 @@
     }
 
     function render() {
-      const todayStr = new Date().toISOString().slice(0,10);
+      const fmtLocal = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      const todayStr = fmtLocal(new Date());
       const tomorrowD = new Date(); tomorrowD.setDate(tomorrowD.getDate()+1);
-      const tomorrowStr = tomorrowD.toISOString().slice(0,10);
+      const tomorrowStr = fmtLocal(tomorrowD);
       const weekD = new Date(); weekD.setDate(weekD.getDate()+7);
-      const weekStr = weekD.toISOString().slice(0,10);
+      const weekStr = fmtLocal(weekD);
 
       let filtered = todos.slice().sort((a,b) => (a.order||0) - (b.order||0));
 
@@ -12391,7 +12472,7 @@
           }</li>`;
         }
       } else {
-        list.innerHTML = filtered.map(t => {
+        const taskTpl = t => {
           const bgUrl = t.showBg ? getFirstImageDataUrl(t.attachments) : null;
           const bgStyle = bgUrl ? ` style="background-image:url(${bgUrl})"` : '';
           const hasBgClass = bgUrl ? ' has-bg' : '';
@@ -12457,7 +12538,60 @@
               </div>
             </li>
           `;
-        }).join('');
+        };
+
+        // Smart date sections
+        const sections = [
+          { key: 'overdue',  label: '🔴 Overdue',   match: t => !t.done && t.dueDate && t.dueDate < todayStr },
+          { key: 'today',    label: '⭐ Today',      match: t => !t.done && t.dueDate === todayStr },
+          { key: 'tomorrow', label: '🌅 Tomorrow',   match: t => !t.done && t.dueDate === tomorrowStr },
+          { key: 'week',     label: '📅 This Week',  match: t => !t.done && t.dueDate && t.dueDate > tomorrowStr && t.dueDate <= weekStr },
+          { key: 'later',    label: '🗓️ Later',      match: t => !t.done && t.dueDate && t.dueDate > weekStr },
+          { key: 'nodate',   label: '💭 Someday',    match: t => !t.done && !t.dueDate },
+          { key: 'done',     label: '✅ Completed',  match: t => t.done },
+        ];
+        let html = '';
+        const usedIds = new Set();
+        let overdueShown = [];
+        sections.forEach(sec => {
+          const items = filtered.filter(t => !usedIds.has(t.id) && sec.match(t));
+          if (!items.length) return;
+          items.forEach(t => usedIds.add(t.id));
+          if (sec.key === 'overdue') overdueShown = items;
+          const resched = sec.key === 'overdue'
+            ? '<button class="tt-resched-btn" id="resched-overdue" title="Move these overdue tasks to today">→ Move to today</button>'
+            : '';
+          html += `<li class="tt-section-header sec-${sec.key}">${sec.label} <span class="tt-section-count">${items.length}</span>${resched}</li>`;
+          html += items.map(taskTpl).join('');
+        });
+        list.innerHTML = html;
+        const reschedBtn = document.getElementById('resched-overdue');
+        if (reschedBtn) reschedBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          overdueShown.forEach(t => { t.dueDate = todayStr; });
+          save();
+          render();
+        });
+      }
+
+      // Daily progress bar
+      const dpEl = document.getElementById('daily-progress');
+      if (dpEl) {
+        const todayTasks = todos.filter(t => t.dueDate === todayStr);
+        if (todayTasks.length) {
+          dpEl.style.display = 'block';
+          const dDone = todayTasks.filter(t => t.done).length;
+          const pct = Math.round(dDone / todayTasks.length * 100);
+          const dpCount = document.getElementById('dp-count');
+          const dpFill = document.getElementById('dp-fill');
+          if (dpCount) dpCount.textContent = dDone + '/' + todayTasks.length + (dDone === todayTasks.length ? ' 🎉' : '');
+          if (dpFill) {
+            dpFill.style.width = pct + '%';
+            dpFill.style.background = dDone === todayTasks.length ? 'linear-gradient(90deg,#30d158,#34e89e)' : 'linear-gradient(90deg,#4772fa,#6c8cff)';
+          }
+        } else {
+          dpEl.style.display = 'none';
+        }
       }
 
       const active = todos.filter(t => !t.done).length;
@@ -12593,6 +12727,7 @@
         recurInput.value = '';
         selectedPriority = 0;
         document.querySelectorAll('.tt-pri-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#pri-picker .pri-chip').forEach(b => b.classList.remove('active'));
         pendingFiles = [];
         renderPendingFiles();
       }
@@ -12687,6 +12822,25 @@
       });
     })();
     dateClearBtn.addEventListener('click', () => { dateInput.value = ''; });
+
+    // Live search
+    const taskSearchEl = document.getElementById('task-search');
+    if (taskSearchEl) {
+      taskSearchEl.addEventListener('input', () => {
+        searchQuery = taskSearchEl.value.trim();
+        render();
+      });
+    }
+
+    // Priority picker chips
+    document.querySelectorAll('#pri-picker .pri-chip').forEach(ch => {
+      ch.addEventListener('click', () => {
+        const p = Number(ch.dataset.pri);
+        selectedPriority = selectedPriority === p ? 0 : p;
+        document.querySelectorAll('#pri-picker .pri-chip').forEach(c =>
+          c.classList.toggle('active', Number(c.dataset.pri) === selectedPriority));
+      });
+    });
 
     // Undo toast for deleted tasks
     let undoTimer = null;
@@ -13034,10 +13188,7 @@
       // Cmd+F → focus search
       if (cmd && e.key.toLowerCase() === 'f') {
         e.preventDefault();
-        var _pp = document.getElementById('tf-power-panel');
-        var _pb = document.getElementById('tf-power-btn');
-        if (_pp && _pb && !_pp.classList.contains('open')) { _pb.click(); }
-        setTimeout(() => document.getElementById('tt-search')?.focus(), 200);
+        document.getElementById('task-search')?.focus();
         return;
       }
       // Cmd+M → matrix
@@ -14371,6 +14522,21 @@
       document.querySelectorAll('.todo-item').forEach(i => i.classList.remove('drag-over'));
       if (item) item.classList.add('drag-over');
     });
+    function sectionKeyFor(t) {
+      const fmtLocal = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      const todayStr = fmtLocal(new Date());
+      const tomorrowD = new Date(); tomorrowD.setDate(tomorrowD.getDate()+1);
+      const tomorrowStr = fmtLocal(tomorrowD);
+      const weekD = new Date(); weekD.setDate(weekD.getDate()+7);
+      const weekStr = fmtLocal(weekD);
+      if (t.done) return 'done';
+      if (!t.dueDate) return 'nodate';
+      if (t.dueDate < todayStr) return 'overdue';
+      if (t.dueDate === todayStr) return 'today';
+      if (t.dueDate === tomorrowStr) return 'tomorrow';
+      if (t.dueDate <= weekStr) return 'week';
+      return 'later';
+    }
     list.addEventListener('drop', (e) => {
       e.preventDefault();
       const item = e.target.closest('.todo-item');
@@ -14380,8 +14546,18 @@
       const srcIdx = todos.findIndex(t => t.id === dragSrcId);
       const targetIdx = todos.findIndex(t => t.id === targetId);
       if (srcIdx === -1 || targetIdx === -1) return;
+      const src = todos[srcIdx], dst = todos[targetIdx];
+      // Dropping into another date section adopts that section's due date
+      if (sectionKeyFor(src) !== sectionKeyFor(dst)) {
+        src.dueDate = dst.dueDate;
+      }
+      // Match priority tier so the drop position sticks in the priority-sorted view
+      if ((src.priority || 5) !== (dst.priority || 5)) {
+        src.priority = dst.priority || 0;
+      }
       const [moved] = todos.splice(srcIdx, 1);
-      todos.splice(targetIdx, 0, moved);
+      const newTargetIdx = todos.findIndex(t => t.id === targetId);
+      todos.splice(newTargetIdx, 0, moved);
       todos.forEach((t, i) => t.order = i);
       save(); render();
     });
