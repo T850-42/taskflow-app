@@ -12153,6 +12153,11 @@
   </div>
 
   <script>
+    // Local-timezone date string (YYYY-MM-DD) — never use toISOString for date logic
+    function fmtLocalDate(d) {
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
     const input = document.getElementById('todo-input');
     const addBtn = document.getElementById('add-btn');
     if (window.__device === 'device-desktop' && input) input.focus();
@@ -12656,13 +12661,13 @@
       const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
 
       if (/\btoday\b/i.test(text)) {
-        dueDate = today.toISOString().slice(0,10); text = text.replace(/\btoday\b/i, '');
+        dueDate = fmtLocalDate(today); text = text.replace(/\btoday\b/i, '');
       } else if (/\btomorrow\b/i.test(text)) {
         const d = new Date(today); d.setDate(d.getDate()+1);
-        dueDate = d.toISOString().slice(0,10); text = text.replace(/\btomorrow\b/i, '');
+        dueDate = fmtLocalDate(d); text = text.replace(/\btomorrow\b/i, '');
       } else if (/\bnext week\b/i.test(text)) {
         const d = new Date(today); d.setDate(d.getDate()+7);
-        dueDate = d.toISOString().slice(0,10); text = text.replace(/\bnext week\b/i, '');
+        dueDate = fmtLocalDate(d); text = text.replace(/\bnext week\b/i, '');
       } else {
         for (let i = 0; i < 7; i++) {
           const re = new RegExp('\\b' + dayNames[i] + '\\b', 'i');
@@ -12670,7 +12675,7 @@
             const d = new Date(today);
             const diff = (i - d.getDay() + 7) % 7 || 7;
             d.setDate(d.getDate() + diff);
-            dueDate = d.toISOString().slice(0,10);
+            dueDate = fmtLocalDate(d);
             text = text.replace(re, '');
             break;
           }
@@ -13005,12 +13010,12 @@
     /* ── 🔥 Daily Streak ── */
     function updateStreak() {
       let s = JSON.parse(localStorage.getItem('tf_streak') || '{"current":0,"best":0,"lastDate":null}');
-      const today = new Date().toISOString().slice(0,10);
+      const today = fmtLocalDate(new Date());
       const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-      const yStr = yesterday.toISOString().slice(0,10);
+      const yStr = fmtLocalDate(yesterday);
 
       // Check if any task was completed today
-      const completedToday = todos.some(t => t.done && t.completedAt && new Date(t.completedAt).toISOString().slice(0,10) === today);
+      const completedToday = todos.some(t => t.done && t.completedAt && fmtLocalDate(new Date(t.completedAt)) === today);
 
       if (completedToday && s.lastDate !== today) {
         if (s.lastDate === yStr || s.lastDate === null) {
@@ -14580,7 +14585,7 @@
           ...todo,
           id: Date.now() + Math.random(),
           done: false,
-          dueDate: d.toISOString().slice(0,10),
+          dueDate: fmtLocalDate(d),
           subtasks: (todo.subtasks || []).map(s => ({ ...s, done: false })),
           createdAt: Date.now(),
           order: todos.length
@@ -14733,7 +14738,7 @@
       function renderSummaryEntry() {
         // Build the special "All Your Tasks" summary from the main todos array
         const todoArr = (typeof todos !== 'undefined') ? todos : [];
-        const todayStr = new Date().toISOString().slice(0,10);
+        const todayStr = fmtLocalDate(new Date());
         const active = todoArr.filter(t => !t.done);
         const completed = todoArr.filter(t => t.done);
         const overdue = active.filter(t => t.dueDate && t.dueDate < todayStr);
@@ -15001,7 +15006,7 @@
 
       function pickFocus() {
         const todoArr = (typeof todos !== 'undefined') ? todos : [];
-        const todayStr = new Date().toISOString().slice(0,10);
+        const todayStr = fmtLocalDate(new Date());
         const candidates = todoArr.filter(t => !t.done && !skippedIds.includes(t.id));
         if (candidates.length === 0) return null;
 
@@ -15022,7 +15027,7 @@
           else if (t.dueDate) {
             const weekOut = new Date();
             weekOut.setDate(weekOut.getDate() + 7);
-            if (t.dueDate <= weekOut.toISOString().slice(0,10)) s -= 10;
+            if (t.dueDate <= fmtLocalDate(weekOut)) s -= 10;
           }
           // Older tasks get slight boost (so they don't get permanently buried)
           if (t.createdAt) {
@@ -15065,7 +15070,7 @@
         widget.classList.remove('empty');
         widget.style.display = 'flex';
         currentFocusId = t.id;
-        const todayStr = new Date().toISOString().slice(0,10);
+        const todayStr = fmtLocalDate(new Date());
 
         // Pick icon based on type
         let icon = '🎯';
@@ -15104,7 +15109,7 @@
       function reasonsFor(t) {
         if (!t) return [];
         const reasons = [];
-        const todayStr = new Date().toISOString().slice(0,10);
+        const todayStr = fmtLocalDate(new Date());
         const ageDays = t.createdAt ? Math.floor((Date.now() - t.createdAt) / 86400000) : 0;
         const isOverdue = t.dueDate && t.dueDate < todayStr;
         const isToday = t.dueDate === todayStr;
@@ -15866,7 +15871,7 @@
       function saveState() { localStorage.setItem('duo_state', JSON.stringify(state)); }
 
       function updateStreak() {
-        const today = new Date().toISOString().slice(0,10);
+        const today = fmtLocalDate(new Date());
         if (state.lastPracticeDay === today) return;
         if (state.lastPracticeDay) {
           const lastD = new Date(state.lastPracticeDay + 'T00:00:00');
