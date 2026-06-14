@@ -9988,30 +9988,37 @@
      DESIGN SYSTEM OVERRIDES — appended pass (cascade wins)
      ═══════════════════════════════════════════════════════════ */
 
-  /* Quiet, unified side-nav on desktop — color reserved for state */
-  @media (min-width: 1280px) {
-    #nav-top-left > button, #nav-top-right > button {
-      background: rgba(255,255,255,.82) !important;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      color: #334155 !important;
-      border: 1px solid rgba(15,23,42,.08) !important;
-      box-shadow: 0 1px 3px rgba(15,23,42,.08) !important;
-      animation: none !important;
-      font-weight: 600 !important;
-    }
-    #nav-top-left > button:hover, #nav-top-right > button:hover {
-      background: #fff !important;
-      color: var(--accent) !important;
-      border-color: rgba(71,114,250,.35) !important;
-      transform: none !important;
-    }
-    #nav-top-right > .tf-signin-btn {
-      background: var(--grad-accent) !important;
-      color: #fff !important;
-      border: none !important;
-      box-shadow: 0 2px 8px rgba(71,114,250,.30) !important;
-    }
+  /* Colorful side-nav buttons — each its own vivid gradient */
+  #nav-top-left > button, #nav-top-right > button {
+    color: #fff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    animation: none !important;
+    transition: transform .15s var(--ease), box-shadow .15s var(--ease), filter .15s var(--ease) !important;
   }
+  #nav-top-left > button:hover, #nav-top-right > button:hover {
+    transform: translateY(-2px) !important;
+    filter: brightness(1.08) !important;
+  }
+  /* Left group */
+  #guide-btn       { background: linear-gradient(135deg,#0984e3,#54a0ff) !important; box-shadow: 0 3px 10px rgba(9,132,227,.35) !important; }
+  #tf-focus-btn    { background: linear-gradient(135deg,#e84393,#fd79a8) !important; box-shadow: 0 3px 10px rgba(232,67,147,.35) !important; }
+  #routine-btn     { background: linear-gradient(135deg,#f39c12,#feca57) !important; box-shadow: 0 3px 10px rgba(243,156,18,.35) !important; }
+  #celebrate-btn   { background: linear-gradient(135deg,#e17055,#ff7675) !important; box-shadow: 0 3px 10px rgba(225,112,85,.35) !important; }
+  #habits-book-btn { background: linear-gradient(135deg,#00b894,#55efc4) !important; box-shadow: 0 3px 10px rgba(0,184,148,.35) !important; }
+  #tf-lang-btn     { background: linear-gradient(135deg,#6c5ce7,#a29bfe) !important; box-shadow: 0 3px 10px rgba(108,92,231,.35) !important; }
+  #trip-btn        { background: linear-gradient(135deg,#0abde3,#48dbfb) !important; box-shadow: 0 3px 10px rgba(10,189,227,.35) !important; }
+  #sun-planner-btn { background: linear-gradient(135deg,#f7971e,#ffd200) !important; box-shadow: 0 3px 10px rgba(247,151,30,.35) !important; }
+  #birthday-btn    { background: linear-gradient(135deg,#ff375f,#ff6b9d) !important; box-shadow: 0 3px 10px rgba(255,55,95,.35) !important; }
+  /* Right group */
+  #appinfo-btn     { background: linear-gradient(135deg,#0984e3,#74b9ff) !important; box-shadow: 0 3px 10px rgba(9,132,227,.35) !important; }
+  #tf-signin-btn   { background: var(--grad-accent) !important; box-shadow: 0 3px 10px rgba(71,114,250,.35) !important; }
+  #settings-btn    { background: linear-gradient(135deg,#636e72,#b2bec3) !important; box-shadow: 0 3px 10px rgba(99,110,114,.35) !important; }
+  #history-btn     { background: linear-gradient(135deg,#00b894,#55efc4) !important; box-shadow: 0 3px 10px rgba(0,184,148,.35) !important; }
+  #weather-btn     { background: linear-gradient(135deg,#0abde3,#74b9ff) !important; box-shadow: 0 3px 10px rgba(10,189,227,.35) !important; }
+  #reminders-btn   { background: linear-gradient(135deg,#ff375f,#ff6b9d) !important; box-shadow: 0 3px 10px rgba(255,55,95,.35) !important; }
+  #scanner-btn     { background: linear-gradient(135deg,#6c5ce7,#a29bfe) !important; box-shadow: 0 3px 10px rgba(108,92,231,.35) !important; }
+  #share-btn       { background: linear-gradient(135deg,#fd79a8,#fab1c0) !important; box-shadow: 0 3px 10px rgba(253,121,168,.35) !important; }
 
   /* Unified accent — repoint off-brand blues */
   .tf-signin-btn, .tf-signin-submit, .tf-signin-logo, .tf-user-info-avatar { background: var(--grad-accent); }
@@ -10022,7 +10029,6 @@
   .app-header h1 { font-size: 1.55rem; letter-spacing: -.4px; color: var(--ink); }
   .owner-name-input { font-size: .85rem !important; font-weight: 600; color: var(--ink-2); }
   .name-size-controls { display: none !important; }
-  #share-btn { background: rgba(255,255,255,.85); color: var(--accent); border: 1px solid rgba(71,114,250,.25); box-shadow: var(--shadow-sm); }
   .trip-badge { color: var(--ink-3); background: rgba(15,23,42,.05); letter-spacing: 1.2px; font-size: .7rem; }
 
   /* Compact mic, promoted Add */
@@ -10056,7 +10062,7 @@
     #nav-top-right > :not(:first-child) { margin-left: 0 !important; }
     #nav-bottom-left { bottom: calc(56px + env(safe-area-inset-bottom)); background: rgba(17,24,39,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
     #nav-bottom-right { padding-bottom: calc(6px + env(safe-area-inset-bottom)); background: rgba(17,24,39,.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgba(255,255,255,.12); }
-    #nav-top-left > *, #nav-top-right > *, #nav-bottom-left > *, #nav-bottom-right > * { font-size: .8rem !important; padding: 8px 14px !important; min-height: 44px; border-radius: 22px !important; white-space: nowrap; background: rgba(255,255,255,.14) !important; color: #fff !important; border: none !important; }
+    #nav-top-left > *, #nav-top-right > *, #nav-bottom-left > *, #nav-bottom-right > * { font-size: .8rem !important; padding: 8px 14px !important; min-height: 44px; border-radius: 22px !important; white-space: nowrap; color: #fff !important; border: none !important; }
     .sidebar-toggle { top: calc(8px + env(safe-area-inset-top)) !important; left: 8px !important; width: 40px; height: 40px; }
     #nav-top-left:empty, #nav-top-right:empty, #nav-bottom-left:empty, #nav-bottom-right:empty { display: none !important; }
     .filters button { padding: 12px 8px !important; min-height: 44px; }
