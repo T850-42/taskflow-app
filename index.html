@@ -10134,6 +10134,23 @@
     .tt-resched-btn { min-height: 32px; padding: 6px 12px; }
   }
 
+  /* ═══ DEADLINE BANNER ═══ */
+  #deadline-banner {
+    position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: #fff; padding: 10px 14px; border-radius: var(--r-pill);
+    font-size: .85rem; font-weight: 600; z-index: 9500;
+    box-shadow: 0 6px 20px rgba(255,107,107,.45);
+    max-width: 92vw; animation: dbDrop .4s var(--ease);
+  }
+  @keyframes dbDrop { from { opacity: 0; transform: translateX(-50%) translateY(-12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  #deadline-banner .db-icon { font-size: 1.05rem; }
+  #deadline-banner .db-text b { font-weight: 800; }
+  #deadline-banner .db-close { background: rgba(255,255,255,.25); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 1rem; line-height: 1; flex-shrink: 0; }
+  #deadline-banner .db-close:hover { background: rgba(255,255,255,.4); }
+
   /* ═══ UX DELIGHT ═══ */
   .todo-item .edit-btn { background: none; border: none; cursor: pointer; font-size: .85rem; opacity: .45; padding: 2px 4px; transition: opacity .15s; }
   .todo-item .edit-btn:hover { opacity: 1; }
@@ -12662,34 +12679,63 @@
       const listMap = { '#work':'work', '#personal':'personal', '#shopping':'shopping', '#inbox':'inbox' };
       tags = tags.filter(t => { if (listMap['#'+t]) { list = listMap['#'+t]; return false; } return true; });
 
-      // Parse dates: "today", "tomorrow", "monday"-"sunday", "next week"
+      // Strip leading deadline words spoken before the date ("due", "by", "deadline", "on")
+      // (kept simple — only used to clean the final task text)
+
+      // Parse dates: "today", "tonight", "tomorrow", weekday names, "next week",
+      // "in N days/weeks", and month-day like "june 20" / "20th june"
       const today = new Date(); today.setHours(0,0,0,0);
       const dayNames = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+      const monthNames = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+      const monthAbbr  = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-      if (/\btoday\b/i.test(text)) {
-        dueDate = fmtLocalDate(today); text = text.replace(/\btoday\b/i, '');
-      } else if (/\btomorrow\b/i.test(text)) {
+      function setDue(d) { dueDate = fmtLocalDate(d); }
+
+      let m;
+      if (/\b(today|tonight)\b/i.test(text)) {
+        setDue(today); text = text.replace(/\b(today|tonight)\b/i, '');
+      } else if (/\b(tomorrow|tmrw|tmr)\b/i.test(text)) {
         const d = new Date(today); d.setDate(d.getDate()+1);
-        dueDate = fmtLocalDate(d); text = text.replace(/\btomorrow\b/i, '');
-      } else if (/\bnext week\b/i.test(text)) {
+        setDue(d); text = text.replace(/\b(tomorrow|tmrw|tmr)\b/i, '');
+      } else if ((m = text.match(/\bin\s+(\d+)\s+(day|days|week|weeks)\b/i))) {
+        const n = parseInt(m[1]); const d = new Date(today);
+        d.setDate(d.getDate() + (/week/i.test(m[2]) ? n*7 : n));
+        setDue(d); text = text.replace(m[0], '');
+      } else if (/\bin\s+a\s+week\b/i.test(text) || /\bnext week\b/i.test(text)) {
         const d = new Date(today); d.setDate(d.getDate()+7);
-        dueDate = fmtLocalDate(d); text = text.replace(/\bnext week\b/i, '');
+        setDue(d); text = text.replace(/\b(in\s+a\s+week|next week)\b/i, '');
+      } else if ((m = text.match(new RegExp('\\b(' + monthNames.concat(monthAbbr).join('|') + ')\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', 'i')))
+              || (m = text.match(new RegExp('\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(' + monthNames.concat(monthAbbr).join('|') + ')\\b', 'i')))) {
+        // month-day in either order
+        const monthTok = isNaN(parseInt(m[1])) ? m[1] : m[2];
+        const dayTok   = isNaN(parseInt(m[1])) ? m[2] : m[1];
+        let mi = monthNames.indexOf(monthTok.toLowerCase());
+        if (mi < 0) mi = monthAbbr.indexOf(monthTok.toLowerCase());
+        const dayNum = parseInt(dayTok);
+        if (mi >= 0 && dayNum >= 1 && dayNum <= 31) {
+          const d = new Date(today.getFullYear(), mi, dayNum);
+          if (d < today) d.setFullYear(d.getFullYear()+1); // roll to next year if past
+          setDue(d); text = text.replace(m[0], '');
+        }
       } else {
+        const isNext = /\bnext\b/i.test(text);
         for (let i = 0; i < 7; i++) {
           const re = new RegExp('\\b' + dayNames[i] + '\\b', 'i');
           if (re.test(text)) {
             const d = new Date(today);
-            const diff = (i - d.getDay() + 7) % 7 || 7;
+            let diff = (i - d.getDay() + 7) % 7 || 7;
+            if (isNext && diff < 7) diff += 7; // "next friday" = following week
             d.setDate(d.getDate() + diff);
-            dueDate = fmtLocalDate(d);
-            text = text.replace(re, '');
+            setDue(d);
+            text = text.replace(re, '').replace(/\bnext\b/i, '');
             break;
           }
         }
       }
 
-      // Remove time patterns (3pm, 15:00) — store but don't use yet
+      // Remove time patterns (3pm, 15:00) and leftover deadline filler words
       text = text.replace(/\b\d{1,2}(:\d{2})?\s*(am|pm)\b/gi, '').replace(/\b\d{1,2}:\d{2}\b/g, '');
+      if (dueDate) text = text.replace(/\b(due|by|deadline|on|at)\b/gi, ' ');
 
       return { text: text.replace(/\s+/g,' ').trim(), dueDate, priority, tags, list };
     }
@@ -13172,6 +13218,56 @@
     }
     if (matrixClose) matrixClose.addEventListener('click', () => matrixOverlay.classList.remove('open'));
     if (matrixOverlay) matrixOverlay.addEventListener('click', (e) => { if (e.target === matrixOverlay) matrixOverlay.classList.remove('open'); });
+
+    /* ── ⏰ Deadline Reminders (1 day left) ── */
+    function checkDeadlineReminders() {
+      const todayStr = fmtLocalDate(new Date());
+      const tmrw = new Date(); tmrw.setDate(tmrw.getDate()+1);
+      const tmrwStr = fmtLocalDate(tmrw);
+
+      const dueTomorrow = todos.filter(t => !t.done && t.dueDate === tmrwStr);
+      const overdue = todos.filter(t => !t.done && t.dueDate && t.dueDate < todayStr);
+
+      // Browser notification — once per day, only if the user enabled & granted it
+      const notifKey = 'deadline_notified_' + todayStr;
+      let notifyEnabled = true;
+      try { notifyEnabled = (typeof appSettings === 'undefined') || appSettings.dueNotify !== false; } catch(e) {}
+      if (dueTomorrow.length && notifyEnabled && !localStorage.getItem(notifKey) &&
+          typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
+        const extra = dueTomorrow.length > 3 ? ` +${dueTomorrow.length-3} more` : '';
+        new Notification('⏰ Deadline tomorrow!', {
+          body: dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra,
+        });
+        localStorage.setItem(notifKey, '1');
+      }
+
+      // In-app banner (always shown if there's something due tomorrow / overdue)
+      let banner = document.getElementById('deadline-banner');
+      const dismissKey = 'deadline_banner_dismissed_' + todayStr;
+      if ((!dueTomorrow.length && !overdue.length) || localStorage.getItem(dismissKey)) {
+        if (banner) banner.remove();
+        return;
+      }
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'deadline-banner';
+        document.body.appendChild(banner);
+      }
+      let msg = '';
+      if (overdue.length) msg += `🔴 <b>${overdue.length}</b> overdue`;
+      if (overdue.length && dueTomorrow.length) msg += ' · ';
+      if (dueTomorrow.length) msg += `⏰ <b>${dueTomorrow.length}</b> due tomorrow`;
+      banner.innerHTML = `<span class="db-icon">📣</span><span class="db-text">${msg}</span><button class="db-close" title="Dismiss">&times;</button>`;
+      banner.querySelector('.db-close').addEventListener('click', () => {
+        localStorage.setItem(dismissKey, '1');
+        banner.remove();
+      });
+    }
+    // Run shortly after load (todos are ready), and re-check whenever tasks change
+    setTimeout(checkDeadlineReminders, 600);
+    const _origSaveForDeadline = save;
+    save = function() { _origSaveForDeadline.apply(this, arguments); try { checkDeadlineReminders(); } catch(e) {} };
 
     /* ── ⌨️ Keyboard Shortcuts ── */
     document.addEventListener('keydown', (e) => {
