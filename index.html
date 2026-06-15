@@ -10134,6 +10134,17 @@
     .tt-resched-btn { min-height: 32px; padding: 6px 12px; }
   }
 
+  /* ═══ DATE REQUIRED WARNING ═══ */
+  #date-required-msg {
+    display: none; color: #e8302a; font-size: .82rem; font-weight: 700;
+    margin: 2px 0 8px; padding: 6px 12px; border-radius: var(--r-md);
+    background: rgba(255,71,87,.1);
+  }
+  #date-required-msg.show { display: block; animation: dbDrop .3s var(--ease); }
+  @keyframes dateShake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+  .date-picker-row.date-shake { animation: dateShake .4s var(--ease); }
+  .date-picker-row.date-shake input[type="date"] { outline: 2px solid #e8302a; border-radius: 8px; }
+
   /* ═══ DEADLINE COUNTDOWN BADGE ═══ */
   .tt-countdown { display: inline-flex; align-items: center; gap: 3px; font-size: .72rem; font-weight: 700; border-radius: var(--r-pill); padding: 2px 9px; }
   .tt-countdown.cd-overdue { background: rgba(255,71,87,.14); color: #e8302a; }
@@ -12765,6 +12776,24 @@
       const parsed = !overrideText ? parseNaturalLanguage(rawText) : { text: rawText, dueDate: null, priority: 0, tags: [], list: null };
       const text = parsed.text || rawText;
       const dueDateVal = overrideDate || parsed.dueDate || dateInput.value || null;
+
+      // Require a due date (deadline) — but allow attachment-only / voice adds
+      if (!dueDateVal && !overrideText && pendingFiles.length === 0) {
+        const dpRow = document.querySelector('.date-picker-row');
+        let warn = document.getElementById('date-required-msg');
+        if (!warn) {
+          warn = document.createElement('div');
+          warn.id = 'date-required-msg';
+          warn.textContent = '📅 Add a date first!';
+          if (dpRow && dpRow.parentNode) dpRow.parentNode.insertBefore(warn, dpRow.nextSibling);
+        }
+        warn.classList.add('show');
+        if (dpRow) { dpRow.classList.add('date-shake'); setTimeout(() => dpRow.classList.remove('date-shake'), 500); }
+        if (dateInput) dateInput.focus();
+        return;
+      }
+      const _drm = document.getElementById('date-required-msg');
+      if (_drm) _drm.classList.remove('show');
 
       const tagsInput = document.getElementById('tt-tags-input');
       const notesInput = document.getElementById('tt-notes-input');
