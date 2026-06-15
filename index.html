@@ -12918,8 +12918,14 @@
         const text = (finalTranscript || input.value).trim();
         if (text) {
           input.value = text;
-          showToast('✓ Added "' + text + '"');
+          // If no deadline was spoken, default it to today so the voice add always works
+          let spokenDate = null;
+          try { spokenDate = parseNaturalLanguage(text).dueDate; } catch (e) {}
+          if (!spokenDate && !dateInput.value) {
+            dateInput.value = fmtLocalDate(new Date());
+          }
           addTodo();
+          showToast('✓ Added by voice');
           setTimeout(hideToast, 1600);
         } else {
           hideToast();
