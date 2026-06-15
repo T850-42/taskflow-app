@@ -12872,9 +12872,19 @@
       }
       function hideToast() { micToast.classList.remove('show'); }
 
-      function startListening() {
+      async function startListening() {
         if (listening) { recog.stop(); return; }
         finalTranscript = '';
+        // Proactively request mic permission so the user gets a clear prompt
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(t => t.stop()); // release immediately; SpeechRecognition reopens it
+          } catch (err) {
+            alert('🎤 TaskFlow needs microphone access for voice input.\n\nPlease allow the microphone when your browser asks, or enable it in your browser/system settings, then tap the mic again.');
+            return;
+          }
+        }
         try {
           recog.start();
         } catch (e) { /* already started */ }
@@ -12905,6 +12915,7 @@
         micBtn.classList.remove('listening');
         if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
           showToast('🎤 Microphone access denied');
+          alert('🎤 Microphone is blocked. Allow it in your browser address bar (the 🔒 icon) or System Settings → Privacy → Microphone, then try again.');
         } else if (e.error === 'no-speech') {
           showToast('No speech detected');
         } else {
