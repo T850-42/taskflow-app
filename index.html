@@ -10134,6 +10134,13 @@
     .tt-resched-btn { min-height: 32px; padding: 6px 12px; }
   }
 
+  /* ═══ DEADLINE COUNTDOWN BADGE ═══ */
+  .tt-countdown { display: inline-flex; align-items: center; gap: 3px; font-size: .72rem; font-weight: 700; border-radius: var(--r-pill); padding: 2px 9px; }
+  .tt-countdown.cd-overdue { background: rgba(255,71,87,.14); color: #e8302a; }
+  .tt-countdown.cd-today   { background: rgba(255,149,0,.16); color: #e8590c; }
+  .tt-countdown.cd-soon    { background: rgba(247,151,30,.14); color: #c2710c; }
+  .tt-countdown.cd-far     { background: rgba(71,114,250,.12); color: var(--accent); }
+
   /* ═══ DEADLINE BANNER ═══ */
   #deadline-banner {
     position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%;
@@ -12509,14 +12516,24 @@
           // Priority dot
           const priDot = t.priority ? `<div class="tt-pri-dot p${t.priority}"></div>` : '';
 
-          // Due date badge
+          // Due date badge + deadline countdown
           let dueBadge = '';
           if (t.dueDate) {
             const dueD = new Date(t.dueDate + 'T00:00:00');
             const todayD = new Date(); todayD.setHours(0,0,0,0);
-            const isOverdue = !t.done && dueD < todayD;
+            const days = Math.round((dueD - todayD) / 86400000);
+            const isOverdue = !t.done && days < 0;
             const cls = t.done ? 'done' : (isOverdue ? 'overdue' : '');
             dueBadge = `<span class="todo-due-date ${cls}">📅 ${dueD.toLocaleDateString('en-US', {month:'short',day:'numeric'})}</span>`;
+            if (!t.done) {
+              let label, ccls;
+              if (days < 0)       { label = (-days) + ' day' + (days===-1?'':'s') + ' overdue'; ccls = 'cd-overdue'; }
+              else if (days === 0){ label = 'Due today'; ccls = 'cd-today'; }
+              else if (days === 1){ label = 'Due tomorrow'; ccls = 'cd-soon'; }
+              else if (days <= 3) { label = days + ' days left'; ccls = 'cd-soon'; }
+              else                { label = days + ' days left'; ccls = 'cd-far'; }
+              dueBadge += `<span class="tt-countdown ${ccls}">⏳ ${label}</span>`;
+            }
           }
 
           // Tags
