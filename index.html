@@ -10109,7 +10109,9 @@
   }
   #task-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(71,114,250,.12); background: #fff; }
 
-  .pri-picker { display: inline-flex; gap: 4px; margin-left: auto; }
+  .date-picker-row { flex-wrap: wrap; }
+  .pri-picker { display: flex; gap: 4px; width: 100%; margin-top: 4px; }
+  .pri-chip { flex: 1; }
   .pri-chip {
     border: 1.5px solid var(--line); background: #fff; border-radius: var(--r-pill);
     padding: 4px 10px; font-size: .72rem; font-weight: 800; cursor: pointer;
@@ -10341,10 +10343,10 @@
       <input type="date" id="todo-date-input">
       <button class="date-clear-btn" id="date-clear-btn">Clear</button>
       <span class="pri-picker" id="pri-picker">
-        <button class="pri-chip pc1" data-pri="1" title="Urgent & important">P1</button>
-        <button class="pri-chip pc2" data-pri="2" title="Important">P2</button>
-        <button class="pri-chip pc3" data-pri="3" title="Can delegate">P3</button>
-        <button class="pri-chip pc4" data-pri="4" title="Someday">P4</button>
+        <button class="pri-chip pc1" data-pri="1" title="Most important">Important 1</button>
+        <button class="pri-chip pc2" data-pri="2" title="Very important">Important 2</button>
+        <button class="pri-chip pc3" data-pri="3" title="Important">Important 3</button>
+        <button class="pri-chip pc4" data-pri="4" title="Least important">Important 4</button>
       </span>
     </div>
 
