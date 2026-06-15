@@ -10337,7 +10337,7 @@
 
 
     <div class="date-picker-row">
-      <label>&#128197; Due:</label>
+      <label>&#128197; Deadline:</label>
       <input type="date" id="todo-date-input">
       <button class="date-clear-btn" id="date-clear-btn">Clear</button>
       <span class="pri-picker" id="pri-picker">
@@ -12539,8 +12539,8 @@
             if (!t.done) {
               let label, ccls;
               if (days < 0)       { label = (-days) + ' day' + (days===-1?'':'s') + ' overdue'; ccls = 'cd-overdue'; }
-              else if (days === 0){ label = 'Due today'; ccls = 'cd-today'; }
-              else if (days === 1){ label = 'Due tomorrow'; ccls = 'cd-soon'; }
+              else if (days === 0){ label = 'Deadline today'; ccls = 'cd-today'; }
+              else if (days === 1){ label = 'Deadline tomorrow'; ccls = 'cd-soon'; }
               else if (days <= 3) { label = days + ' days left'; ccls = 'cd-soon'; }
               else                { label = days + ' days left'; ccls = 'cd-far'; }
               dueBadge += `<span class="tt-countdown ${ccls}">⏳ ${label}</span>`;
@@ -13792,7 +13792,7 @@
           'filter.all': 'All',
           'filter.active': 'Active',
           'filter.completed': 'Completed',
-          'label.due': '📅 Due:',
+          'label.due': '📅 Deadline:',
           'label.attach': '📎 Attach file',
           'label.file_bg': 'File background',
           'btn.clear': 'Clear',
