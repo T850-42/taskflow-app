@@ -13285,12 +13285,13 @@
     if (matrixClose) matrixClose.addEventListener('click', () => matrixOverlay.classList.remove('open'));
     if (matrixOverlay) matrixOverlay.addEventListener('click', (e) => { if (e.target === matrixOverlay) matrixOverlay.classList.remove('open'); });
 
-    /* ── ⏰ Deadline Reminders (1 day left) ── */
+    /* ── ⏰ Deadline Reminders (today + 1 day left) ── */
     function checkDeadlineReminders() {
       const todayStr = fmtLocalDate(new Date());
       const tmrw = new Date(); tmrw.setDate(tmrw.getDate()+1);
       const tmrwStr = fmtLocalDate(tmrw);
 
+      const dueToday = todos.filter(t => !t.done && t.dueDate === todayStr);
       const dueTomorrow = todos.filter(t => !t.done && t.dueDate === tmrwStr);
       const overdue = todos.filter(t => !t.done && t.dueDate && t.dueDate < todayStr);
 
@@ -13298,20 +13299,28 @@
       const notifKey = 'deadline_notified_' + todayStr;
       let notifyEnabled = true;
       try { notifyEnabled = (typeof appSettings === 'undefined') || appSettings.dueNotify !== false; } catch(e) {}
-      if (dueTomorrow.length && notifyEnabled && !localStorage.getItem(notifKey) &&
+      if ((dueToday.length || dueTomorrow.length) && notifyEnabled && !localStorage.getItem(notifKey) &&
           typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-        const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
-        const extra = dueTomorrow.length > 3 ? ` +${dueTomorrow.length-3} more` : '';
-        new Notification('⏰ Deadline tomorrow!', {
-          body: dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra,
-        });
+        if (dueToday.length) {
+          const names = dueToday.slice(0,3).map(t => t.text).join(', ');
+          const extra = dueToday.length > 3 ? ` +${dueToday.length-3} more` : '';
+          new Notification('🔥 Deadline TODAY!', {
+            body: dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra,
+          });
+        } else if (dueTomorrow.length) {
+          const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
+          const extra = dueTomorrow.length > 3 ? ` +${dueTomorrow.length-3} more` : '';
+          new Notification('⏰ Deadline tomorrow!', {
+            body: dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra,
+          });
+        }
         localStorage.setItem(notifKey, '1');
       }
 
-      // In-app banner (always shown if there's something due tomorrow / overdue)
+      // In-app banner (shown if anything is due today / tomorrow / overdue)
       let banner = document.getElementById('deadline-banner');
       const dismissKey = 'deadline_banner_dismissed_' + todayStr;
-      if ((!dueTomorrow.length && !overdue.length) || localStorage.getItem(dismissKey)) {
+      if ((!dueToday.length && !dueTomorrow.length && !overdue.length) || localStorage.getItem(dismissKey)) {
         if (banner) banner.remove();
         return;
       }
@@ -13320,11 +13329,11 @@
         banner.id = 'deadline-banner';
         document.body.appendChild(banner);
       }
-      let msg = '';
-      if (overdue.length) msg += `🔴 <b>${overdue.length}</b> overdue`;
-      if (overdue.length && dueTomorrow.length) msg += ' · ';
-      if (dueTomorrow.length) msg += `⏰ <b>${dueTomorrow.length}</b> due tomorrow`;
-      banner.innerHTML = `<span class="db-icon">📣</span><span class="db-text">${msg}</span><button class="db-close" title="Dismiss">&times;</button>`;
+      const parts = [];
+      if (overdue.length)     parts.push(`🔴 <b>${overdue.length}</b> overdue`);
+      if (dueToday.length)    parts.push(`🔥 <b>${dueToday.length}</b> due today`);
+      if (dueTomorrow.length) parts.push(`⏰ <b>${dueTomorrow.length}</b> due tomorrow`);
+      banner.innerHTML = `<span class="db-icon">📣</span><span class="db-text">${parts.join(' · ')}</span><button class="db-close" title="Dismiss">&times;</button>`;
       banner.querySelector('.db-close').addEventListener('click', () => {
         localStorage.setItem(dismissKey, '1');
         banner.remove();
