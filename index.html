@@ -10155,6 +10155,25 @@
   .tt-countdown.cd-soon    { background: rgba(247,151,30,.14); color: #c2710c; }
   .tt-countdown.cd-far     { background: rgba(71,114,250,.12); color: var(--accent); }
 
+  /* ═══ DEADLINE POPUP (stays 10 seconds) ═══ */
+  #deadline-popup {
+    position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 50%;
+    transform: translateX(-50%) translateY(-140%);
+    width: 360px; max-width: 92vw;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: #fff; padding: 16px 40px 14px 18px; border-radius: var(--r-lg);
+    box-shadow: 0 12px 40px rgba(255,107,107,.5);
+    z-index: 99999; opacity: 0;
+    transition: transform .35s var(--ease), opacity .35s var(--ease);
+  }
+  #deadline-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #deadline-popup .dp-pop-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
+  #deadline-popup .dp-pop-body { font-size: .85rem; font-weight: 500; line-height: 1.4; opacity: .96; }
+  #deadline-popup .dp-pop-bar { margin-top: 10px; height: 4px; background: rgba(255,255,255,.3); border-radius: 999px; overflow: hidden; }
+  #deadline-popup .dp-pop-bar-fill { height: 100%; width: 100%; background: #fff; border-radius: 999px; transition: width 10s linear; }
+  #deadline-popup .dp-pop-close { position: absolute; top: 10px; right: 12px; background: rgba(255,255,255,.25); border: none; color: #fff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; line-height: 1; }
+  #deadline-popup .dp-pop-close:hover { background: rgba(255,255,255,.4); }
+
   /* ═══ DEADLINE BANNER ═══ */
   #deadline-banner {
     position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%;
@@ -13299,24 +13318,44 @@
       const notifKey = 'deadline_notified_' + todayStr;
       let notifyEnabled = true;
       try { notifyEnabled = (typeof appSettings === 'undefined') || appSettings.dueNotify !== false; } catch(e) {}
-      // Show a notification that stays on screen for ~10 seconds
-      function notify10s(title, body) {
-        try {
-          const n = new Notification(title, { body, requireInteraction: true });
-          setTimeout(() => { try { n.close(); } catch(e) {} }, 10000);
-        } catch(e) {}
+      // In-app popup that stays on screen for exactly 10 seconds (fully app-controlled)
+      function showDeadlinePopup(title, body) {
+        let pop = document.getElementById('deadline-popup');
+        if (pop) pop.remove();
+        pop = document.createElement('div');
+        pop.id = 'deadline-popup';
+        pop.innerHTML =
+          '<div class="dp-pop-title">' + title + '</div>' +
+          '<div class="dp-pop-body">' + body + '</div>' +
+          '<div class="dp-pop-bar"><div class="dp-pop-bar-fill"></div></div>' +
+          '<button class="dp-pop-close" title="Dismiss">&times;</button>';
+        document.body.appendChild(pop);
+        requestAnimationFrame(() => pop.classList.add('show'));
+        const fill = pop.querySelector('.dp-pop-bar-fill');
+        if (fill) { requestAnimationFrame(() => { fill.style.width = '0%'; }); }
+        const closeFn = () => { pop.classList.remove('show'); setTimeout(() => pop.remove(), 350); };
+        pop.querySelector('.dp-pop-close').addEventListener('click', closeFn);
+        setTimeout(closeFn, 10000); // stays 10 seconds
       }
-      if ((dueToday.length || dueTomorrow.length) && notifyEnabled && !localStorage.getItem(notifKey) &&
-          typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      // Native browser notification too (its on-screen time is OS-controlled)
+      function notifyNative(title, body) {
+        try { const n = new Notification(title, { body, requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
+      }
+      if ((dueToday.length || dueTomorrow.length) && notifyEnabled && !localStorage.getItem(notifKey)) {
+        let title, body;
         if (dueToday.length) {
           const names = dueToday.slice(0,3).map(t => t.text).join(', ');
           const extra = dueToday.length > 3 ? ` +${dueToday.length-3} more` : '';
-          notify10s('🔥 Deadline TODAY!', dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra);
-        } else if (dueTomorrow.length) {
+          title = '🔥 Deadline TODAY!';
+          body = dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra;
+        } else {
           const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
           const extra = dueTomorrow.length > 3 ? ` +${dueTomorrow.length-3} more` : '';
-          notify10s('⏰ Deadline tomorrow!', dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra);
+          title = '⏰ Deadline tomorrow!';
+          body = dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra;
         }
+        showDeadlinePopup(title, body); // always shows, 10 seconds
+        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') notifyNative(title, body);
         localStorage.setItem(notifKey, '1');
       }
 
