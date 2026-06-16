@@ -13299,20 +13299,23 @@
       const notifKey = 'deadline_notified_' + todayStr;
       let notifyEnabled = true;
       try { notifyEnabled = (typeof appSettings === 'undefined') || appSettings.dueNotify !== false; } catch(e) {}
+      // Show a notification that stays on screen for ~10 seconds
+      function notify10s(title, body) {
+        try {
+          const n = new Notification(title, { body, requireInteraction: true });
+          setTimeout(() => { try { n.close(); } catch(e) {} }, 10000);
+        } catch(e) {}
+      }
       if ((dueToday.length || dueTomorrow.length) && notifyEnabled && !localStorage.getItem(notifKey) &&
           typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         if (dueToday.length) {
           const names = dueToday.slice(0,3).map(t => t.text).join(', ');
           const extra = dueToday.length > 3 ? ` +${dueToday.length-3} more` : '';
-          new Notification('🔥 Deadline TODAY!', {
-            body: dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra,
-          });
+          notify10s('🔥 Deadline TODAY!', dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra);
         } else if (dueTomorrow.length) {
           const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
           const extra = dueTomorrow.length > 3 ? ` +${dueTomorrow.length-3} more` : '';
-          new Notification('⏰ Deadline tomorrow!', {
-            body: dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra,
-          });
+          notify10s('⏰ Deadline tomorrow!', dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra);
         }
         localStorage.setItem(notifKey, '1');
       }
