@@ -13306,6 +13306,8 @@
 
     /* ── ⏰ Deadline Reminders (today + 1 day left) ── */
     function checkDeadlineReminders() {
+      // Don't fire on the login/gate screen — wait until the user is in the app
+      if (document.body.classList.contains('tf-gate-mode') || document.body.classList.contains('tf-signin-page-mode')) return;
       const todayStr = fmtLocalDate(new Date());
       const tmrw = new Date(); tmrw.setDate(tmrw.getDate()+1);
       const tmrwStr = fmtLocalDate(tmrw);
@@ -13381,8 +13383,16 @@
         banner.remove();
       });
     }
-    // Run shortly after load (todos are ready), and re-check whenever tasks change
-    setTimeout(checkDeadlineReminders, 600);
+    // Wait until the user is past the login/gate screen, then check (poll up to ~60s)
+    (function waitThenCheck() {
+      let tries = 0;
+      const iv = setInterval(() => {
+        tries++;
+        const inGate = document.body.classList.contains('tf-gate-mode') || document.body.classList.contains('tf-signin-page-mode');
+        if (!inGate) { clearInterval(iv); try { checkDeadlineReminders(); } catch(e) {} }
+        else if (tries > 120) { clearInterval(iv); }
+      }, 500);
+    })();
     const _origSaveForDeadline = save;
     save = function() { _origSaveForDeadline.apply(this, arguments); try { checkDeadlineReminders(); } catch(e) {} };
 
