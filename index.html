@@ -13343,7 +13343,7 @@
       function notifyNative(title, body) {
         try { const n = new Notification(title, { body, requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
       }
-      if ((dueToday.length || dueTomorrow.length) && notifyEnabled && !localStorage.getItem(notifKey)) {
+      if ((dueToday.length || dueTomorrow.length) && notifyEnabled) {
         let title, body;
         if (dueToday.length) {
           const names = dueToday.slice(0,3).map(t => t.text).join(', ');
@@ -13356,9 +13356,16 @@
           title = '⏰ Deadline tomorrow!';
           body = dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra;
         }
-        showDeadlinePopup(title, body); // always shows, 10 seconds
-        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') notifyNative(title, body);
-        localStorage.setItem(notifKey, '1');
+        // In-app popup: show immediately once per app session (not on every edit/save)
+        if (!window.__deadlinePopupShown) {
+          window.__deadlinePopupShown = true;
+          showDeadlinePopup(title, body);
+        }
+        // Native OS notification: once per day so it doesn't spam
+        if (!localStorage.getItem(notifKey) && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          notifyNative(title, body);
+          localStorage.setItem(notifKey, '1');
+        }
       }
 
       // In-app banner (shown if anything is due today / tomorrow / overdue)
