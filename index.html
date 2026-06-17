@@ -10166,18 +10166,19 @@
   #cal-export-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(52,199,89,.45); }
   #cal-export-btn:active { transform: translateY(0); }
 
-  /* ═══ DEADLINE POPUP (stays 10 seconds) ═══ */
+  /* ═══ DEADLINE POPUP (slides in from top-right, stays 10 seconds) ═══ */
   #deadline-popup {
-    position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 50%;
-    transform: translateX(-50%) translateY(-140%);
-    width: 360px; max-width: 92vw;
+    position: fixed; top: calc(16px + env(safe-area-inset-top));
+    right: calc(16px + env(safe-area-inset-right));
+    transform: translateX(120%);
+    width: 340px; max-width: 88vw;
     background: linear-gradient(135deg, #ff6b6b, #ff8e53);
     color: #fff; padding: 16px 40px 14px 18px; border-radius: var(--r-lg);
     box-shadow: 0 12px 40px rgba(255,107,107,.5);
     z-index: 99999; opacity: 0;
-    transition: transform .35s var(--ease), opacity .35s var(--ease);
+    transition: transform .4s var(--ease), opacity .4s var(--ease);
   }
-  #deadline-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #deadline-popup.show { transform: translateX(0); opacity: 1; }
   #deadline-popup .dp-pop-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
   #deadline-popup .dp-pop-body { font-size: .85rem; font-weight: 500; line-height: 1.4; opacity: .96; }
   #deadline-popup .dp-pop-bar { margin-top: 10px; height: 4px; background: rgba(255,255,255,.3); border-radius: 999px; overflow: hidden; }
@@ -12803,6 +12804,26 @@
       return { text: text.replace(/\s+/g,' ').trim(), dueDate, priority, tags, list };
     }
 
+    // Shared corner notification popup (slides in from top-right, stays 10s)
+    function tfCornerPopup(title, body) {
+      let pop = document.getElementById('deadline-popup');
+      if (pop) pop.remove();
+      pop = document.createElement('div');
+      pop.id = 'deadline-popup';
+      pop.innerHTML =
+        '<div class="dp-pop-title">' + title + '</div>' +
+        '<div class="dp-pop-body">' + body + '</div>' +
+        '<div class="dp-pop-bar"><div class="dp-pop-bar-fill"></div></div>' +
+        '<button class="dp-pop-close" title="Dismiss">&times;</button>';
+      document.body.appendChild(pop);
+      requestAnimationFrame(() => pop.classList.add('show'));
+      const fill = pop.querySelector('.dp-pop-bar-fill');
+      if (fill) requestAnimationFrame(() => { fill.style.width = '0%'; });
+      const closeFn = () => { pop.classList.remove('show'); setTimeout(() => pop.remove(), 400); };
+      pop.querySelector('.dp-pop-close').addEventListener('click', closeFn);
+      setTimeout(closeFn, 10000);
+    }
+
     function addTodo(overrideText, overrideDate) {
       const rawText = (overrideText || input.value).trim();
       if (!rawText && pendingFiles.length === 0) return;
@@ -12864,6 +12885,9 @@
         const dateLabel = dd.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
         const nTitle = '⏰ Deadline set!';
         const nBody = '"' + newTodo.text + '" is due ' + dateLabel;
+        // In-app popup slides in from the top-right corner (always shows)
+        tfCornerPopup(nTitle, nBody);
+        // Native system notification too (if allowed)
         function fireAddNotif() {
           try { const n = new Notification(nTitle, { body: nBody, icon: 'icon-192.png', requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
         }
@@ -13395,25 +13419,8 @@
       const notifKey = 'deadline_notified_' + todayStr;
       let notifyEnabled = true;
       try { notifyEnabled = (typeof appSettings === 'undefined') || appSettings.dueNotify !== false; } catch(e) {}
-      // In-app popup that stays on screen for exactly 10 seconds (fully app-controlled)
-      function showDeadlinePopup(title, body) {
-        let pop = document.getElementById('deadline-popup');
-        if (pop) pop.remove();
-        pop = document.createElement('div');
-        pop.id = 'deadline-popup';
-        pop.innerHTML =
-          '<div class="dp-pop-title">' + title + '</div>' +
-          '<div class="dp-pop-body">' + body + '</div>' +
-          '<div class="dp-pop-bar"><div class="dp-pop-bar-fill"></div></div>' +
-          '<button class="dp-pop-close" title="Dismiss">&times;</button>';
-        document.body.appendChild(pop);
-        requestAnimationFrame(() => pop.classList.add('show'));
-        const fill = pop.querySelector('.dp-pop-bar-fill');
-        if (fill) { requestAnimationFrame(() => { fill.style.width = '0%'; }); }
-        const closeFn = () => { pop.classList.remove('show'); setTimeout(() => pop.remove(), 350); };
-        pop.querySelector('.dp-pop-close').addEventListener('click', closeFn);
-        setTimeout(closeFn, 10000); // stays 10 seconds
-      }
+      // In-app popup slides in from the top-right corner, stays 10 seconds
+      const showDeadlinePopup = tfCornerPopup;
       // Native macOS/system notification (the real one, like Notification Center)
       function notifyNative(title, body) {
         try { const n = new Notification(title, { body, requireInteraction: true, icon: 'icon-192.png' }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
@@ -13431,17 +13438,13 @@
           title = '⏰ Deadline tomorrow!';
           body = dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra;
         }
-        // Fire the real system notification immediately (once per app session)
+        // Show immediately once per app session (corner popup always; native too if allowed)
         if (!window.__deadlineNotified) {
           window.__deadlineNotified = true;
-          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            notifyNative(title, body);
-          } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-            // Ask for permission, then fire the system notification on grant
-            Notification.requestPermission().then(p => { if (p === 'granted') notifyNative(title, body); else showDeadlinePopup(title, body); });
-          } else {
-            // Notifications blocked/unsupported → fall back to the in-app popup
-            showDeadlinePopup(title, body);
+          showDeadlinePopup(title, body);
+          if (typeof Notification !== 'undefined') {
+            if (Notification.permission === 'granted') notifyNative(title, body);
+            else if (Notification.permission === 'default') Notification.requestPermission().then(p => { if (p === 'granted') notifyNative(title, body); });
           }
         }
       }
