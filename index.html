@@ -10155,6 +10155,17 @@
   .tt-countdown.cd-soon    { background: rgba(247,151,30,.14); color: #c2710c; }
   .tt-countdown.cd-far     { background: rgba(71,114,250,.12); color: var(--accent); }
 
+  /* ═══ CALENDAR EXPORT BUTTON ═══ */
+  #cal-export-btn {
+    display: block; width: 100%; margin-top: 14px; padding: 12px 16px;
+    background: linear-gradient(135deg, #34c759, #30d158); color: #fff;
+    border: none; border-radius: var(--r-md); font-size: .92rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 2px 10px rgba(52,199,89,.35);
+    transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+  }
+  #cal-export-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(52,199,89,.45); }
+  #cal-export-btn:active { transform: translateY(0); }
+
   /* ═══ DEADLINE POPUP (stays 10 seconds) ═══ */
   #deadline-popup {
     position: fixed; top: calc(20px + env(safe-area-inset-top)); left: 50%;
@@ -10400,6 +10411,8 @@
 
     <ul class="todo-list" id="todo-list"></ul>
     <div class="status" id="status"></div>
+
+    <button id="cal-export-btn" title="Get iPhone/Calendar alerts for your deadlines">📲 Add deadlines to my Calendar</button>
   </div>
 
   <!-- Hidden stubs for JS references (prevent crashes) -->
@@ -12964,6 +12977,53 @@
       });
     })();
     dateClearBtn.addEventListener('click', () => { dateInput.value = ''; });
+
+    // ── 📲 Export deadlines to Calendar (.ics) — real iPhone alerts ──
+    (function setupCalExport() {
+      const btn = document.getElementById('cal-export-btn');
+      if (!btn) return;
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function icsDate(dateStr) { // all-day event date: YYYYMMDD
+        return dateStr.replace(/-/g, '');
+      }
+      function esc(s) { return (s || '').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n'); }
+      btn.addEventListener('click', () => {
+        const withDeadlines = todos.filter(t => !t.done && t.dueDate);
+        if (!withDeadlines.length) {
+          alert('No tasks with a deadline yet. Add a task with a deadline first!');
+          return;
+        }
+        const now = new Date();
+        const stamp = now.getUTCFullYear() + pad(now.getUTCMonth()+1) + pad(now.getUTCDate()) + 'T' +
+                      pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';
+        let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//TaskFlow//EN\r\nCALSCALE:GREGORIAN\r\n';
+        withDeadlines.forEach(t => {
+          const d = icsDate(t.dueDate);
+          // next day for all-day DTEND
+          const dt = new Date(t.dueDate + 'T00:00:00'); dt.setDate(dt.getDate()+1);
+          const dEnd = dt.getFullYear() + pad(dt.getMonth()+1) + pad(dt.getDate());
+          ics += 'BEGIN:VEVENT\r\n';
+          ics += 'UID:taskflow-' + t.id + '@taskflow\r\n';
+          ics += 'DTSTAMP:' + stamp + '\r\n';
+          ics += 'DTSTART;VALUE=DATE:' + d + '\r\n';
+          ics += 'DTEND;VALUE=DATE:' + dEnd + '\r\n';
+          ics += 'SUMMARY:⏰ ' + esc(t.text) + '\r\n';
+          ics += 'DESCRIPTION:' + esc('TaskFlow deadline' + (t.priority ? ' (Important ' + t.priority + ')' : '')) + '\r\n';
+          // Alarm at 9:00 AM on the deadline day (fires on iPhone even when TaskFlow is closed)
+          ics += 'BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:⏰ Deadline today: ' + esc(t.text) + '\r\nTRIGGER;VALUE=DATE-TIME:' + d + 'T090000\r\nEND:VALARM\r\n';
+          ics += 'END:VEVENT\r\n';
+        });
+        ics += 'END:VCALENDAR\r\n';
+        const blob = new Blob([ics], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'taskflow-deadlines.ics';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+      });
+    })();
 
     // Live search
     const taskSearchEl = document.getElementById('task-search');
