@@ -12857,6 +12857,21 @@
 
       todos.push(newTodo);
       logHistory('added', newTodo.text);
+
+      // Fire an immediate notification when a task with a deadline is added
+      if (newTodo.dueDate) {
+        const dd = new Date(newTodo.dueDate + 'T00:00:00');
+        const dateLabel = dd.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+        const nTitle = '⏰ Deadline set!';
+        const nBody = '"' + newTodo.text + '" is due ' + dateLabel;
+        function fireAddNotif() {
+          try { const n = new Notification(nTitle, { body: nBody, icon: 'icon-192.png', requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
+        }
+        if (typeof Notification !== 'undefined') {
+          if (Notification.permission === 'granted') fireAddNotif();
+          else if (Notification.permission === 'default') Notification.requestPermission().then(p => { if (p === 'granted') fireAddNotif(); });
+        }
+      }
       if (!overrideText) {
         input.value = '';
         dateInput.value = '';
