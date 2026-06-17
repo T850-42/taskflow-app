@@ -13339,16 +13339,16 @@
         pop.querySelector('.dp-pop-close').addEventListener('click', closeFn);
         setTimeout(closeFn, 10000); // stays 10 seconds
       }
-      // Native browser notification too (its on-screen time is OS-controlled)
+      // Native macOS/system notification (the real one, like Notification Center)
       function notifyNative(title, body) {
-        try { const n = new Notification(title, { body, requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
+        try { const n = new Notification(title, { body, requireInteraction: true, icon: 'icon-192.png' }); setTimeout(() => { try { n.close(); } catch(e) {} }, 10000); } catch(e) {}
       }
       if ((dueToday.length || dueTomorrow.length) && notifyEnabled) {
         let title, body;
         if (dueToday.length) {
           const names = dueToday.slice(0,3).map(t => t.text).join(', ');
           const extra = dueToday.length > 3 ? ` +${dueToday.length-3} more` : '';
-          title = '🔥 Deadline TODAY!';
+          title = '⏰ Deadline TODAY!';
           body = dueToday.length + ' task' + (dueToday.length>1?'s are':' is') + ' due today: ' + names + extra;
         } else {
           const names = dueTomorrow.slice(0,3).map(t => t.text).join(', ');
@@ -13356,15 +13356,18 @@
           title = '⏰ Deadline tomorrow!';
           body = dueTomorrow.length + ' task' + (dueTomorrow.length>1?'s are':' is') + ' due tomorrow: ' + names + extra;
         }
-        // In-app popup: show immediately once per app session (not on every edit/save)
-        if (!window.__deadlinePopupShown) {
-          window.__deadlinePopupShown = true;
-          showDeadlinePopup(title, body);
-        }
-        // Native OS notification: once per day so it doesn't spam
-        if (!localStorage.getItem(notifKey) && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-          notifyNative(title, body);
-          localStorage.setItem(notifKey, '1');
+        // Fire the real system notification immediately (once per app session)
+        if (!window.__deadlineNotified) {
+          window.__deadlineNotified = true;
+          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            notifyNative(title, body);
+          } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+            // Ask for permission, then fire the system notification on grant
+            Notification.requestPermission().then(p => { if (p === 'granted') notifyNative(title, body); else showDeadlinePopup(title, body); });
+          } else {
+            // Notifications blocked/unsupported → fall back to the in-app popup
+            showDeadlinePopup(title, body);
+          }
         }
       }
 
