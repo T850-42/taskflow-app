@@ -10179,6 +10179,9 @@
     transition: transform .4s var(--ease), opacity .4s var(--ease);
   }
   #deadline-popup.show { transform: translateX(0); opacity: 1; }
+  #deadline-popup.alarm { background: linear-gradient(135deg, #e8302a, #b00020); box-shadow: 0 12px 40px rgba(232,48,42,.6); animation: alarmPulse .6s ease-in-out infinite; }
+  #deadline-popup.alarm.show { animation: alarmPulse .6s ease-in-out infinite; }
+  @keyframes alarmPulse { 0%,100% { box-shadow: 0 12px 40px rgba(232,48,42,.6); } 50% { box-shadow: 0 12px 50px rgba(232,48,42,.95); } }
   #deadline-popup .dp-pop-title { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
   #deadline-popup .dp-pop-body { font-size: .85rem; font-weight: 500; line-height: 1.4; opacity: .96; }
   #deadline-popup .dp-pop-bar { margin-top: 10px; height: 4px; background: rgba(255,255,255,.3); border-radius: 999px; overflow: hidden; }
@@ -12827,13 +12830,48 @@
       } catch(e) {}
     }
 
+    // Urgent alarm sound — fast repeating beeps (for security events)
+    function playAlarmSound() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        const ctx = new AC();
+        for (let i = 0; i < 6; i++) {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = 'square';
+          o.frequency.value = i % 2 === 0 ? 880 : 660;
+          const t0 = ctx.currentTime + i * 0.18;
+          g.gain.setValueAtTime(0, t0);
+          g.gain.linearRampToValueAtTime(0.22, t0 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.15);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(t0); o.stop(t0 + 0.15);
+        }
+        setTimeout(() => { try { ctx.close(); } catch(e) {} }, 1500);
+      } catch(e) {}
+    }
+
+    // Fire a full security alarm: red popup + urgent sound + system notification
+    function tfSecurityAlarm(title, body) {
+      playAlarmSound();
+      tfCornerPopup(title, body, true); // alarm style
+      try {
+        if (typeof Notification !== 'undefined') {
+          if (Notification.permission === 'granted') { const n = new Notification(title, { body, icon: 'icon-192.png', requireInteraction: true }); setTimeout(() => { try { n.close(); } catch(e) {} }, 12000); }
+          else if (Notification.permission === 'default') Notification.requestPermission();
+        }
+      } catch(e) {}
+    }
+
     // Shared corner notification popup (slides in from top-right, stays 10s)
-    function tfCornerPopup(title, body) {
-      playNotifSound();
+    function tfCornerPopup(title, body, isAlarm) {
+      if (!isAlarm) playNotifSound();
       let pop = document.getElementById('deadline-popup');
       if (pop) pop.remove();
       pop = document.createElement('div');
       pop.id = 'deadline-popup';
+      if (isAlarm) pop.classList.add('alarm');
       pop.innerHTML =
         '<div class="dp-pop-title">' + title + '</div>' +
         '<div class="dp-pop-body">' + body + '</div>' +
@@ -15274,6 +15312,8 @@
         unlockedPin = newPin;
         saveVaultTasks(unlockedPin, tasks);
         showHint('✓ PIN updated.');
+        // Immediate security alarm — the app's secret was just changed
+        try { tfSecurityAlarm('🚨 Security Alert', 'The app secret (Vault PIN) was just changed at ' + new Date().toLocaleTimeString()); } catch(e) {}
       });
 
       hideBtn.addEventListener('click', () => {
