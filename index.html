@@ -2042,15 +2042,23 @@
     }
     .vt-text { flex: 1; }
     .vt-del {
-      background: none;
+      background: rgba(239,68,68,0.15);
       border: none;
-      color: #71717a;
+      color: #ef4444;
       cursor: pointer;
-      font-size: 1rem;
-      padding: 2px 6px;
-      transition: color 0.15s;
+      font-size: 1.1rem;
+      line-height: 1;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
     }
-    .vt-del:hover { color: #ef4444; }
+    .vt-del:hover { background: #ef4444; color: #fff; }
+    .vt-del:active { transform: scale(0.92); }
     .vault-empty { text-align: center; color: #57534e; padding: 24px; font-style: italic; font-size: 0.85rem; }
 
     /* Special "All Your Tasks" pinned entry */
@@ -15186,7 +15194,7 @@
             <li class="vault-task ${t.done ? 'done' : ''}" data-idx="${i}">
               <input type="checkbox" ${t.done ? 'checked' : ''}>
               <span class="vt-text">${escVault(t.text)}</span>
-              <button class="vt-del" title="Delete">&times;</button>
+              <button class="vt-del" title="Delete this secret task">🗑</button>
             </li>
           `).join('');
         }
