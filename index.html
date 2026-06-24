@@ -3902,10 +3902,9 @@
 
     /* Info button — matches classic blue circle "i" icon */
     .info-btn {
-      display: none !important; /* removed — replaced by the App Info button; was overlapping */
       position: fixed;
       top: 20px;
-      right: 20px;
+      right: 156px; /* sits just left of the right sidebar so it never overlaps */
       width: 52px;
       height: 52px;
       border-radius: 50%;
@@ -3924,6 +3923,16 @@
     .info-btn:hover {
       transform: scale(1.1);
       box-shadow: 4px 7px 20px rgba(60,80,120,0.45);
+    }
+    /* On phones/tablets the top is full of button strips — move it to the bottom-left, clear of everything */
+    @media (max-width: 1279px) {
+      .info-btn {
+        top: auto !important;
+        right: auto !important;
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        left: calc(16px + env(safe-area-inset-left));
+        width: 46px; height: 46px;
+      }
     }
 
     .info-btn .info-i {
