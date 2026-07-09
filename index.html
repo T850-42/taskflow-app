@@ -2060,6 +2060,23 @@
     .vt-del:hover { background: #ef4444; color: #fff; }
     .vt-del:active { transform: scale(0.92); }
     .vault-empty { text-align: center; color: #57534e; padding: 24px; font-style: italic; font-size: 0.85rem; }
+    .vault-news-btn {
+      width: 100%; margin-top: 8px; padding: 11px 16px;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #1c1917;
+      border: none; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 3px 10px rgba(245,158,11,0.35);
+    }
+    .vault-news-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(245,158,11,0.45); }
+    .vault-news-btn:active { transform: translateY(0); }
+    #vault-news-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .vnews-item {
+      background: #2c2c2e; border-radius: 10px; padding: 10px 12px;
+      color: #e5e5e5; font-size: 0.82rem; line-height: 1.4; text-decoration: none; display: block;
+      border-left: 3px solid #fbbf24; transition: background 0.15s;
+    }
+    .vnews-item:hover { background: #3a3a3c; }
+    .vnews-item .vnews-num { color: #fbbf24; font-weight: 800; margin-right: 6px; }
+    .vnews-status { text-align: center; color: #a1a1aa; font-size: 0.82rem; padding: 8px; }
 
     /* Special "All Your Tasks" pinned entry */
     .vault-summary {
@@ -10887,6 +10904,9 @@
         <ul class="vault-list" id="vault-list"></ul>
         <div class="vault-empty" id="vault-empty" style="display:none;">No secrets here yet. Add one above.</div>
 
+        <button id="vault-news-btn" class="vault-news-btn">📰 Show me the news</button>
+        <div id="vault-news-list"></div>
+
         <div class="vault-actions">
           <button id="vault-lock-btn">🔒 Lock Vault</button>
           <button id="vault-change-pin">Change PIN</button>
@@ -15319,6 +15339,30 @@
         lockVault();
         showHint('🔒 Vault locked.');
       });
+
+      // 📰 News button — fetches live top headlines (Hacker News API: free, no key)
+      const newsBtn = document.getElementById('vault-news-btn');
+      const newsList = document.getElementById('vault-news-list');
+      if (newsBtn && newsList) {
+        newsBtn.addEventListener('click', async () => {
+          newsList.innerHTML = '<div class="vnews-status">📡 Loading the latest news…</div>';
+          try {
+            const topRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json');
+            const ids = (await topRes.json()).slice(0, 6);
+            const stories = await Promise.all(ids.map(id =>
+              fetch('https://hacker-news.firebaseio.com/v0/item/' + id + '.json').then(r => r.json())
+            ));
+            newsList.innerHTML = stories.filter(Boolean).map((s, i) => {
+              const url = s.url || ('https://news.ycombinator.com/item?id=' + s.id);
+              const title = (s.title || 'Untitled').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              return '<a class="vnews-item" href="' + url + '" target="_blank" rel="noopener">' +
+                     '<span class="vnews-num">' + (i + 1) + '.</span>' + title + '</a>';
+            }).join('');
+          } catch (e) {
+            newsList.innerHTML = '<div class="vnews-status">⚠️ Could not load news. Check your internet and try again.</div>';
+          }
+        });
+      }
 
       changePinBtn.addEventListener('click', async () => {
         const newPin = prompt('Enter new PIN (4+ characters):');
