@@ -12159,7 +12159,7 @@
           <label>🏠 Come back at</label>
           <input type="time" id="sun-custom-back" value="18:00">
         </div>
-        <button class="sun-check-btn" id="sun-check-btn" onclick="(function(){var goInput=document.getElementById('sun-custom-go'),backInput=document.getElementById('sun-custom-back'),adviceEl=document.getElementById('sun-advice');var goH=parseInt((goInput.value||'').split(':')[0]),backH=parseInt((backInput.value||'').split(':')[0]);var goInPeak=goH>=11&&goH<16,backInPeak=backH>=11&&backH<16;if(!goInPeak&&!backInPeak){adviceEl.className='sun-advice good';adviceEl.textContent='✅ Great plan! You avoid the hottest hours (11am–4pm). Stay hydrated and enjoy your outing! 💧';}else if(goInPeak&&backInPeak){adviceEl.className='sun-advice bad';adviceEl.textContent='🔥 Both times are during peak heat (11am–4pm). Try going earlier in the morning or after 4pm!';}else if(goInPeak){adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ You\'re going out during peak heat. Try leaving before 11am. Wear sunscreen and bring water! 🧴';}else{adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ You\'re coming back during peak heat. Find shade or stay cool between 11am–4pm. 🧢';}})()">Check if it's healthy ☀️</button>
+        <button class="sun-check-btn" id="sun-check-btn" onclick="(function(){var goInput=document.getElementById('sun-custom-go'),backInput=document.getElementById('sun-custom-back'),adviceEl=document.getElementById('sun-advice');var goH=parseInt((goInput.value||'').split(':')[0]),backH=parseInt((backInput.value||'').split(':')[0]);if(isNaN(goH)||isNaN(backH)){adviceEl.className='sun-advice warn';adviceEl.textContent='Please pick both times first.';return;}if(backH<=goH){adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ Your come-back time should be after your go-out time.';return;}var pS=11,pE=16;var overlaps=(goH<pE)&&(backH>pS);if(!overlaps){adviceEl.className='sun-advice good';adviceEl.textContent='✅ Great plan! You stay out of the hottest hours (11am–4pm), so it is gentle on your body. Stay hydrated! 💧';}else if(goH<=pS&&backH>=pE){adviceEl.className='sun-advice bad';adviceEl.textContent='🔥 Not healthy! You will be outside the WHOLE hottest part of the day (11am–4pm). That is hard on your body. Try coming back before 11am or going out after 4pm. Bring water, sunscreen and a hat! 🧴🧢';}else{adviceEl.className='sun-advice warn';adviceEl.textContent='⚠️ Part of your outing is during peak heat (11am–4pm). Stay in the shade during those hours and bring water & sunscreen! 💧🧴';}})()">Check if it's healthy ☀️</button>
         <div class="sun-advice" id="sun-advice"></div>
       </div>
     </div>
@@ -21166,22 +21166,29 @@
       checkBtn.addEventListener('click', () => {
         const goH = parseInt(goInput.value.split(':')[0]);
         const backH = parseInt(backInput.value.split(':')[0]);
-        const peakStart = 11, peakEnd = 16;
-        const goInPeak = goH >= peakStart && goH < peakEnd;
-        const backInPeak = backH >= peakStart && backH < peakEnd;
-
-        if (!goInPeak && !backInPeak) {
-          adviceEl.className = 'sun-advice good';
-          adviceEl.textContent = '✅ Great plan! You avoid the hottest hours (11am–4pm). Stay hydrated and enjoy your outing! 💧';
-        } else if (goInPeak && backInPeak) {
-          adviceEl.className = 'sun-advice bad';
-          adviceEl.textContent = '🔥 Both times are during peak heat (11am–4pm). Try going earlier in the morning or after 4pm — it will be much cooler!';
-        } else if (goInPeak) {
+        if (isNaN(goH) || isNaN(backH)) {
           adviceEl.className = 'sun-advice warn';
-          adviceEl.textContent = '⚠️ You\'re going out during peak heat. Try leaving before 11am if you can. Wear sunscreen and bring water! 🧴';
+          adviceEl.textContent = 'Please pick both times first.';
+          return;
+        }
+        if (backH <= goH) {
+          adviceEl.className = 'sun-advice warn';
+          adviceEl.textContent = '⚠️ Your come-back time should be after your go-out time.';
+          return;
+        }
+        const peakStart = 11, peakEnd = 16;
+        // The whole outing window [goH, backH) — does it overlap the peak-heat window [11, 16)?
+        const overlapsPeak = (goH < peakEnd) && (backH > peakStart);
+
+        if (!overlapsPeak) {
+          adviceEl.className = 'sun-advice good';
+          adviceEl.textContent = '✅ Great plan! You stay out of the hottest hours (11am–4pm), so it is gentle on your body. Stay hydrated! 💧';
+        } else if (goH <= peakStart && backH >= peakEnd) {
+          adviceEl.className = 'sun-advice bad';
+          adviceEl.textContent = '🔥 Not healthy! You will be outside the WHOLE hottest part of the day (11am–4pm). That is hard on your body. Try coming back before 11am or going out after 4pm. Bring water, sunscreen and a hat! 🧴🧢';
         } else {
           adviceEl.className = 'sun-advice warn';
-          adviceEl.textContent = '⚠️ You\'re coming back during peak heat. Try to find shade or stay cool between 11am–4pm. 🧢';
+          adviceEl.textContent = '⚠️ Part of your outing is during peak heat (11am–4pm). Stay in the shade during those hours and bring water & sunscreen! 💧🧴';
         }
       });
     })();
