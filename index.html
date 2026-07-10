@@ -13030,11 +13030,14 @@
       pop = document.createElement('div');
       pop.id = 'deadline-popup';
       if (isAlarm) pop.classList.add('alarm');
+      // Structure only; title/body set as TEXT (never HTML) so task text can't inject markup
       pop.innerHTML =
-        '<div class="dp-pop-title">' + title + '</div>' +
-        '<div class="dp-pop-body">' + body + '</div>' +
+        '<div class="dp-pop-title"></div>' +
+        '<div class="dp-pop-body"></div>' +
         '<div class="dp-pop-bar"><div class="dp-pop-bar-fill"></div></div>' +
         '<button class="dp-pop-close" title="Dismiss">&times;</button>';
+      pop.querySelector('.dp-pop-title').textContent = title;
+      pop.querySelector('.dp-pop-body').textContent = body;
       document.body.appendChild(pop);
       requestAnimationFrame(() => pop.classList.add('show'));
       const fill = pop.querySelector('.dp-pop-bar-fill');
