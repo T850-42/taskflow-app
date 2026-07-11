@@ -10373,6 +10373,24 @@
 
   /* App purpose subtitle under the title */
   .app-purpose { font-size: 0.82rem; color: #6b7280; font-weight: 500; margin-top: 3px; }
+
+  /* ── Glow on every button ── */
+  button {
+    transition: box-shadow .25s var(--ease), transform .15s var(--ease), filter .25s var(--ease);
+  }
+  button:not(:disabled):hover {
+    box-shadow: 0 0 14px rgba(71,114,250,0.55), 0 0 4px rgba(71,114,250,0.35);
+    filter: brightness(1.05);
+  }
+  button:not(:disabled):active { transform: translateY(1px); }
+  /* Gentle resting glow so buttons always look "alive" */
+  #add-btn, .starter-chip, #clear-completed-btn, .filters button, .pri-chip,
+  .todo-item .edit-btn, .todo-item .delete-btn, .vault-news-btn, #cal-export-btn {
+    box-shadow: 0 0 8px rgba(71,114,250,0.18);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button { transition: none; }
+  }
   </style>
 </head>
 <body>
