@@ -294,6 +294,16 @@
       background-attachment: fixed;
       transition: background 0.3s ease;
     }
+    /* Light background mode (toggled by the ☀️/🌙 button, saved per device) */
+    html.bg-light body { background: #f5f5f5; }
+    .theme-toggle-btn {
+      padding: 10px 16px; background: #1f2937; color: #fde68a;
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 18px;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35); transition: all 0.2s;
+    }
+    html.bg-light .theme-toggle-btn { background: #fff; color: #1f2937; border-color: #e2e6eb; }
 
     .container {
       width: 100%;
@@ -10494,6 +10504,27 @@
 
     <!-- Share / QR Code button -->
     <button id="share-btn">📲 Share</button>
+
+    <!-- Light/Dark background toggle -->
+    <button class="theme-toggle-btn" id="theme-toggle-btn" onclick="window.toggleBgTheme()" title="Switch between light and dark background">☀️ Light</button>
+    <script>
+    (function() {
+      function label() {
+        var b = document.getElementById('theme-toggle-btn');
+        if (!b) return;
+        var light = document.documentElement.classList.contains('bg-light');
+        b.textContent = light ? '🌙 Dark' : '☀️ Light';
+        b.title = light ? 'Switch to dark background' : 'Switch to light background';
+      }
+      try { if (localStorage.getItem('bg_theme') === 'light') document.documentElement.classList.add('bg-light'); } catch(e) {}
+      window.toggleBgTheme = function() {
+        var light = document.documentElement.classList.toggle('bg-light');
+        try { localStorage.setItem('bg_theme', light ? 'light' : 'dark'); } catch(e) {}
+        label();
+      };
+      label();
+    })();
+    </script>
 
     <!-- Share modal -->
     <div id="share-modal">
@@ -21765,7 +21796,7 @@
       // Left sidebar: Navigation + Personal
       'nav-top-left':    ['guide-btn', 'celebrate-btn', 'tf-lang-btn', 'trip-btn'],
       // Right sidebar: Account + Tools
-      'nav-top-right':   ['appinfo-btn', 'tf-signin-btn', 'settings-btn', 'history-btn', 'share-btn', 'vault-btn'],
+      'nav-top-right':   ['appinfo-btn', 'tf-signin-btn', 'settings-btn', 'history-btn', 'share-btn', 'theme-toggle-btn', 'vault-btn'],
       'nav-bottom-left': [],
       'nav-bottom-right':[]
     };
