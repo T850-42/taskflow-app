@@ -275,6 +275,10 @@
 
 
     #vel-btn, #net-btn, #prog-btn, #downloads-btn, #duo-btn, #goal-btn, #apps-btn, #dict-btn, #upg-btn { display: none !important; }
+    /* Removed by request: scan, reminders, weather, routine, habits book, sun planner, birthdays, focus */
+    #scanner-btn, #reminders-btn, #weather-btn, #routine-btn, #habits-book-btn, #sun-planner-btn, #birthday-btn, #tf-focus-btn { display: none !important; }
+    /* Removed at owner's request: scan, reminders, weather, routine, habits book, sun planner, birthdays, focus */
+    #scanner-btn, #reminders-btn, #weather-btn, #routine-btn, #habits-book-btn, #sun-planner-btn, #birthday-btn, #tf-focus-btn { display: none !important; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -21759,9 +21763,9 @@
   (function moveToNavContainers() {
     var groups = {
       // Left sidebar: Navigation + Personal
-      'nav-top-left':    ['guide-btn', 'tf-focus-btn', 'routine-btn', 'celebrate-btn', 'habits-book-btn', 'tf-lang-btn', 'trip-btn', 'sun-planner-btn', 'birthday-btn'],
+      'nav-top-left':    ['guide-btn', 'celebrate-btn', 'tf-lang-btn', 'trip-btn'],
       // Right sidebar: Account + Tools
-      'nav-top-right':   ['appinfo-btn', 'tf-signin-btn', 'settings-btn', 'history-btn', 'weather-btn', 'reminders-btn', 'scanner-btn', 'share-btn', 'vault-btn'],
+      'nav-top-right':   ['appinfo-btn', 'tf-signin-btn', 'settings-btn', 'history-btn', 'share-btn', 'vault-btn'],
       'nav-bottom-left': [],
       'nav-bottom-right':[]
     };
